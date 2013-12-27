@@ -2,7 +2,7 @@ require 'spec_helper'
 
 mysql_name = ''
 case backend.check_os[:family]
-when 'Debian'
+when 'Ubuntu'
   mysql_name = 'mysql'
   mysql_config_file = '/etc/mysql/my.cnf'
 when 'RedHat'
