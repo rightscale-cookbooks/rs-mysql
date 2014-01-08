@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: rs-mysql
-# Recipe:: server
+# Attribute:: server
 #
 # Copyright (C) 2013 RightScale, Inc.
 #
@@ -17,10 +17,7 @@
 # limitations under the License.
 #
 
-RsMysql::Tuning.calculate_mysql_tuning_attributes(
-  node.override['mysql']['tunable'],
-  node['memory']['total'],
-  node['rs-mysql']['server_usage']
-)
-
-include_recipe 'mysql::server'
+# The server usage method. It should either be 'dedicated' or 'shared'. In a 'dedicated' server, all
+# resources are dedicated to the mysql server. In a 'shared' server, mysql utilizes only half of the server resources.
+#
+default['rs-mysql']['server_usage'] = 'dedicated'
