@@ -12,7 +12,7 @@ platforms:
     box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box
     customize:
       cpus: 2
-      memory: 1024
+      memory: 512
 - name: centos-6.4
   run_list:
   - recipe[yum::epel]
@@ -21,10 +21,10 @@ platforms:
     box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_centos-6.4_provisionerless.box
     customize:
       cpus: 2
-      memory: 1024
+      memory: 512
 
 suites:
-- name: server
+- name: dedicated_server
   run_list:
   - recipe[rs-mysql::server]
   - recipe[fake::database_mysql]
@@ -33,3 +33,16 @@ suites:
       server_root_password: rootpass
       server_debian_password: debpass
       server_repl_password: replpass
+    rs-mysql:
+      server_usage: dedicated
+- name: shared_server
+  run_list:
+  - recipe[rs-mysql::server]
+  - recipe[fake::database_mysql]
+  attributes:
+    mysql:
+      server_root_password: rootpass
+      server_debian_password: debpass
+      server_repl_password: replpass
+    rs-mysql:
+      server_usage: shared

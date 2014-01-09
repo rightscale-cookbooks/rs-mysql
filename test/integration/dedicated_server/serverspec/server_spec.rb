@@ -33,6 +33,35 @@ describe file(mysql_config_file) do
   it { should be_file }
 end
 
+describe "verify the tuning attributes set in #{mysql_config_file}" do
+  {
+    query_cache_size: "4M",
+    innodb_buffer_pool_size: "392M",
+    thread_cache_size: 50,
+    max_connections: 800,
+    wait_timeout: 28800,
+    net_read_timeout: 30,
+    net_write_timeout: 30,
+    back_log: 128,
+    max_heap_table_size: "32M",
+    read_buffer_size: "1M",
+    read_rnd_buffer_size: "4M",
+    long_query_time: 5,
+    key_buffer: "16M",
+    max_allowed_packet: "20M",
+    innodb_log_file_size: "4M",
+    innodb_log_buffer_size: "16M",
+    table_cache: 256,
+    sort_buffer_size: "2M",
+    innodb_additional_mem_pool_size: "50M",
+    myisam_sort_buffer_size: "64M"
+  }.each do |attribute, value|
+    describe command("grep -E \"^#{attribute}\\s+\" #{mysql_config_file}") do
+      it { should return_stdout /#{value}/ }
+    end
+  end
+end
+
 describe file('/var/lib/mysql') do
   it { should be_directory }
 end
