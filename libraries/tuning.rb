@@ -22,9 +22,9 @@ module RsMysql
 
     GB = 1024
 
-    def self.calculate_mysql_tuning_attributes(node_tuning, memory_str, server_usage)
+    def self.tune_attributes(node_tuning, memory, server_usage)
       factor = server_usage == 'dedicated' ? 1 : 0.5
-      memory = calculate_system_memory(memory_str)
+      memory = memory_in_megabytes(memory)
       node_tuning['query_cache_size'] = value_with_units((memory * 0.01).to_i, 'M', factor)
       node_tuning['innodb_buffer_pool_size'] = value_with_units((memory * 0.8).to_i, 'M', factor)
 
@@ -93,9 +93,16 @@ module RsMysql
 
   private
 
-    def self.calculate_system_memory(memory_str)
-      # TODO: Fix meeeee please
-      memory_str.to_i / 1024
+    def self.memory_in_megabytes(memory)
+      # If ohai returns the total memory in String, it will most likely be in kB.
+      if memory.is_a?(String) && memory =~ /\d+kB/i
+        memory.to_i / 1024
+      # If it returns an integer, it will most likely be in bytes.
+      elsif memory.is_a?(Integer)
+        memory / (1024 * 1024)
+      else
+        nil
+      end
     end
 
     def self.value_with_units(value, unit, factor)

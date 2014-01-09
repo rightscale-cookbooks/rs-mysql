@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-RsMysql::Tuning.calculate_mysql_tuning_attributes(
+RsMysql::Tuning.tune_attributes(
   node.override['mysql']['tunable'],
   node['memory']['total'],
   node['rs-mysql']['server_usage']
