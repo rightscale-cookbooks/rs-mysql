@@ -32,9 +32,6 @@ suites:
       server_root_password: rootpass
       server_debian_password: debpass
       server_repl_password: replpass
-- name: client
-  run_list:
-  - recipe[rs-mysql::client]
 - name: database_mysql
   run_list:
   - recipe[rs-mysql::server]
