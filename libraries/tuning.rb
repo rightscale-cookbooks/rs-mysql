@@ -64,27 +64,27 @@ module RsMysql
       #   > 50 GB
       #
       if memory < 3 * GB
-        node_tuning['table_cache'] = (256 * factor).to_i
+        node_tuning['table_open_cache'] = (256 * factor).to_i
         node_tuning['sort_buffer_size'] = value_with_units(2, 'M', factor)
         node_tuning['innodb_additional_mem_pool_size'] = value_with_units(50, 'M', factor)
         node_tuning['myisam_sort_buffer_size'] = value_with_units(64, 'M', factor)
       elsif memory < 10 * GB
-        node_tuning['table_cache'] = (512 * factor).to_i
+        node_tuning['table_open_cache'] = (512 * factor).to_i
         node_tuning['sort_buffer_size'] = value_with_units(4, 'M', factor)
         node_tuning['innodb_additional_mem_pool_size'] = value_with_units(200, 'M', factor)
         node_tuning['myisam_sort_buffer_size'] = value_with_units(96, 'M', factor)
       elsif memory < 25 * GB
-        node_tuning['table_cache'] = (1024 * factor).to_i
+        node_tuning['table_open_cache'] = (1024 * factor).to_i
         node_tuning['sort_buffer_size'] = value_with_units(8, 'M', factor)
         node_tuning['innodb_additional_mem_pool_size'] = value_with_units(300, 'M', factor)
         node_tuning['myisam_sort_buffer_size'] = value_with_units(128, 'M', factor)
       elsif memory < 50 * GB
-        node_tuning['table_cache'] = (2048 * factor).to_i
+        node_tuning['table_open_cache'] = (2048 * factor).to_i
         node_tuning['sort_buffer_size'] = value_with_units(16, 'M', factor)
         node_tuning['innodb_additional_mem_pool_size'] = value_with_units(400, 'M', factor)
         node_tuning['myisam_sort_buffer_size'] = value_with_units(256, 'M', factor)
       else
-        node_tuning['table_cache'] = (4096 * factor).to_i
+        node_tuning['table_open_cache'] = (4096 * factor).to_i
         node_tuning['sort_buffer_size'] = value_with_units(32, 'M', factor)
         node_tuning['innodb_additional_mem_pool_size'] = value_with_units(500, 'M', factor)
         node_tuning['myisam_sort_buffer_size'] = value_with_units(512, 'M', factor)
