@@ -23,7 +23,7 @@ module RsMysql
     GB = 1024
 
     def self.tune_attributes(node_tuning, memory, server_usage)
-      factor = server_usage == 'dedicated' ? 1 : 0.5
+      factor = server_usage.to_s == 'dedicated' ? 1 : 0.5
       memory = memory_in_megabytes(memory)
       node_tuning['query_cache_size'] = value_with_units((memory * 0.01).to_i, 'M', factor)
       node_tuning['innodb_buffer_pool_size'] = value_with_units((memory * 0.8).to_i, 'M', factor)
