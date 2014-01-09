@@ -46,16 +46,12 @@ module RsMysql
       if memory < 1 * GB
         node_tuning['key_buffer'] = value_with_units(16, 'M', factor)
         node_tuning['max_allowed_packet'] = value_with_units(20, 'M', factor)
-        node_tuning['myisam_sort_buffer_size'] = value_with_units(20, 'M', factor)
-        # TODO: innodb log file size doesn't seem to work as the initial log file size is different.
-        # Also on CentOS mysql 5.1 gets installed which doesn't have innodb installed by default.
-        #node_tuning['innodb_log_file_size'] = value_with_units(4, 'M', factor)
+        node_tuning['innodb_log_file_size'] = value_with_units(4, 'M', factor)
         node_tuning['innodb_log_buffer_size'] = value_with_units(16, 'M', factor)
       else
         node_tuning['key_buffer'] = value_with_units(128, 'M', factor)
         node_tuning['max_allowed_packet'] = value_with_units(128, 'M', factor)
-        node_tuning['myisam_sort_buffer_size'] = value_with_units(128, 'M', factor)
-        #node_tuning['innodb_log_file_size'] = value_with_units(64, 'M', factor)
+        node_tuning['innodb_log_file_size'] = value_with_units(64, 'M', factor)
         node_tuning['innodb_log_buffer_size'] = value_with_units(8, 'M', factor)
       end
 
