@@ -17,6 +17,10 @@
 # limitations under the License.
 #
 
+marker 'recipe_start_rightscale' do
+  template 'rightscale_audit_entry.erb'
+end
+
 RsMysql::Tuning.tune_attributes(
   node.override['mysql']['tunable'],
   node['memory']['total'],

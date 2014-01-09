@@ -18,6 +18,6 @@
 #
 
 # The server usage method. It should either be 'dedicated' or 'shared'. In a 'dedicated' server, all
-# resources are dedicated to the mysql server. In a 'shared' server, mysql utilizes only half of the server resources.
+# resources are dedicated to MySQL. In a 'shared' server, MySQL utilizes only half of the server resources.
 #
 default['rs-mysql']['server_usage'] = 'dedicated'
