@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+include_recipe 'database::mysql'
+
 # The connection hash to use to connect to mysql
 mysql_connection_info = {
   :host => 'localhost',

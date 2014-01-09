@@ -5,13 +5,19 @@ case backend.check_os[:family]
 when 'Ubuntu'
   mysql_name = 'mysql'
   mysql_config_file = '/etc/mysql/my.cnf'
+  mysql_server_packages = %w{mysql-server apparmor-utils}
 when 'RedHat'
   mysql_name = 'mysqld'
   mysql_config_file = '/etc/my.cnf'
+  mysql_server_packages = %w{mysql-server}
 end
 
-describe package('mysql-server') do
-  it { should be_installed }
+describe "MySQL server packages are installed" do
+  mysql_server_packages.each do |pkg|
+    describe package(pkg) do
+      it { should be_installed }
+    end
+  end
 end
 
 describe service(mysql_name) do
