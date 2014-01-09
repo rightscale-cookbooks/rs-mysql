@@ -47,7 +47,7 @@ describe "verify the tuning attributes set in #{mysql_config_file}" do
     read_buffer_size: "1M",
     read_rnd_buffer_size: "4M",
     long_query_time: 5,
-    key_buffer: "16M",
+    key_buffer_size: "16M",
     max_allowed_packet: "20M",
     innodb_log_file_size: "4M",
     innodb_log_buffer_size: "16M",

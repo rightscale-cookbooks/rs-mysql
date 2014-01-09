@@ -53,12 +53,12 @@ module RsMysql
       # Sets buffer sizes and InnoDB log properties. Overrides buffer sizes for really small servers.
       #
       if memory < 1 * GB
-        node_tuning['key_buffer'] = value_with_units((16 * factor).to_i, 'M')
+        node_tuning['key_buffer_size'] = value_with_units((16 * factor).to_i, 'M')
         node_tuning['max_allowed_packet'] = value_with_units((20 * factor).to_i, 'M')
         node_tuning['innodb_log_file_size'] = value_with_units((4 * factor).to_i, 'M')
         node_tuning['innodb_log_buffer_size'] = value_with_units((16 * factor).to_i, 'M')
       else
-        node_tuning['key_buffer'] = value_with_units((128 * factor).to_i, 'M')
+        node_tuning['key_buffer_size'] = value_with_units((128 * factor).to_i, 'M')
         node_tuning['max_allowed_packet'] = value_with_units((128 * factor).to_i, 'M')
         node_tuning['innodb_log_file_size'] = value_with_units((64 * factor).to_i, 'M')
         node_tuning['innodb_log_buffer_size'] = value_with_units((8 * factor).to_i, 'M')

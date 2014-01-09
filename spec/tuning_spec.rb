@@ -14,7 +14,7 @@ describe RsMysql::Tuning do
           assertions: {
             query_cache_size: "#{(5 * factor).to_i}M",
             innodb_buffer_pool_size: "#{(409 * factor).to_i}M",
-            key_buffer: "#{(16 * factor).to_i}M",
+            key_buffer_size: "#{(16 * factor).to_i}M",
             max_allowed_packet: "#{(20 * factor).to_i}M",
             innodb_log_file_size: "#{(4 * factor).to_i}M",
             innodb_log_buffer_size: "#{(16 * factor).to_i}M",
@@ -30,7 +30,7 @@ describe RsMysql::Tuning do
           assertions: {
             query_cache_size: "#{(5 * factor).to_i}M",
             innodb_buffer_pool_size: "#{(409 * factor).to_i}M",
-            key_buffer: "#{(16 * factor).to_i}M",
+            key_buffer_size: "#{(16 * factor).to_i}M",
             max_allowed_packet: "#{(20 * factor).to_i}M",
             innodb_log_file_size: "#{(4 * factor).to_i}M",
             innodb_log_buffer_size: "#{(16 * factor).to_i}M",
@@ -46,7 +46,7 @@ describe RsMysql::Tuning do
           assertions: {
             query_cache_size: "#{(20 * factor).to_i}M",
             innodb_buffer_pool_size: "#{(1638 * factor).to_i}M",
-            key_buffer: "#{(128 * factor).to_i}M",
+            key_buffer_size: "#{(128 * factor).to_i}M",
             max_allowed_packet: "#{(128 * factor).to_i}M",
             innodb_log_file_size: "#{(64 * factor).to_i}M",
             innodb_log_buffer_size: "#{(8 * factor).to_i}M",
@@ -62,7 +62,7 @@ describe RsMysql::Tuning do
           assertions: {
             query_cache_size: "#{(51 * factor).to_i}M",
             innodb_buffer_pool_size: "#{(4096 * factor).to_i}M",
-            key_buffer: "#{(128 * factor).to_i}M",
+            key_buffer_size: "#{(128 * factor).to_i}M",
             max_allowed_packet: "#{(128 * factor).to_i}M",
             innodb_log_file_size: "#{(64 * factor).to_i}M",
             innodb_log_buffer_size: "#{(8 * factor).to_i}M",
@@ -78,7 +78,7 @@ describe RsMysql::Tuning do
           assertions: {
             query_cache_size: "#{(153 * factor).to_i}M",
             innodb_buffer_pool_size: "#{(12288 * factor).to_i}M",
-            key_buffer: "#{(128 * factor).to_i}M",
+            key_buffer_size: "#{(128 * factor).to_i}M",
             max_allowed_packet: "#{(128 * factor).to_i}M",
             innodb_log_file_size: "#{(64 * factor).to_i}M",
             innodb_log_buffer_size: "#{(8 * factor).to_i}M",
@@ -94,7 +94,7 @@ describe RsMysql::Tuning do
           assertions: {
             query_cache_size: "#{(307 * factor).to_i}M",
             innodb_buffer_pool_size: "#{(24576 * factor).to_i}M",
-            key_buffer: "#{(128 * factor).to_i}M",
+            key_buffer_size: "#{(128 * factor).to_i}M",
             max_allowed_packet: "#{(128 * factor).to_i}M",
             innodb_log_file_size: "#{(64 * factor).to_i}M",
             innodb_log_buffer_size: "#{(8 * factor).to_i}M",
@@ -110,7 +110,7 @@ describe RsMysql::Tuning do
           assertions: {
             query_cache_size: "#{(563 * factor).to_i}M",
             innodb_buffer_pool_size: "#{(45056 * factor).to_i}M",
-            key_buffer: "#{(128 * factor).to_i}M",
+            key_buffer_size: "#{(128 * factor).to_i}M",
             max_allowed_packet: "#{(128 * factor).to_i}M",
             innodb_log_file_size: "#{(64 * factor).to_i}M",
             innodb_log_buffer_size: "#{(8 * factor).to_i}M",
