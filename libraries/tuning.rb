@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: rs-mysql
-# Library:: helper
+# Library:: tuning
 #
 # Copyright (C) 2013 RightScale, Inc.
 #
@@ -109,7 +109,7 @@ module RsMysql
       raise 'Value must convert to an integer.' unless value.to_i
       raise 'Units must be k, K, m, M, g, G' unless unit =~ /[KMG]/i
       raise "Factor must be between 1.0 and 0.0. You gave: #{factor}" if factor > 1.0 || factor < 0.0
-      "#{(value * factor)}#{unit}"
+      "#{(value * factor).to_i}#{unit}"
     end
   end
 end
