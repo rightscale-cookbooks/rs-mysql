@@ -27,6 +27,10 @@ RsMysql::Tuning.tune_attributes(
   node['rs-mysql']['server_usage']
 )
 
+node.override['mysql']['server_root_password'] = node['rs-mysql']['server_root_password']
+node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root_password']
+node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_root_password']
+
 include_recipe 'mysql::server'
 
 

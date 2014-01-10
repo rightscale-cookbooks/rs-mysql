@@ -20,3 +20,9 @@ attribute 'rs-mysql/server_usage',
   :default => 'dedicated',
   :required => 'optional',
   :recipes => ['rs-mysql::server']
+
+attribute 'rs-mysql/server_root_password',
+  :display_name => 'MySQL Root Password',
+  :description => 'The root password for MySQL server. Example: cred:MYSQL_ROOT_PASSWORD',
+  :required => 'required',
+  :recipes => ['rs-mysql::server']
