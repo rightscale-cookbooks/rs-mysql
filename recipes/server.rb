@@ -39,7 +39,7 @@ end
 log "Installing MySQL collectd plugin"
 
 package "collectd-mysql" do
-  only_if { node[:platform] =~ /redhat|centos/ }
+  only_if { node['platform'] =~ /redhat|centos/ }
 end
 
 include_recipe 'collectd::default'
