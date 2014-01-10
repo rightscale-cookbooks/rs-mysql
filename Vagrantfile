@@ -71,6 +71,10 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :chef_solo do |chef|
     chef.json = {
+      'rs-mysql' => {
+        'collectd_server' => 'sketchy1-66.rightscale.com'
+      },
+
       :mysql => {
         :server_root_password => 'rootpass',
         :server_debian_password => 'debpass',

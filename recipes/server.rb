@@ -28,3 +28,26 @@ RsMysql::Tuning.tune_attributes(
 )
 
 include_recipe 'mysql::server'
+
+
+# Setup collectd mysql plugin
+
+if node['rightscale'] && node['rightscale']['instance_uuid']
+  node.override['collectd']['fqdn'] = node['rightscale']['instance_uuid']
+end
+
+log "Installing MySQL collectd plugin"
+
+package "collectd-mysql" do
+  only_if { node[:platform] =~ /redhat|centos/ }
+end
+
+include_recipe 'collectd::default'
+
+collectd_plugin "mysql" do
+  options({
+    "Host" => "localhost",
+    "User" => "root",
+    "Password" => node['mysql']['server_root_password']
+  })
+end
