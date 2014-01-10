@@ -24,7 +24,7 @@ platforms:
       memory: 512
 
 suites:
-- name: dedicated_server
+- name: default
   run_list:
   - recipe[rs-mysql::server]
   - recipe[fake::database_mysql]

@@ -6,10 +6,12 @@ when 'Ubuntu'
   mysql_name = 'mysql'
   mysql_config_file = '/etc/mysql/my.cnf'
   mysql_server_packages = %w{mysql-server apparmor-utils}
+  collectd_plugin_dir = '/etc/collectd/plugins'
 when 'RedHat'
   mysql_name = 'mysqld'
   mysql_config_file = '/etc/my.cnf'
   mysql_server_packages = %w{mysql-server}
+  collectd_plugin_dir = '/etc/collectd.d'
 end
 
 describe "MySQL server packages are installed" do
@@ -88,6 +90,30 @@ describe "can run MySQL queries on the server" do
       "echo \"CREATE DATABASE IF NOT EXISTS blah; SHOW DATABASES LIKE 'blah'\" | mysql --user=root --password=rootpass"
     ) do
       it { should return_stdout /blah/ }
+    end
+  end
+end
+
+describe "mysql collectd plugin" do
+  describe file("#{collectd_plugin_dir}/mysql.conf") do
+    it { should be_file }
+  end
+
+  describe "contents of #{collectd_plugin_dir}/mysql.conf" do
+    describe command("grep LoadPlugin #{collectd_plugin_dir}/mysql.conf") do
+      it { should return_stdout /mysql/ }
+    end
+
+    describe command("grep \"^<Plugin\" #{collectd_plugin_dir}/mysql.conf") do
+      it { should return_stdout /mysql/ }
+    end
+
+    describe command("grep Host #{collectd_plugin_dir}/mysql.conf") do
+      it { should return_stdout /localhost/ }
+    end
+
+    describe command("grep User #{collectd_plugin_dir}/mysql.conf") do
+      it { should return_stdout /root/ }
     end
   end
 end
