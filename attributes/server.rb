@@ -21,3 +21,18 @@
 # resources are dedicated to MySQL. In a 'shared' server, MySQL utilizes only half of the server resources.
 #
 default['rs-mysql']['server_usage'] = 'dedicated'
+
+# The MySQL server's root password
+default['rs-mysql']['server_root_password'] = nil
+
+# The MySQL database application username
+default['rs-mysql']['application_username'] = nil
+
+# The MySQL database application password
+default['rs-mysql']['application_password'] = nil
+
+# The previleges given to the application user
+default['rs-mysql']['application_user_privileges'] = [:select, :update, :insert]
+
+# The name of MySQL database
+default['rs-mysql']['database_name'] = nil

@@ -77,6 +77,14 @@ describe "can run MySQL queries on the server" do
     end
   end
 
+  describe "'appuser' mysql user is created" do
+    describe command(
+      "echo \"SELECT User FROM mysql.user\" | mysql --user=root --password=rootpass"
+    ) do
+      it { should return_stdout /appuser/ }
+    end
+  end
+
   describe "select tables from a database" do
     describe command(
       "echo \"USE app_test; SELECT * FROM app_test\" | mysql --user=root --password=rootpass"

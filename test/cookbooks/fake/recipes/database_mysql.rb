@@ -19,19 +19,6 @@
 
 include_recipe 'database::mysql'
 
-# The connection hash to use to connect to mysql
-mysql_connection_info = {
-  :host => 'localhost',
-  :username => 'root',
-  :password => node['mysql']['server_root_password']
-}
-
-# Create the test database
-mysql_database node['fake']['database_name'] do
-  connection mysql_connection_info
-  action :create
-end
-
 # Obtain the mysql dump file
 cookbook_file '/tmp/mysql.dump' do
   source 'mysql.dump'

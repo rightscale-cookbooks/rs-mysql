@@ -55,3 +55,26 @@ collectd_plugin "mysql" do
     "Password" => node['mysql']['server_root_password']
   })
 end
+
+# The connection hash to use to connect to mysql
+mysql_connection_info = {
+  :host => 'localhost',
+  :username => 'root',
+  :password => node['rs-mysql']['server_root_password']
+}
+
+# Create the application user
+mysql_database_user node['rs-mysql']['application_username'] do
+  connection mysql_connection_info
+  password node['rs-mysql']['application_password']
+  database_name node['rs-mysql']['database_name']
+  host 'localhost'
+  privileges node['rs-mysql']['application_user_privileges']
+  action [:create, :grant]
+end
+
+# Create the database
+mysql_database node['rs-mysql']['database_name'] do
+  connection mysql_connection_info
+  action :create
+end
