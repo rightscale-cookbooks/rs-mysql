@@ -56,25 +56,29 @@ collectd_plugin "mysql" do
   })
 end
 
-# The connection hash to use to connect to mysql
-mysql_connection_info = {
-  :host => 'localhost',
-  :username => 'root',
-  :password => node['rs-mysql']['server_root_password']
-}
+if node['rs-mysql']['application_username'] && node['rs-mysql']['application_password']
+  raise 'The rs-mysql/database_name is required for creating user' unless node['rs-mysql']['database_name']
 
-# Create the application user
-mysql_database_user node['rs-mysql']['application_username'] do
-  connection mysql_connection_info
-  password node['rs-mysql']['application_password']
-  database_name node['rs-mysql']['database_name']
-  host 'localhost'
-  privileges node['rs-mysql']['application_user_privileges']
-  action [:create, :grant]
-end
+  # The connection hash to use to connect to mysql
+  mysql_connection_info = {
+    :host => 'localhost',
+    :username => 'root',
+    :password => node['rs-mysql']['server_root_password']
+  }
 
-# Create the database
-mysql_database node['rs-mysql']['database_name'] do
-  connection mysql_connection_info
-  action :create
+  # Create the application user
+  mysql_database_user node['rs-mysql']['application_username'] do
+    connection mysql_connection_info
+    password node['rs-mysql']['application_password']
+    database_name node['rs-mysql']['database_name']
+    host 'localhost'
+    privileges node['rs-mysql']['application_user_privileges']
+    action [:create, :grant]
+  end
+
+  # Create the database
+  mysql_database node['rs-mysql']['database_name'] do
+    connection mysql_connection_info
+    action :create
+  end
 end
