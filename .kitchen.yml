@@ -35,6 +35,7 @@ suites:
       application_username: appuser
       application_password: apppass
       database_name: app_test
+
 - name: shared_server
   run_list:
   - recipe[rs-mysql::server]
@@ -43,3 +44,4 @@ suites:
     rs-mysql:
       server_root_password: rootpass
       server_usage: shared
+      database_name: app_test
