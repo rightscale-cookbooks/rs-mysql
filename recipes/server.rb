@@ -63,6 +63,13 @@ mysql_connection_info = {
   :password => node['rs-mysql']['server_root_password']
 }
 
+# Create the database
+mysql_database node['rs-mysql']['application_database_name'] do
+  only_if { node['rs-mysql']['application_database_name'] }
+  connection mysql_connection_info
+  action :create
+end
+
 if node['rs-mysql']['application_username'] && node['rs-mysql']['application_password']
   raise 'The rs-mysql/application_database_name is required for creating user' unless node['rs-mysql']['application_database_name']
 
@@ -75,11 +82,4 @@ if node['rs-mysql']['application_username'] && node['rs-mysql']['application_pas
     privileges node['rs-mysql']['application_user_privileges']
     action [:create, :grant]
   end
-end
-
-# Create the database
-mysql_database node['rs-mysql']['application_database_name'] do
-  only_if { node['rs-mysql']['application_database_name'] }
-  connection mysql_connection_info
-  action :create
 end
