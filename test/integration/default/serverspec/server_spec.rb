@@ -69,14 +69,6 @@ describe file('/var/lib/mysql') do
 end
 
 describe "can run MySQL queries on the server" do
-  describe "'app_test' database exists" do
-    describe command(
-      "echo \"SHOW DATABASES LIKE 'app_test'\" | mysql --user=root --password=rootpass"
-    ) do
-      it { should return_stdout /app_test/ }
-    end
-  end
-
   describe "'appuser' mysql user is created" do
     describe command(
       "echo \"SELECT User FROM mysql.user\" | mysql --user=root --password=rootpass"
@@ -85,9 +77,17 @@ describe "can run MySQL queries on the server" do
     end
   end
 
+  describe "'app_test' database exists" do
+    describe command(
+      "echo \"SHOW DATABASES LIKE 'app_test'\" | mysql --user=appuser --password=apppass"
+    ) do
+      it { should return_stdout /app_test/ }
+    end
+  end
+
   describe "select tables from a database" do
     describe command(
-      "echo \"USE app_test; SELECT * FROM app_test\" | mysql --user=root --password=rootpass"
+      "echo \"USE app_test; SELECT * FROM app_test\" | mysql --user=appuser --password=apppass"
     ) do
       it { should return_stdout /I am in the db/ }
     end
@@ -95,7 +95,7 @@ describe "can run MySQL queries on the server" do
 
   describe "create database" do
     describe command(
-      "echo \"CREATE DATABASE IF NOT EXISTS blah; SHOW DATABASES LIKE 'blah'\" | mysql --user=root --password=rootpass"
+      "echo \"DROP DATABASE IF EXISTS blah; CREATE DATABASE blah; SHOW DATABASES LIKE 'blah'\" | mysql --user=root --password=rootpass"
     ) do
       it { should return_stdout /blah/ }
     end

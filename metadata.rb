@@ -51,6 +51,6 @@ attribute 'rs-mysql/application_user_privileges',
 
 attribute 'rs-mysql/application_database_name',
   :display_name => 'MySQL Database Name',
-  :description => 'The name of the database. Example: mydb',
+  :description => 'The name of the application database. Example: mydb',
   :required => 'optional',
   :recipes => ['rs-mysql::server']

@@ -22,7 +22,7 @@ module RsMysql
   # The helper for calculating the MySQL tuning attributes.
   module Tuning
 
-    # The constant to multiple memory (in megabypes) to obtain the gigabytes value.
+    # The constant multiplied with megabytes to obtain the value in gigabytes
     GB = 1024
 
     # Tunes the MySQL attributes based on the available memory and server usage type.
@@ -34,8 +34,8 @@ module RsMysql
     def self.tune_attributes(node_tuning, memory, server_usage)
       factor = server_usage.to_s == 'dedicated' ? 1 : 0.5
       memory = memory_in_megabytes(memory)
-      node_tuning['query_cache_size'] = value_with_units((memory * factor * 0.01).to_i, 'M')
-      node_tuning['innodb_buffer_pool_size'] = value_with_units((memory * factor * 0.8).to_i, 'M')
+      node_tuning['query_cache_size'] = (memory * factor * 0.01).to_i.to_s + 'M'
+      node_tuning['innodb_buffer_pool_size'] = (memory * factor * 0.8).to_i.to_s + 'M'
 
       # Fixed parameters, common value for all memory categories.
       #
@@ -45,23 +45,23 @@ module RsMysql
       node_tuning['net_read_timeout'] = (30 * factor).to_i
       node_tuning['net_write_timeout'] = (30 * factor).to_i
       node_tuning['back_log'] = (128 * factor).to_i
-      node_tuning['max_heap_table_size'] = value_with_units((32 * factor).to_i, 'M')
-      node_tuning['read_buffer_size'] = value_with_units((1 * factor).to_i, 'M')
-      node_tuning['read_rnd_buffer_size'] = value_with_units((4 * factor).to_i, 'M')
+      node_tuning['max_heap_table_size'] = (32 * factor).to_i.to_s + 'M'
+      node_tuning['read_buffer_size'] = (1 * factor).to_i.to_s + 'M'
+      node_tuning['read_rnd_buffer_size'] = (4 * factor).to_i.to_s + 'M'
       node_tuning['long_query_time'] = 5
 
       # Sets buffer sizes and InnoDB log properties. Overrides buffer sizes for really small servers.
       #
       if memory < 1 * GB
-        node_tuning['key_buffer_size'] = value_with_units((16 * factor).to_i, 'M')
-        node_tuning['max_allowed_packet'] = value_with_units((20 * factor).to_i, 'M')
-        node_tuning['innodb_log_file_size'] = value_with_units((4 * factor).to_i, 'M')
-        node_tuning['innodb_log_buffer_size'] = value_with_units((16 * factor).to_i, 'M')
+        node_tuning['key_buffer_size'] = (16 * factor).to_i.to_s + 'M'
+        node_tuning['max_allowed_packet'] = (20 * factor).to_i.to_s + 'M'
+        node_tuning['innodb_log_file_size'] = (4 * factor).to_i.to_s + 'M'
+        node_tuning['innodb_log_buffer_size'] = (16 * factor).to_i.to_s + 'M'
       else
-        node_tuning['key_buffer_size'] = value_with_units((128 * factor).to_i, 'M')
-        node_tuning['max_allowed_packet'] = value_with_units((128 * factor).to_i, 'M')
-        node_tuning['innodb_log_file_size'] = value_with_units((64 * factor).to_i, 'M')
-        node_tuning['innodb_log_buffer_size'] = value_with_units((8 * factor).to_i, 'M')
+        node_tuning['key_buffer_size'] = (128 * factor).to_i.to_s + 'M'
+        node_tuning['max_allowed_packet'] = (128 * factor).to_i.to_s + 'M'
+        node_tuning['innodb_log_file_size'] = (64 * factor).to_i.to_s + 'M'
+        node_tuning['innodb_log_buffer_size'] = (8 * factor).to_i.to_s + 'M'
       end
 
       # Adjusts tunable values based on available system memory range.
@@ -74,29 +74,29 @@ module RsMysql
       #
       if memory < 3 * GB
         node_tuning['table_open_cache'] = (256 * factor).to_i
-        node_tuning['sort_buffer_size'] = value_with_units((2 * factor).to_i, 'M')
-        node_tuning['innodb_additional_mem_pool_size'] = value_with_units((50 * factor).to_i, 'M')
-        node_tuning['myisam_sort_buffer_size'] = value_with_units((64 * factor).to_i, 'M')
+        node_tuning['sort_buffer_size'] = (2 * factor).to_i.to_s + 'M'
+        node_tuning['innodb_additional_mem_pool_size'] = (50 * factor).to_i.to_s + 'M'
+        node_tuning['myisam_sort_buffer_size'] = (64 * factor).to_i.to_s + 'M'
       elsif memory < 10 * GB
         node_tuning['table_open_cache'] = (512 * factor).to_i
-        node_tuning['sort_buffer_size'] = value_with_units((4 * factor).to_i, 'M')
-        node_tuning['innodb_additional_mem_pool_size'] = value_with_units((200 * factor).to_i, 'M')
-        node_tuning['myisam_sort_buffer_size'] = value_with_units((96 * factor).to_i, 'M')
+        node_tuning['sort_buffer_size'] = (4 * factor).to_i.to_s + 'M'
+        node_tuning['innodb_additional_mem_pool_size'] = (200 * factor).to_i.to_s + 'M'
+        node_tuning['myisam_sort_buffer_size'] = (96 * factor).to_i.to_s + 'M'
       elsif memory < 25 * GB
         node_tuning['table_open_cache'] = (1024 * factor).to_i
-        node_tuning['sort_buffer_size'] = value_with_units((8 * factor).to_i, 'M')
-        node_tuning['innodb_additional_mem_pool_size'] = value_with_units((300 * factor).to_i, 'M')
-        node_tuning['myisam_sort_buffer_size'] = value_with_units((128 * factor).to_i, 'M')
+        node_tuning['sort_buffer_size'] = (8 * factor).to_i.to_s + 'M'
+        node_tuning['innodb_additional_mem_pool_size'] = (300 * factor).to_i.to_s + 'M'
+        node_tuning['myisam_sort_buffer_size'] = (128 * factor).to_i.to_s + 'M'
       elsif memory < 50 * GB
         node_tuning['table_open_cache'] = (2048 * factor).to_i
-        node_tuning['sort_buffer_size'] = value_with_units((16 * factor).to_i, 'M')
-        node_tuning['innodb_additional_mem_pool_size'] = value_with_units((400 * factor).to_i, 'M')
-        node_tuning['myisam_sort_buffer_size'] = value_with_units((256 * factor).to_i, 'M')
+        node_tuning['sort_buffer_size'] = (16 * factor).to_i.to_s + 'M'
+        node_tuning['innodb_additional_mem_pool_size'] = (400 * factor).to_i.to_s + 'M'
+        node_tuning['myisam_sort_buffer_size'] = (256 * factor).to_i.to_s + 'M'
       else
         node_tuning['table_open_cache'] = (4096 * factor).to_i
-        node_tuning['sort_buffer_size'] = value_with_units((32 * factor).to_i, 'M')
-        node_tuning['innodb_additional_mem_pool_size'] = value_with_units((500 * factor).to_i, 'M')
-        node_tuning['myisam_sort_buffer_size'] = value_with_units((512 * factor).to_i, 'M')
+        node_tuning['sort_buffer_size'] = (32 * factor).to_i.to_s + 'M'
+        node_tuning['innodb_additional_mem_pool_size'] = (500 * factor).to_i.to_s + 'M'
+        node_tuning['myisam_sort_buffer_size'] = (512 * factor).to_i.to_s + 'M'
       end
     end
 
@@ -110,28 +110,13 @@ module RsMysql
     # @return [Numeric] memory in megabytes
     #
     def self.memory_in_megabytes(memory)
-      # If ohai returns the total memory in String, it will most likely be in kB.
+      # If ohai returns the total memory in String, it is assumed to be in kB.
       if memory.is_a?(String) && memory =~ /\d+kB/i
         memory.to_i / 1024
-      # If it returns an integer, it will most likely be in bytes.
+      # If it returns an integer, it is assumed to be in bytes.
       else
         memory / (1024 * 1024)
       end
-    end
-
-    # Given the value, unit, this method will return the value with the unit.
-    #
-    # @param value [Integer] the value of a tunable attribute
-    # @param unit [String] the unit. Should be one of `'k'`, `'K'`, `'m'`, `'M'`, `'g'`, `'G'`.
-    #
-    # @return [String] the value with the unit.
-    #
-    # @example An Example
-    #   >> value_with_units(8, 'M')
-    #   => '8M'
-    #
-    def self.value_with_units(value, unit)
-      "#{value}#{unit}"
     end
   end
 end
