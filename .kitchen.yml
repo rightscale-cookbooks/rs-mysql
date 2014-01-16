@@ -5,23 +5,43 @@ driver_config:
 
 platforms:
 - name: ubuntu-12.04
+  run_list:
+  - recipe[apt::default]
   driver_config:
     box: opscode-ubuntu-12.04
     box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box
-- name: ubuntu-10.04
-  driver_config:
-    box: opscode-ubuntu-10.04
-    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-10.04_provisionerless.box
+    customize:
+      cpus: 2
+      memory: 512
 - name: centos-6.4
+  run_list:
+  - recipe[yum::epel]
   driver_config:
     box: opscode-centos-6.4
     box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_centos-6.4_provisionerless.box
-- name: centos-5.9
-  driver_config:
-    box: opscode-centos-5.9
-    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_centos-5.9_provisionerless.box
+    customize:
+      cpus: 2
+      memory: 512
 
 suites:
 - name: default
-  run_list: ["recipe[rs-mysql]"]
-  attributes: {}
+  run_list:
+  - recipe[rs-mysql::server]
+  - recipe[fake::database_mysql]
+  attributes:
+    rs-mysql:
+      server_root_password: rootpass
+      server_usage: dedicated
+      application_username: appuser
+      application_password: apppass
+      application_database_name: app_test
+
+- name: shared_server
+  run_list:
+  - recipe[rs-mysql::server]
+  - recipe[fake::database_mysql]
+  attributes:
+    rs-mysql:
+      server_root_password: rootpass
+      server_usage: shared
+      application_database_name: app_test
