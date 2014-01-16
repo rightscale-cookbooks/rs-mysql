@@ -35,4 +35,4 @@ default['rs-mysql']['application_password'] = nil
 default['rs-mysql']['application_user_privileges'] = [:select, :update, :insert]
 
 # The name of MySQL database
-default['rs-mysql']['database_name'] = nil
+default['rs-mysql']['application_database_name'] = nil

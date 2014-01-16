@@ -49,7 +49,7 @@ attribute 'rs-mysql/application_user_privileges',
   :default => [:select, :update, :insert],
   :recipes => ['rs-mysql::server']
 
-attribute 'rs-mysql/database_name',
+attribute 'rs-mysql/application_database_name',
   :display_name => 'MySQL Database Name',
   :description => 'The name of the database. Example: mydb',
   :required => 'optional',

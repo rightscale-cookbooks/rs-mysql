@@ -12,7 +12,7 @@ Github Repository: [https://github.com/rightscale-cookbooks/rs-mysql](https://gi
 * Requires Chef 11 or higher
 * Platform
   * Ubuntu 12.04
-  * CentOS 6.4
+  * CentOS 6
 * Cookbooks
   * [marker](http://community.opscode.com/cookbooks/marker)
   * [mysql](http://community.opscode.com/cookbooks/mysql)
