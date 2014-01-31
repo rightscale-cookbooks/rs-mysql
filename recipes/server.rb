@@ -31,7 +31,8 @@ RsMysql::Tuning.tune_attributes(
 
 node.override['mysql']['server_root_password'] = node['rs-mysql']['server_root_password']
 node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root_password']
-node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_root_password']
+node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password']
+node.override['mysql']['tunable']['expire_log_days'] = 2
 
 include_recipe 'mysql::server'
 
@@ -49,6 +50,8 @@ package "collectd-mysql" do
 end
 
 include_recipe 'collectd::default'
+
+include_recipe 'database::mysql'
 
 collectd_plugin "mysql" do
   options({
