@@ -21,11 +21,7 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
-directory "#{node['mysql']['data_dir']}/mysql_binlogs" do
-  owner 'mysql'
-  group 'mysql'
-  recursive true
-end
+node.override['mysql']['server']['directories']['bin_log_dir'] = "#{node['mysql']['data_dir']}/mysql_binlogs"
 
 # TODO: Override master server specific attributes
 node.override['mysql']['tunable']['log_bin'] = "#{node['mysql']['data_dir']}/mysql_binlogs/mysql-bin"
@@ -42,9 +38,8 @@ mysql_connection_info = {
   :password => node['rs-mysql']['server_root_password']
 }
 
-# Stop the slave
-# TODO: v13 runs this twice. Do we still need to do this? If we need to, we can use `retries` and `retry_delay`.
-#
+# Reset the master so the bin logs don't have information about the system tables that get created during the MySQL
+# installation start up. Since we don't use
 mysql_database 'reset master' do
   database_name 'mysql'
   connection mysql_connection_info
