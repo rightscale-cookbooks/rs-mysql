@@ -27,13 +27,6 @@ node.override['mysql']['tunable']['server_id'] = node['rightscale']['server_uuid
 
 include_recipe 'rs-mysql::server'
 
-# The mysql service should be restarted if the server-id is changed. The mysql cookbook reloads the service
-# if the my.cnf is changed but that is not sufficient.
-#
-#service 'mysql' do
-#  action :restart
-#end
-
 # TODO: Include 'rs-machine_tag::database' recipe after setting required attributes for the rs-machine_tag cookbook to
 # identify the database roles and other required information.
 
@@ -53,6 +46,7 @@ mysql_connection_info = {
 # TODO: v13 runs this twice. Do we still need to do this? If we need to, we can use `retries` and `retry_delay`.
 #
 mysql_database 'stop slave' do
+  database_name 'mysql'
   connection mysql_connection_info
   sql 'STOP SLAVE'
   action :query
@@ -61,10 +55,7 @@ end
 change_master_host_sql = "CHANGE MASTER TO" +
   " MASTER_HOST='#{master_ip}'," +
   " MASTER_USER='repl'," +
-  " MASTER_PASSWORD='#{node['rs-mysql']['server_repl_password']}';"
-
-# TODO: Definitely remove the line below
-log "Change master host command: #{change_master_host_sql}"
+  " MASTER_PASSWORD='#{node['rs-mysql']['server_repl_password']}'"
 
 mysql_database 'change master host' do
   database_name 'mysql'
