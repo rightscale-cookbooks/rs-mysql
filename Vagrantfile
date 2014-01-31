@@ -92,7 +92,7 @@ Vagrant.configure("2") do |config|
         "recipe[fake::database_mysql]"
       ]
 
-      chef.arguments = "--logfile /var/log/chef-solo.log"
+      chef.arguments = "--logfile /var/log/chef-solo.log --log_level debug"
     end
   end
 
