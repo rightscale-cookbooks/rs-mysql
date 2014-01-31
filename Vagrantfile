@@ -6,8 +6,6 @@ Vagrant.configure("2") do |config|
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
 
-  config.vm.hostname = "rs-mysql-berkshelf"
-
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "opscode-ubuntu-12.04"
 
@@ -19,7 +17,7 @@ Vagrant.configure("2") do |config|
   # via the IP. Host-only networks can talk to the host machine as well as
   # any other machines on the same network, but cannot be accessed (through this
   # network interface) by any external networks.
-  config.vm.network :private_network, ip: "33.33.33.10"
+  #config.vm.network :private_network, ip: "33.33.33.10"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -69,18 +67,60 @@ Vagrant.configure("2") do |config|
   # to skip installing and copying to Vagrant's shelf.
   # config.berkshelf.except = []
 
-  config.vm.provision :chef_solo do |chef|
-    chef.json = {
-      :mysql => {
-        :server_root_password => 'rootpass',
-        :server_debian_password => 'debpass',
-        :server_repl_password => 'replpass'
-      }
-    }
+  config.vm.define :master do |master|
+    master.vm.network :private_network, ip: '33.33.33.10'
 
-    chef.run_list = [
-      "recipe[apt::default]",
-      "recipe[rs-mysql::server]"
-    ]
+    master.vm.hostname = 'rs-mysql-master'
+
+    master.vm.provision :chef_solo do |chef|
+      chef.json = {
+        :'rs-mysql' => {
+          :server_root_password => 'rootpass',
+          :server_repl_password => 'replpass',
+          :application_username => 'appuser',
+          :application_password => 'apppass',
+          :application_database_name => 'app_test'
+        },
+        :rightscale => {
+          :server_uuid => '1111111'
+        }
+      }
+
+      chef.run_list = [
+        "recipe[apt::default]",
+        "recipe[rs-mysql::master]",
+        "recipe[fake::database_mysql]"
+      ]
+
+      chef.arguments = "--logfile /var/log/chef-solo.log"
+    end
+  end
+
+  config.vm.define :slave do |slave|
+    slave.vm.network :private_network, ip: '33.33.33.11'
+
+    slave.vm.hostname = 'rs-mysql-slave'
+
+    slave.vm.provision :chef_solo do |chef|
+      chef.json = {
+        :'rs-mysql' => {
+          :server_root_password => 'rootpass',
+          :server_repl_password => 'replpass',
+          :application_username => 'appuser',
+          :application_password => 'apppass',
+          :application_database_name => 'app_test'
+        },
+        :rightscale => {
+          :server_uuid => '2222222'
+        }
+      }
+
+      chef.run_list = [
+        "recipe[apt::default]",
+        "recipe[rs-mysql::slave]"
+      ]
+
+      chef.arguments = "--logfile /var/log/chef-solo.log --log_level debug"
+    end
   end
 end
