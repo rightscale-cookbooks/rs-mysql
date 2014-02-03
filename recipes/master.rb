@@ -21,6 +21,9 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
+# The directory that contains the MySQL binary logs.
+# The attribute mysql/server/directories contains directories that belong to MySQL. These directories will be creted by
+# the mysql::server recipe with correct ownership.
 node.override['mysql']['server']['directories']['bin_log_dir'] = "#{node['mysql']['data_dir']}/mysql_binlogs"
 
 # TODO: Override master server specific attributes
@@ -39,7 +42,7 @@ mysql_connection_info = {
 }
 
 # Reset the master so the bin logs don't have information about the system tables that get created during the MySQL
-# installation start up. Since we don't use
+# installation.
 mysql_database 'reset master' do
   database_name 'mysql'
   connection mysql_connection_info
