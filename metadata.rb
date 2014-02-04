@@ -54,3 +54,15 @@ attribute 'rs-mysql/application_database_name',
   :description => 'The name of the application database. Example: mydb',
   :required => 'optional',
   :recipes => ['rs-mysql::server']
+
+attribute 'rs-mysql/server_repl_password',
+  :display_name => 'MySQL Slave Replication Password',
+  :description => 'The replication password for the slave database. Example cred:MYSQL_REPLICATION_PASSWORD'
+  :required => 'optional',
+  :recipes => ['rs-mysql::server']
+
+attribute 'rs-mysql/master_ip',
+  :display_name => 'IP Address for the Master DB (Hack)',
+  :description => 'THIS IS A HACK! This input will be removed once we have the rs-machine_tag ready',
+  :required => 'optional',
+  :recipes => ['rs-mysql::slave']
