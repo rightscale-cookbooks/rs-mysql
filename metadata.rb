@@ -12,6 +12,8 @@ depends 'mysql', '~> 4.0.18'
 depends 'collectd', '~> 1.1.0'
 
 recipe 'rs-mysql::server', 'Sets up a MySQL server'
+recipe 'rs-mysql::master', 'Sets up a MySQL master server'
+recipe 'rs-mysql::slave', 'Sets up a MySQL slave server'
 
 attribute 'rs-mysql/server_usage',
   :display_name => 'Server Usage',
