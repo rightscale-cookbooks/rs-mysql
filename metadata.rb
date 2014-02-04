@@ -57,7 +57,7 @@ attribute 'rs-mysql/application_database_name',
 
 attribute 'rs-mysql/server_repl_password',
   :display_name => 'MySQL Slave Replication Password',
-  :description => 'The replication password for the slave database. Example cred:MYSQL_REPLICATION_PASSWORD'
+  :description => 'The replication password for the slave database. Example cred:MYSQL_REPLICATION_PASSWORD',
   :required => 'optional',
   :recipes => ['rs-mysql::server']
 
