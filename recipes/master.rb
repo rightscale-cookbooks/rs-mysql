@@ -21,14 +21,7 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
-# The directory that contains the MySQL binary logs.
-# The attribute mysql/server/directories contains directories that belong to MySQL. These directories will be creted by
-# the mysql::server recipe with correct ownership.
-node.override['mysql']['server']['directories']['bin_log_dir'] = "#{node['mysql']['data_dir']}/mysql_binlogs"
-
 # TODO: Override master server specific attributes
-node.override['mysql']['tunable']['log_bin'] = "#{node['mysql']['data_dir']}/mysql_binlogs/mysql-bin"
-node.override['mysql']['tunable']['binlog_format'] = 'MIXED'
 node.override['mysql']['tunable']['read_only'] = false
 node.override['mysql']['tunable']['server_id'] = node['rightscale']['server_uuid']
 
