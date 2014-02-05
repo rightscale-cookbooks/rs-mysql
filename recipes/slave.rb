@@ -33,7 +33,7 @@ include_recipe 'rs-mysql::server'
 
 # TODO: Use the helper to find the master database server. This is now exposed as
 # an input in the ST.
-master_ip = node['rs_mysql']['master_ip']
+master_ip = node['rs-mysql']['master_ip']
 
 # The connection hash to use to connect to mysql
 mysql_connection_info = {
