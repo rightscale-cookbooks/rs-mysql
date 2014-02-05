@@ -23,7 +23,6 @@ end
 
 node.override['mysql']['tunable']['log_bin'] = nil
 node.override['mysql']['tunable']['read_only'] = true
-node.override['mysql']['tunable']['server_id'] = node['rightscale']['server_uuid']
 
 include_recipe 'rs-mysql::server'
 
