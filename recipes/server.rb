@@ -32,6 +32,12 @@ node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root
 node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password']
 node.override['mysql']['tunable']['expire_log_days'] = 2
 
+node.override['mysql']['server']['directories']['bin_log_dir'] = "#{node['mysql']['data_dir']}/mysql_binlogs"
+
+node.override['mysql']['tunable']['log_bin'] = "#{node['mysql']['data_dir']}/mysql_binlogs/mysql-bin"
+
+node.override['mysql']['tunable']['binlog_format'] = 'MIXED'
+
 include_recipe 'mysql::server'
 
 
