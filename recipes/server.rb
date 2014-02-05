@@ -34,6 +34,12 @@ node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root
 node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password']
 node.override['mysql']['tunable']['expire_log_days'] = 2
 
+# server-id in my.cnf should be an integer.
+# Remove any characters in the server UUID that is not a number or an alphabet.
+# Convert the resulting string to an integer with a radix base of 36
+# (numbers and alphabets)
+node.override['mysql']['tunable']['server_id'] = node['rightscale']['server_uuid'].gsub(/[^0-9A-Z]/i, '').to_i(36)
+
 include_recipe 'mysql::server'
 
 # Setup collectd mysql plugin
