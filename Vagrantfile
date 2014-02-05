@@ -84,7 +84,7 @@ Vagrant.configure("2") do |config|
           :application_database_name => 'app_test'
         },
         :rightscale => {
-          :server_uuid => '1111111'
+          :instance_uuid => '1111111'
         }
       }
 
@@ -114,7 +114,7 @@ Vagrant.configure("2") do |config|
           :application_database_name => 'app_test'
         },
         :rightscale => {
-          :server_uuid => '2222222'
+          :instance_uuid => '2222222'
         }
       }
 
