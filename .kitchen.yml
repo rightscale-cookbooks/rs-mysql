@@ -49,3 +49,20 @@ suites:
       server_repl_password: realpass
       server_usage: shared
       application_database_name: app_test
+
+- name: master 
+  run_list:
+  - recipe[rs-mysql::master]
+  - recipe[fake::database_mysql]
+  attributes:
+    rs-mysql:
+      server_root_password: rootpass
+      server_repl_password: realpass
+      server_usage: dedicated
+      application_username: appuser
+      application_password: apppass
+      application_database_name: app_test
+    rightscale:
+      instance_uuid: '1111111'
+
+
