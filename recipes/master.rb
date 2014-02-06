@@ -30,6 +30,7 @@ node.override['mysql']['server']['directories']['bin_log_dir'] = "#{node['mysql'
 node.override['mysql']['tunable']['log_bin'] = "#{node['mysql']['data_dir']}/mysql_binlogs/mysql-bin"
 node.override['mysql']['tunable']['binlog_format'] = 'MIXED'
 node.override['mysql']['tunable']['read_only'] = false
+node.override['mysql']['tunable']['server_id'] = RsMysql::Helper.get_server_ip(node).to_i
 
 include_recipe 'rs-mysql::server'
 

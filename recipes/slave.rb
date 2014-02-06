@@ -23,6 +23,7 @@ end
 
 node.override['mysql']['tunable']['log_bin'] = nil
 node.override['mysql']['tunable']['read_only'] = true
+node.override['mysql']['tunable']['server_id'] = RsMysql::Helper.get_server_ip(node).to_i
 
 include_recipe 'rs-mysql::server'
 
