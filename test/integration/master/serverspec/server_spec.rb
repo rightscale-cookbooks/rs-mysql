@@ -125,16 +125,16 @@ describe "mysql collectd plugin" do
     end
   end
 
-
-describe "Verify state of read_only setting" do
-   it "should be set to OFF, or value = 0" do
-     db.query("select @@global.read_only").entries.first['@@global.read_only'].should == 0 
-   end
+describe "Verify the parameters directly from msyql" do
+  {
+    read_only: 0,
+    binlog_format: "MIXED",
+    expire_logs_days: 10
+  }.each do |attribute, value|
+    it "paremeter #{attribute} should return #{value}" do
+      db.query("select @@global.#{attribute}").entries.first["@@global.#{attribute}"].should  == value
+    end
+  end
 end
 
-describe "Verify setting of binlog_format" do
-   it "should be set to MIXED" do
-     db.query("select @@global.binlog_format").entries.first['@@global.binlog_format'].should == "MIXED"
-   end
-end
 end
