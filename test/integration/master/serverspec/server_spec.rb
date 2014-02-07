@@ -127,6 +127,7 @@ describe "mysql collectd plugin" do
 
 describe "Verify the parameters directly from msyql" do
   {
+    log_bin: 1,
     read_only: 0,
     binlog_format: "MIXED",
     expire_logs_days: 10
@@ -135,6 +136,15 @@ describe "Verify the parameters directly from msyql" do
       db.query("select @@global.#{attribute}").entries.first["@@global.#{attribute}"].should  == value
     end
   end
+end
+
+describe "Verify replication setup:" do
+   it "User repl should be created." do
+     db.query("select distinct user from mysql.user").entries.count { |u| u['user'] == 'repl' }.should == 1
+   end
+   it "repl user should have replication privileges." do
+     db.query("show grants for 'repl'").entries.first['Grants for repl@%'].should =~ /^GRANT REPLICATION SLAVE ON \*\.\* TO \'repl\'/
+   end
 end
 
 end
