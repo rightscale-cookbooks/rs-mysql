@@ -132,4 +132,9 @@ describe "Verify state of read_only setting" do
    end
 end
 
+describe "Verify setting of binlog_format" do
+   it "should be set to MIXED" do
+     db.query("select @@global.binlog_format").entries.first['@@global.binlog_format'].should == "MIXED"
+   end
+end
 end
