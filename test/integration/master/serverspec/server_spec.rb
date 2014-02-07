@@ -125,20 +125,11 @@ describe "mysql collectd plugin" do
     end
   end
 
-describe "mysql read_only variable is set" do
-   db.list_dbs.include?("app_test").should == true 
-end
 
-describe "read_only variable should be set to ON" do
-   db.query("show variables like 'read_only'").each { |row| row.include?("OFF").should == true }
-end
-
-#describe "read_only variable shold be set to 1" do
-#  db.query("select @@global.read_only").each { |row| row.should == 1 }
-#end
-
-describe "check master status" do
-   db.query("show master status").each { |row| row.include?("mysql-bin").should == false }
+describe "Verify state of read_only setting" do
+   it "should be set to OFF, or value = 0" do
+     db.query("select @@global.read_only").entries.first['@@global.read_only'].should == 0 
+   end
 end
 
 end

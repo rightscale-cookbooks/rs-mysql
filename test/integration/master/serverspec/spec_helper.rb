@@ -6,22 +6,18 @@ include Serverspec::Helper::Exec
 include Serverspec::Helper::DetectOS
 
 installer = Gem::DependencyInstaller.new
-installer.install('mysql')
+installer.install('mysql2')
 Gem.clear_paths
 
-require 'mysql'
+require 'mysql2'
 
 def db
   @db ||= begin
-    connection = ::Mysql.new(
-      'localhost',
-      'root',
-      'rootpass',
-      nil,
-      3306,
-      nil
+    connection = ::Mysql2::Client.new(
+      :host     => 'localhost',
+      :username => 'root',
+      :password => 'rootpass'
     )
-    connection.set_server_option ::Mysql::OPTION_MULTI_STATEMENTS_ON
     connection
   end
 end
