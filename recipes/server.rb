@@ -32,7 +32,24 @@ RsMysql::Tuning.tune_attributes(
 node.override['mysql']['server_root_password'] = node['rs-mysql']['server_root_password']
 node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root_password']
 node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password']
+
+Chef::Log.info "Overriding mysql/tunable/expire_log_days to '2'"
 node.override['mysql']['tunable']['expire_log_days'] = 2
+
+# The directory that contains the MySQL binary logs.
+# The attribute mysql/server/directories contains directories that belong to MySQL. These directories will be creted by
+# the mysql::server recipe with correct ownership.
+node.override['mysql']['server']['directories']['bin_log_dir'] = "#{node['mysql']['data_dir']}/mysql_binlogs"
+
+Chef::Log.info "Overriding mysql/tunable/log_bin to '#{node['mysql']['data_dir']}/mysql_binlogs/mysql-bin'"
+node.override['mysql']['tunable']['log_bin'] = "#{node['mysql']['data_dir']}/mysql_binlogs/mysql-bin"
+
+Chef::Log.info "Overriding mysql/tunable/binlog_format to 'MIXED'"
+node.override['mysql']['tunable']['binlog_format'] = 'MIXED'
+
+server_id = RsMysql::Helper.get_server_ip(node).to_i
+Chef::Log.info "Overriding mysql/tunable/server_id to '#{server_id}'"
+node.override['mysql']['tunable']['server_id'] = server_id
 
 include_recipe 'mysql::server'
 

@@ -21,9 +21,8 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
-node.override['mysql']['tunable']['log_bin'] = nil
+Chef::Log.info "Overriding mysql/tunable/read_only to 'true'..."
 node.override['mysql']['tunable']['read_only'] = true
-node.override['mysql']['tunable']['server_id'] = RsMysql::Helper.get_server_ip(node).to_i
 
 include_recipe 'rs-mysql::server'
 
