@@ -156,4 +156,12 @@ describe "Verify master status" do
    end
 end
 
+# The kitchen.yml file is set up to provide a public ip in the master suite.   This is what this is testing.
+# The slave setup will provide a null public, and a private ip.  
+describe "Verify valid server-id entry" do
+   it "should correspond to the result of IPAddr converting 173.227.0.5 to an integer" do
+     db.query("show variables like 'server_id'").entries.first['Value'].to_i.should == 2917335045
+   end
+end
+
 end

@@ -55,6 +55,9 @@ suites:
   - recipe[rs-mysql::master]
   - recipe[fake::database_mysql]
   attributes:
+    cloud:
+      public_ips: ['173.227.0.5']
+      private_ips: ['']
     rs-mysql:
       server_root_password: rootpass
       server_repl_password: realpass
