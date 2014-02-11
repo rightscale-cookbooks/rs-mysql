@@ -50,7 +50,7 @@ suites:
       server_usage: shared
       application_database_name: app_test
 
-- name: master 
+- name: master
   run_list:
   - recipe[rs-mysql::master]
   - recipe[fake::database_mysql]
@@ -68,4 +68,21 @@ suites:
     rightscale:
       instance_uuid: '1111111'
 
-
+- name: slave
+  run_list:
+  - recipe[rs-mysql::slave]
+  - recipe[fake::database_mysql]
+  attributes:
+    cloud:
+      public_ips: ['10.10.2.2']
+      private_ips: ['10.10.3.3']
+    rs-mysql:
+      server_root_password: rootpass
+      server_repl_password: realpass
+      server_usage: dedicated
+      application_username: appuser
+      application_password: apppass
+      application_database_name: app_test
+      master_ip: '10.10.1.1'
+    rightscale:
+      instance_uuid: '2222222'
