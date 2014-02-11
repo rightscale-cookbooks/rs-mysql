@@ -27,10 +27,6 @@ node.override['mysql']['tunable']['read_only'] = false
 
 include_recipe 'rs-mysql::server'
 
-# Create /var/lib/rightscale if it does not exist to store the timestamp file
-# This directory will not exist by default in Vagrant environment
-directory '/var/lib/rightscale'
-
 rightscale_tag_database node['rs-mysql']['lineage'] do
   role 'master'
   bind_ip_address node['mysql']['bind_address']
