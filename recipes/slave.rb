@@ -21,18 +21,48 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
+# Override slave specific attributes
 Chef::Log.info "Overriding mysql/tunable/read_only to 'true'..."
 node.override['mysql']['tunable']['read_only'] = true
 
 include_recipe 'rs-mysql::server'
 
-# TODO: Include 'rs-machine_tag::database' recipe after setting required attributes for the rs-machine_tag cookbook to
-# identify the database roles and other required information.
+# Create /var/lib/rightscale if it does not exist to store the timestamp file
+# This directory will not exist by default in Vagrant environment
+directory '/var/lib/rightscale'
 
+# Set up tags for slave database
+rightscale_tag_database node['rs-mysql']['lineage'] do
+  role 'slave'
+  bind_ip_address node['mysql']['bind_address']
+  bind_port node['mysql']['port']
+  # Since resource attributes are evaluated during compile phase, getting the
+  # slave timestamp should be deferred to converge phase
+  timestamp(lazy do
+    # Read slave timestamp from the timestamp file if it exists
+    # Else create the timestamp file and write the timestamp to the file
+    # This ensures idempotency of the rightscale_tag_database resource
+    slave_timestamp_file = "/var/lib/rightscale/rs-mysql-#{node['rs-mysql']['lineage']}"
+    if File.exist?(slave_timestamp_file)
+      require 'time'
+      Time.parse(IO.read(slave_timestamp_file).chomp)
+    else
+      slave_timestamp = Time.now
+      File.open(slave_timestamp_file, 'w') { |file| file.write(slave_timestamp) }
+      slave_timestamp
+    end
+  end)
+  action :create
+end
 
-# TODO: Use the helper to find the master database server. This is now exposed as
-# an input in the ST.
-master_ip = node['rs-mysql']['master_ip']
+class Chef::Recipe
+  include Rightscale::RightscaleTag
+end
+
+# Find the master database in the deployment
+master_db = find_database_servers(node, node['rs-mysql']['lineage'], 'master')
+raise "No master database for the lineage '#{node['rs-mysql']['lineage']}' found in the deployment!" if master_db.empty?
+Chef::Log.info "#####################{master_db.inspect}"
 
 # The connection hash to use to connect to mysql
 mysql_connection_info = {
@@ -51,15 +81,13 @@ mysql_database 'stop slave' do
   action :query
 end
 
-change_master_host_sql = "CHANGE MASTER TO" +
-  " MASTER_HOST='#{master_ip}'," +
-  " MASTER_USER='repl'," +
-  " MASTER_PASSWORD='#{node['rs-mysql']['server_repl_password']}'"
-
 mysql_database 'change master host' do
   database_name 'mysql'
   connection mysql_connection_info
-  sql change_master_host_sql
+  sql "CHANGE MASTER TO" +
+    " MASTER_HOST='#{master_db['bind_ip_address']}'," +
+    " MASTER_USER='repl'," +
+    " MASTER_PASSWORD='#{node['rs-mysql']['server_repl_password']}'"
   action :query
 end
 

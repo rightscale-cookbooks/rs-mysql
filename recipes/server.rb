@@ -29,6 +29,7 @@ RsMysql::Tuning.tune_attributes(
   node['rs-mysql']['server_usage']
 )
 
+# Override mysql cookbook attributes
 node.override['mysql']['server_root_password'] = node['rs-mysql']['server_root_password']
 node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root_password']
 node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password']
@@ -37,8 +38,7 @@ Chef::Log.info "Overriding mysql/tunable/expire_log_days to '2'"
 node.override['mysql']['tunable']['expire_log_days'] = 2
 
 # The directory that contains the MySQL binary logs.
-# The attribute mysql/server/directories contains directories that belong to MySQL. These directories will be creted by
-# the mysql::server recipe with correct ownership.
+Chef::Log.info "Overriding mysql/server/directories/bin_log_dir to '#{node['mysql']['data_dir']}/mysql_binlogs'"
 node.override['mysql']['server']['directories']['bin_log_dir'] = "#{node['mysql']['data_dir']}/mysql_binlogs"
 
 Chef::Log.info "Overriding mysql/tunable/log_bin to '#{node['mysql']['data_dir']}/mysql_binlogs/mysql-bin'"
@@ -47,19 +47,29 @@ node.override['mysql']['tunable']['log_bin'] = "#{node['mysql']['data_dir']}/mys
 Chef::Log.info "Overriding mysql/tunable/binlog_format to 'MIXED'"
 node.override['mysql']['tunable']['binlog_format'] = 'MIXED'
 
+# Convert the server IP to an integer and use it for the server-id attribute in my.cnf
 server_id = RsMysql::Helper.get_server_ip(node).to_i
 Chef::Log.info "Overriding mysql/tunable/server_id to '#{server_id}'"
 node.override['mysql']['tunable']['server_id'] = server_id
 
 include_recipe 'mysql::server'
+include_recipe 'database::mysql'
+include_recipe 'rightscale_tag::default'
 
-# Setup collectd mysql plugin
+# Setup database tags on the server
+rightscale_tag_database node['rs-mysql']['lineage'] do
+  bind_ip_address node['mysql']['bind_address']
+  bind_port node['mysql']['port']
+  action :create
+end
 
+# Setup MySQL collectd plugin
 if node['rightscale'] && node['rightscale']['instance_uuid']
+  Chef::Log.info "Overriding collectd/fqdn to '#{node['rightscale']['instance_uuid']}'..."
   node.override['collectd']['fqdn'] = node['rightscale']['instance_uuid']
 end
 
-log "Installing MySQL collectd plugin"
+log "Installing MySQL collectd plugin..."
 
 # On CentOS the MySQL collectd plugin is installed separately
 package "collectd-mysql" do
@@ -67,8 +77,6 @@ package "collectd-mysql" do
 end
 
 include_recipe 'collectd::default'
-
-include_recipe 'database::mysql'
 
 collectd_plugin "mysql" do
   options({
@@ -78,7 +86,7 @@ collectd_plugin "mysql" do
   })
 end
 
-# The connection hash to use to connect to mysql
+# The connection hash to use to connect to MySQL
 mysql_connection_info = {
   :host => 'localhost',
   :username => 'root',
@@ -93,7 +101,7 @@ mysql_database node['rs-mysql']['application_database_name'] do
 end
 
 if node['rs-mysql']['application_username'] && node['rs-mysql']['application_password']
-  raise 'The rs-mysql/application_database_name is required for creating user' unless node['rs-mysql']['application_database_name']
+  raise 'rs-mysql/application_database_name is required for creating user!' unless node['rs-mysql']['application_database_name']
 
   # Create the application user
   mysql_database_user node['rs-mysql']['application_username'] do

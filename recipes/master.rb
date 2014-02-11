@@ -21,11 +21,38 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
-# TODO: Override master server specific attributes
+# Override master server specific attributes
 Chef::Log.info "Overriding mysql/tunable/read_only to 'false'"
 node.override['mysql']['tunable']['read_only'] = false
 
 include_recipe 'rs-mysql::server'
+
+# Create /var/lib/rightscale if it does not exist to store the timestamp file
+# This directory will not exist by default in Vagrant environment
+directory '/var/lib/rightscale'
+
+rightscale_tag_database node['rs-mysql']['lineage'] do
+  role 'master'
+  bind_ip_address node['mysql']['bind_address']
+  bind_port node['mysql']['port']
+  # Since resource attributes are evaluated during compile phase, getting the
+  # master timestamp should be deferred to converge phase
+  timestamp(lazy do
+    # Read master timestamp from the timestamp file if it exists
+    # Else create the timestamp file and write the timestamp to the file
+    # This ensures idempotency of the rightscale_tag_database resource
+    master_timestamp_file = "/var/lib/rightscale/rs-mysql-#{node['rs-mysql']['lineage']}"
+    if File.exist?(master_timestamp_file)
+      require 'time'
+      Time.parse(IO.read(master_timestamp_file).chomp)
+    else
+      master_timestamp = Time.now
+      File.open(master_timestamp_file, 'w') { |file| file.write(master_timestamp) }
+      master_timestamp
+    end
+  end)
+  action :create
+end
 
 # The connection hash to use to connect to mysql
 mysql_connection_info = {
@@ -42,5 +69,3 @@ mysql_database 'reset master' do
   sql 'RESET MASTER'
   action :query
 end
-
-# TODO: Include 'rs-machine_tag::database' recipe

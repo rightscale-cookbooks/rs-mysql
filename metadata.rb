@@ -10,10 +10,17 @@ depends 'marker', '~> 1.0.0'
 depends 'database', '~> 1.5.2'
 depends 'mysql', '~> 4.0.18'
 depends 'collectd', '~> 1.1.0'
+depends 'rightscale_tag'
 
 recipe 'rs-mysql::server', 'Sets up a MySQL server'
 recipe 'rs-mysql::master', 'Sets up a MySQL master server'
 recipe 'rs-mysql::slave', 'Sets up a MySQL slave server'
+
+attribute 'rs-mysql/lineage',
+  :display_name => 'MySQL Database Backup Lineage',
+  :description => 'The prefix that will be used to name/locate the backup of a particular database.',
+  :required => 'required',
+  :recipes => ['rs-mysql::server']
 
 attribute 'rs-mysql/server_usage',
   :display_name => 'Server Usage',
@@ -62,9 +69,3 @@ attribute 'rs-mysql/server_repl_password',
   :description => 'The replication password for the slave database. Example cred:MYSQL_REPLICATION_PASSWORD',
   :required => 'optional',
   :recipes => ['rs-mysql::server']
-
-attribute 'rs-mysql/master_ip',
-  :display_name => 'IP Address for the Master DB (Hack)',
-  :description => 'THIS IS A HACK! This input will be removed once we have the rs-machine_tag ready',
-  :required => 'optional',
-  :recipes => ['rs-mysql::slave']
