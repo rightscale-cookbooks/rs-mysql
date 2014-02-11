@@ -35,22 +35,6 @@ rightscale_tag_database node['rs-mysql']['lineage'] do
   role 'master'
   bind_ip_address node['mysql']['bind_address']
   bind_port node['mysql']['port']
-  # Since resource attributes are evaluated during compile phase, getting the
-  # master timestamp should be deferred to converge phase
-  timestamp(lazy do
-    # Read master timestamp from the timestamp file if it exists
-    # Else create the timestamp file and write the timestamp to the file
-    # This ensures idempotency of the rightscale_tag_database resource
-    master_timestamp_file = "/var/lib/rightscale/rs-mysql-#{node['rs-mysql']['lineage']}"
-    if File.exist?(master_timestamp_file)
-      require 'time'
-      Time.parse(IO.read(master_timestamp_file).chomp)
-    else
-      master_timestamp = Time.now
-      File.open(master_timestamp_file, 'w') { |file| file.write(master_timestamp) }
-      master_timestamp
-    end
-  end)
   action :create
 end
 
