@@ -72,13 +72,19 @@ suites:
 
 - name: slave
   run_list:
+  - recipe[fake::setup_master_db]
   - recipe[rs-mysql::slave]
-  - recipe[fake::database_mysql]
+  provisioner:
+      solo_rb:
+        log_location: /var/log/chef-solo.log
   attributes:
     cloud:
       provider: 'vagrant'
       public_ips: ['10.10.2.2']
       private_ips: ['10.10.3.3']
+    mysql:
+      bind_address: '10.10.4.4'
+      port: 3306
     rs-mysql:
       lineage: 'lineage'
       server_root_password: rootpass
@@ -87,6 +93,6 @@ suites:
       application_username: appuser
       application_password: apppass
       application_database_name: app_test
-      master_ip: '10.10.1.1'
+      master_ip: '173.227.0.5'
     rightscale:
       instance_uuid: '2222222'

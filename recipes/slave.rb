@@ -42,7 +42,6 @@ end
 # Find the master database in the deployment
 master_db = find_database_servers(node, node['rs-mysql']['lineage'], 'master')
 raise "No master database for the lineage '#{node['rs-mysql']['lineage']}' found in the deployment!" if master_db.empty?
-Chef::Log.info "#####################{master_db.inspect}"
 
 # The connection hash to use to connect to mysql
 mysql_connection_info = {
