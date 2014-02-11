@@ -76,7 +76,11 @@ Vagrant.configure("2") do |config|
 
     master.vm.provision :chef_solo do |chef|
       chef.json = {
+        :cloud => {
+          :private_ips => ['33.33.33.10']
+        },
         :'rs-mysql' => {
+          :lineage => 'master_lineage',
           :server_root_password => 'rootpass',
           :server_repl_password => 'replpass',
           :application_username => 'appuser',
@@ -92,7 +96,7 @@ Vagrant.configure("2") do |config|
         "recipe[apt::default]",
         #"recipe[yum::epel]",
         "recipe[rs-mysql::master]",
-        "recipe[fake::database_mysql]"
+        #"recipe[fake::database_mysql]"
       ]
 
       chef.arguments = "--logfile /var/log/chef-solo.log --log_level debug"
@@ -106,7 +110,11 @@ Vagrant.configure("2") do |config|
 
     slave.vm.provision :chef_solo do |chef|
       chef.json = {
+        :cloud => {
+          :private_ips => ['33.33.33.10']
+        },
         :'rs-mysql' => {
+          :lineage => 'slave_lineage',
           :server_root_password => 'rootpass',
           :server_repl_password => 'replpass',
           :application_username => 'appuser',
