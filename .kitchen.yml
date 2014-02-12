@@ -53,7 +53,6 @@ suites:
 - name: master
   run_list:
   - recipe[rs-mysql::master]
-  - recipe[fake::database_mysql]
   attributes:
     cloud:
       provider: 'vagrant'
@@ -64,8 +63,6 @@ suites:
       server_root_password: rootpass
       server_repl_password: realpass
       server_usage: dedicated
-      application_username: appuser
-      application_password: apppass
       application_database_name: app_test
     rightscale:
       instance_uuid: '1111111'
@@ -90,9 +87,7 @@ suites:
       server_root_password: rootpass
       server_repl_password: realpass
       server_usage: dedicated
-      application_username: appuser
-      application_password: apppass
-      application_database_name: app_test
       master_ip: '173.227.0.5'
+      application_database_name: app_test
     rightscale:
       instance_uuid: '2222222'

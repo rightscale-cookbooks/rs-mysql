@@ -17,9 +17,11 @@
 # limitations under the License.
 #
 
-rightscale_tag_database node['rs-mysql']['lineage'] do
+resource = rightscale_tag_database node['rs-mysql']['lineage'] do
   role 'master'
   bind_ip_address node['mysql']['bind_address']
   bind_port node['mysql']['port']
-  action :create
+  action :nothing
 end
+
+resource.run_action(:create)
