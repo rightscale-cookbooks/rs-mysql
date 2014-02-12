@@ -17,17 +17,22 @@
 # limitations under the License.
 #
 
-tag_folder_name = "/vagrant/cache_dir/machine_tag_cache/test"
+include_recipe "machine_tag::default"
 
-FileUtils.mkdir_p(tag_folder_name)
+ts = Time.now
 
 tags = [
+  "server:uuid=#{node["rightscale"]["instance_uuid"]}",
   "database:active=true",
+  "database:master_active=#{ts}",
   "database:lineage=#{node['rs-mysql']['lineage']}",
   "database:bind_ip_address=#{node['mysql']['bind_address']}",
   "database:bind_port=#{node['mysql']['port']}"
 ]
 
-File.open("#{tag_folder_name}/tags.json", 'w') do |f|
-  tags.each { |element| f.puts(element)}
+tags.each do |tag|
+  mt = machine_tag tag do
+    action :nothing
+  end
+  mt.run_action (:create)
 end
