@@ -53,6 +53,9 @@ suites:
 - name: master
   run_list:
   - recipe[rs-mysql::master]
+  provisioner:
+      solo_rb:
+        log_location: /var/log/chef-solo.log
   attributes:
     cloud:
       provider: 'vagrant'
@@ -63,7 +66,6 @@ suites:
       server_root_password: rootpass
       server_repl_password: realpass
       server_usage: dedicated
-      application_database_name: app_test
     rightscale:
       instance_uuid: '1111111'
 
@@ -79,15 +81,10 @@ suites:
       provider: 'vagrant'
       public_ips: ['10.10.2.2']
       private_ips: ['10.10.3.3']
-    mysql:
-      bind_address: '173.227.0.5'
-      port: 3306
     rs-mysql:
       lineage: 'lineage'
       server_root_password: rootpass
       server_repl_password: realpass
       server_usage: dedicated
-      master_ip: '173.227.0.5'
-      application_database_name: app_test
     rightscale:
       instance_uuid: '2222222'
