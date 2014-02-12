@@ -17,11 +17,17 @@
 # limitations under the License.
 #
 
-resource = rightscale_tag_database node['rs-mysql']['lineage'] do
-  role 'master'
-  bind_ip_address node['mysql']['bind_address']
-  bind_port node['mysql']['port']
-  action :nothing
-end
+tag_folder_name = "/vagrant/cache_dir/machine_tag_cache/test"
 
-resource.run_action(:create)
+FileUtils.mkdir_p(tag_folder_name)
+
+tags = [
+  "database:active=true",
+  "database:lineage=#{node['rs-mysql']['lineage']}",
+  "database:bind_ip_address=#{node['mysql']['bind_address']}",
+  "database:bind_port=#{node['mysql']['port']}"
+]
+
+File.open("#{tag_folder_name}/tags.json", 'w') do |f|
+  tags.each { |element| f.puts(element)}
+end
