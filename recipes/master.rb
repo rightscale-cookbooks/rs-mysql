@@ -21,8 +21,8 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
-# Override master server specific attributes
-Chef::Log.info "Overriding mysql/tunable/read_only to 'false'"
+# Override master specific attributes
+Chef::Log.info "Overriding mysql/tunable/read_only to 'false'..."
 node.override['mysql']['tunable']['read_only'] = false
 
 include_recipe 'rs-mysql::server'
