@@ -68,40 +68,6 @@ describe file('/var/lib/mysql') do
   it { should be_directory }
 end
 
-describe "can run MySQL queries on the server" do
-  describe "'appuser' mysql user is created" do
-    describe command(
-      "echo \"SELECT User FROM mysql.user\" | mysql --user=root --password=rootpass"
-    ) do
-      it { should return_stdout /appuser/ }
-    end
-  end
-
-  describe "'app_test' database exists" do
-    describe command(
-      "echo \"SHOW DATABASES LIKE 'app_test'\" | mysql --user=appuser --password=apppass"
-    ) do
-      it { should return_stdout /app_test/ }
-    end
-  end
-
-  describe "select tables from a database" do
-    describe command(
-      "echo \"USE app_test; SELECT * FROM app_test\" | mysql --user=appuser --password=apppass"
-    ) do
-      it { should return_stdout /I am in the db/ }
-    end
-  end
-
-  describe "create database" do
-    describe command(
-      "echo \"DROP DATABASE IF EXISTS blah; CREATE DATABASE blah; SHOW DATABASES LIKE 'blah'\" | mysql --user=root --password=rootpass"
-    ) do
-      it { should return_stdout /blah/ }
-    end
-  end
-end
-
 describe "mysql collectd plugin" do
   describe file("#{collectd_plugin_dir}/mysql.conf") do
     it { should be_file }
@@ -124,6 +90,7 @@ describe "mysql collectd plugin" do
       it { should return_stdout /root/ }
     end
   end
+end
 
 describe "Verify the parameters directly from msyql" do
   {
@@ -155,5 +122,22 @@ describe "Verify master status" do
      db.query("show master status").entries[0]['Position'].should_not == 0
    end
 end
+
+describe "Check slave status" do
+  describe "Master_Host matches 173.227.0.5" do
+    describe command(
+      "echo \"SHOW SLAVE STATUS \\G \" | mysql --user=root --password=rootpass"
+    ) do
+      it { should return_stdout /Master_Host: 173.227.0.5/ }
+    end
+  end
+
+  describe "Master_Port matches 3306" do
+    describe command(
+      "echo \"SHOW SLAVE STATUS \\G \" | mysql --user=root --password=rootpass"
+    ) do
+      it { should return_stdout /Master_Port: 3306/ }
+    end
+  end
 
 end
