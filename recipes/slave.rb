@@ -39,9 +39,15 @@ class Chef::Recipe
   include Rightscale::RightscaleTag
 end
 
-# Find the master database in the deployment
-master_db = find_database_servers(node, node['rs-mysql']['lineage'], 'master')
-raise "No master database for the lineage '#{node['rs-mysql']['lineage']}' found in the deployment!" if master_db.empty?
+# Find the most recent master database in the deployment
+latest_master = nil
+Chef::Log.info "Finding master database servers with lineage '#{node['rs-mysql']['lineage']}' in the deployment..."
+master_dbs = find_database_servers(node, node['rs-mysql']['lineage'], 'master')
+if master_dbs.empty?
+  raise "No master database for the lineage '#{node['rs-mysql']['lineage']}' found in the deployment!"
+else
+  latest_master = RsMysql::Helper.get_latest_master(master_dbs)
+end
 
 # The connection hash to use to connect to mysql
 mysql_connection_info = {
@@ -64,7 +70,7 @@ mysql_database 'change master host' do
   database_name 'mysql'
   connection mysql_connection_info
   sql "CHANGE MASTER TO" +
-    " MASTER_HOST='#{master_db['bind_ip_address']}'," +
+    " MASTER_HOST='#{latest_master['bind_ip_address']}'," +
     " MASTER_USER='repl'," +
     " MASTER_PASSWORD='#{node['rs-mysql']['server_repl_password']}'"
   action :query
