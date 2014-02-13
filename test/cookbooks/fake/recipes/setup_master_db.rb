@@ -17,10 +17,7 @@
 # limitations under the License.
 #
 
-include_recipe "machine_tag::default"
-
-ts = Time.now
-
+# Tags for the fake master database server
 tags = [
   "server:uuid=1111111111",
   "database:active=true",
@@ -30,9 +27,9 @@ tags = [
   "database:bind_port=3306"
 ]
 
-tags.each do |tag|
-  mt = machine_tag tag do
-    action :nothing
-  end
-  mt.run_action (:create)
-end
+# The file containing the master server tags must be created in
+# in this path so that machine tag search work as intended in a
+# vagrant environment
+tags_path = '/vagrant/cache_dir/machine_tag_cache/master-host'
+::FileUtils.mkdir_p(tags_path)
+::File.open(::File.join(tags_path, 'tags.json'), 'w') { |file| file.write(::JSON.pretty_generate(tags)) }
