@@ -35,44 +35,5 @@ module RsMysql
         IPAddr.new(node['cloud']['private_ips'].first)
       end
     end
-
-    # Gets the information hash of the latest master from the list of master servers.
-    #
-    # @param master_servers_hash [Hash{String => Hash}] the master servers found in the deployment
-    #
-    # @return [Hash] the information hash of the most recent master database server
-    #
-    # @example Given a hash of master database servers as below
-    #
-    # {
-    #   '01-GHIJKL1234567' => {
-    #     'lineage' => 'example',
-    #     'bind_ip_address' => '10.0.0.5',
-    #     'bind_port' => 3306,
-    #     'role' => 'master',
-    #     'master_since' => Time.at(1391803892)
-    #   },
-    #   '01-ABCD12341FHIK' => {
-    #     'lineage' => 'example',
-    #     'bind_ip_address' => '10.0.0.6',
-    #     'bind_port' => 3306,
-    #     'role' => 'master',
-    #     'master_since' => Time.at(1391803900)
-    #   }
-    # }
-    #
-    # This method returns
-    #
-    # {
-    #   'lineage' => 'example',
-    #   'bind_ip_address' => '10.0.0.6',
-    #   'bind_port' => 3306,
-    #   'role' => 'master',
-    #   'master_since' => Time.at(1391803900)
-    # }
-    #
-    def self.get_latest_master(master_servers_hash)
-      master_servers_hash.values.max_by { |hash| hash['master_since'] }
-    end
   end
 end

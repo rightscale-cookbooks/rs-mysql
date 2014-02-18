@@ -42,11 +42,11 @@ end
 # Find the most recent master database in the deployment
 latest_master = nil
 Chef::Log.info "Finding master database servers with lineage '#{node['rs-mysql']['lineage']}' in the deployment..."
-master_dbs = find_database_servers(node, node['rs-mysql']['lineage'], 'master')
+master_dbs = find_database_servers(node, node['rs-mysql']['lineage'], 'master', {:only_latest_for_role => true})
 if master_dbs.empty?
   raise "No master database for the lineage '#{node['rs-mysql']['lineage']}' found in the deployment!"
 else
-  latest_master = RsMysql::Helper.get_latest_master(master_dbs)
+  latest_master = master_dbs.map { |uuid, server_hash| server_hash }.first
 end
 
 # The connection hash to use to connect to mysql
