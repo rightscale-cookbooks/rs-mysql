@@ -140,4 +140,38 @@ describe "Verify valid server-id entry" do
    end
 end
 
+# Verify tags
+
+# Get the hostname
+host_name = `hostname -s`.chomp
+
+master_tags = MachineTag::Set.new(JSON.parse(IO.read("/vagrant/cache_dir/machine_tag_cache/#{host_name}/tags.json")))
+
+describe "Master database tags" do
+  it "should have a UUID of 1111111" do
+    master_tags['server:uuid'].first.value.should match ('1111111')
+  end
+  it "should have a public of 173.227.0.5" do
+    master_tags['server:public_ip_0'].first.value.should match ('173.227.0.5')
+  end
+  it "should have a bind ip address of 10.0.2.15" do
+    master_tags['database:bind_ip_address'].first.value.should match ('10.0.2.15')
+  end
+  it "should have a bind port of 3306" do
+    master_tags['database:bind_port'].first.value.should match ('3306')
+  end
+  it "should have 5 database specific entries" do
+    master_tags['database'].length.should == 5
+  end
+  it "should be active" do
+    master_tags['database:active'].first.value.should be_true
+  end
+  it "should have a lineage of lineage" do
+    master_tags['database:lineage'].first.value.should match ('lineage')
+  end
+  it "should have a master active value of 1392834749" do
+    master_tags['database:master_active'].first.value.should match ('1392834749')
+  end
+end
+
 end

@@ -141,3 +141,37 @@ describe "Check slave status" do
   end
 
 end
+
+# Verify tags
+
+# Get the hostname
+host_name = `hostname -s`.chomp
+
+slave_tags = MachineTag::Set.new(JSON.parse(IO.read("/vagrant/cache_dir/machine_tag_cache/#{host_name}/tags.json")))
+
+describe "Slave database tags" do
+  it "should have a UUID of 2222222" do
+    slave_tags['server:uuid'].first.value.should match ('2222222')
+  end
+  it "should have a public of 10.10.2.2" do
+    slave_tags['server:public_ip_0'].first.value.should match ('10.10.2.2')
+  end
+  it "should have a private ip address of 10.10.3.3" do
+    slave_tags['server:private_ip_0'].first.value.should match ('10.10.3.3')
+  end
+  it "should have a bind port of 3306" do
+    slave_tags['database:bind_port'].first.value.should match ('3306')
+  end
+  it "should have 5 database specific entries" do
+    slave_tags['database'].length.should == 5
+  end
+  it "should be active" do
+    slave_tags['database:active'].first.value.should be_true
+  end
+  it "should have a lineage of lineage" do
+    slave_tags['database:lineage'].first.value.should match ('lineage')
+  end
+  it "should have a slave active value of 1392836857" do
+    slave_tags['database:slave_active'].first.value.should match ('1392836857')
+  end
+end
