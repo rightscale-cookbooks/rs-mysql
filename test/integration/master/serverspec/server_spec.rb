@@ -69,37 +69,13 @@ describe file('/var/lib/mysql') do
 end
 
 describe "can run MySQL queries on the server" do
-  describe "'appuser' mysql user is created" do
-    describe command(
-      "echo \"SELECT User FROM mysql.user\" | mysql --user=root --password=rootpass"
-    ) do
-      it { should return_stdout /appuser/ }
-    end
-  end
-
-  describe "'app_test' database exists" do
-    describe command(
-      "echo \"SHOW DATABASES LIKE 'app_test'\" | mysql --user=appuser --password=apppass"
-    ) do
-      it { should return_stdout /app_test/ }
-    end
-  end
-
-  describe "select tables from a database" do
-    describe command(
-      "echo \"USE app_test; SELECT * FROM app_test\" | mysql --user=appuser --password=apppass"
-    ) do
-      it { should return_stdout /I am in the db/ }
-    end
-  end
-
   describe "create database" do
-    describe command(
-      "echo \"DROP DATABASE IF EXISTS blah; CREATE DATABASE blah; SHOW DATABASES LIKE 'blah'\" | mysql --user=root --password=rootpass"
-    ) do
-      it { should return_stdout /blah/ }
-    end
-  end
+   describe command(
+     "echo \"DROP DATABASE IF EXISTS blah; CREATE DATABASE blah; SHOW DATABASES LIKE 'blah'\" | mysql --user=root --password=rootpass"
+   ) do
+     it { should return_stdout /blah/ }
+   end
+ end
 end
 
 describe "mysql collectd plugin" do
@@ -157,7 +133,7 @@ describe "Verify master status" do
 end
 
 # The kitchen.yml file is set up to provide a public ip in the master suite.   This is what this is testing.
-# The slave setup will provide a null public, and a private ip.  
+# The slave setup will provide a null public, and a private ip.
 describe "Verify valid server-id entry" do
    it "should correspond to the result of IPAddr converting 173.227.0.5 to an integer" do
      db.query("show variables like 'server_id'").entries.first['Value'].to_i.should == 2917335045
