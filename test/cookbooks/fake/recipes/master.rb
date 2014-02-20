@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: fake
-# Recipe:: setup_master_db
+# Recipe:: master
 #
 # Copyright (C) 2013 RightScale, Inc.
 #
