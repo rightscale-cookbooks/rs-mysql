@@ -1,3 +1,5 @@
+# Shared Server
+
 require 'spec_helper'
 
 case backend.check_os[:family]
@@ -37,28 +39,31 @@ describe "verify the tuning attributes set in #{mysql_config_file}" do
 end
 
 # Verify tags
-
-# Get the hostname
-host_name = `hostname -s`.chomp
-
-shared_server_tags = MachineTag::Set.new(JSON.parse(IO.read("/vagrant/cache_dir/machine_tag_cache/#{host_name}/tags.json")))
-
 describe "Shared server database tags" do
+
+  let(:host_name) { Socket.gethostname }
+  let(:shared_server_tags) { MachineTag::Set.new(JSON.parse(IO.read("/vagrant/cache_dir/machine_tag_cache/#{host_name}/tags.json"))) }
+
   it "should have a public of 10.10.0.0" do
     shared_server_tags['server:public_ip_0'].first.value.should match ('10.10.0.0')
   end
+
   it "should have a bind port of 3306" do
     shared_server_tags['database:bind_port'].first.value.should match ('3306')
   end
+
   it "should have a bind IP address of 10.0.2.15" do
     shared_server_tags['database:bind_ip_address'].first.value.should match ('10.0.2.15')
   end
+
   it "should have 4 database specific entries" do
     shared_server_tags['database'].length.should == 4
   end
+
   it "should be active" do
     shared_server_tags['database:active'].first.value.should be_true
   end
+
   it "should have a lineage of lineage" do
     shared_server_tags['database:lineage'].first.value.should match ('lineage')
   end

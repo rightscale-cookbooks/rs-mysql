@@ -79,7 +79,7 @@ suites:
 
 - name: slave
   run_list:
-  - recipe[fake::setup_master_db]
+  - recipe[fake::master]
   - recipe[rs-mysql::slave]
   provisioner:
       solo_rb:

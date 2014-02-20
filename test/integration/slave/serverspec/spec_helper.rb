@@ -6,11 +6,10 @@ require 'rubygems/dependency_installer'
 include Serverspec::Helper::Exec
 include Serverspec::Helper::DetectOS
 
+# server_spec requires Gems to be installed in a specific path so the following is needed to make mysql12 & machine_tag
+# available for testing
 installer = Gem::DependencyInstaller.new
 installer.install('mysql2')
-Gem.clear_paths
-
-installer = Gem::DependencyInstaller.new
 installer.install('machine_tag')
 Gem.clear_paths
 

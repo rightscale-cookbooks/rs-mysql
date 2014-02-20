@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: rs-mysql
-# Recipe:: server
+# Recipe:: master
 #
 # Copyright (C) 2013 RightScale, Inc.
 #

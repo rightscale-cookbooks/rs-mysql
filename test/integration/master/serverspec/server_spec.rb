@@ -1,4 +1,7 @@
+# Master
+
 require 'spec_helper'
+require 'socket'
 
 mysql_name = ''
 case backend.check_os[:family]
@@ -78,29 +81,6 @@ describe "can run MySQL queries on the server" do
  end
 end
 
-describe "mysql collectd plugin" do
-  describe file("#{collectd_plugin_dir}/mysql.conf") do
-    it { should be_file }
-  end
-
-  describe "contents of #{collectd_plugin_dir}/mysql.conf" do
-    describe command("grep LoadPlugin #{collectd_plugin_dir}/mysql.conf") do
-      it { should return_stdout /mysql/ }
-    end
-
-    describe command("grep \"^<Plugin\" #{collectd_plugin_dir}/mysql.conf") do
-      it { should return_stdout /mysql/ }
-    end
-
-    describe command("grep Host #{collectd_plugin_dir}/mysql.conf") do
-      it { should return_stdout /localhost/ }
-    end
-
-    describe command("grep User #{collectd_plugin_dir}/mysql.conf") do
-      it { should return_stdout /root/ }
-    end
-  end
-
 describe "Verify the parameters directly from msyql" do
   {
     log_bin: 1,
@@ -115,63 +95,70 @@ describe "Verify the parameters directly from msyql" do
 end
 
 describe "Verify replication setup:" do
-   it "User repl should be created." do
-     db.query("select distinct user from mysql.user").entries.count { |u| u['user'] == 'repl' }.should == 1
-   end
-   it "repl user should have replication privileges." do
-     db.query("show grants for 'repl'").entries.first['Grants for repl@%'].should =~ /^GRANT REPLICATION SLAVE ON \*\.\* TO \'repl\'/
-   end
+ it "User repl should be created." do
+   db.query("select distinct user from mysql.user").entries.count { |u| u['user'] == 'repl' }.should == 1
+ end
+
+ it "repl user should have replication privileges." do
+   db.query("show grants for 'repl'").entries.first['Grants for repl@%'].should =~ /^GRANT REPLICATION SLAVE ON \*\.\* TO \'repl\'/
+ end
 end
 
 describe "Verify master status" do
-   it "Master should have entry mysql-bin file" do
-     db.query("show master status").entries[0]['File'].should =~ /^mysql-bin/
-   end
-   it "with a non-zero position marker" do
-     db.query("show master status").entries[0]['Position'].should_not == 0
-   end
+  it "Master should have entry mysql-bin file" do
+   db.query("show master status").entries[0]['File'].should =~ /^mysql-bin/
+  end
+  it "with a non-zero position marker" do
+   db.query("show master status").entries[0]['Position'].should_not == 0
+  end
 end
 
 # The kitchen.yml file is set up to provide a public ip in the master suite.   This is what this is testing.
 # The slave setup will provide a null public, and a private ip.
 describe "Verify valid server-id entry" do
-   it "should correspond to the result of IPAddr converting 173.227.0.5 to an integer" do
-     db.query("show variables like 'server_id'").entries.first['Value'].to_i.should == 2917335045
-   end
+  it "should correspond to the result of IPAddr converting 173.227.0.5 to an integer" do
+   db.query("show variables like 'server_id'").entries.first['Value'].to_i.should == 2917335045
+  end
 end
 
 # Verify tags
-
-# Get the hostname
-host_name = `hostname -s`.chomp
-
-master_tags = MachineTag::Set.new(JSON.parse(IO.read("/vagrant/cache_dir/machine_tag_cache/#{host_name}/tags.json")))
-
 describe "Master database tags" do
+
+  let(:host_name) { Socket.gethostname }
+  let(:master_tags) { MachineTag::Set.new(JSON.parse(IO.read("/vagrant/cache_dir/machine_tag_cache/#{host_name}/tags.json"))) }
+
   it "should have a UUID of 1111111" do
     master_tags['server:uuid'].first.value.should match ('1111111')
   end
+
   it "should have a public of 173.227.0.5" do
     master_tags['server:public_ip_0'].first.value.should match ('173.227.0.5')
   end
+
   it "should have a bind ip address of 10.0.2.15" do
     master_tags['database:bind_ip_address'].first.value.should match ('10.0.2.15')
   end
+
   it "should have a bind port of 3306" do
     master_tags['database:bind_port'].first.value.should match ('3306')
   end
+
   it "should have 5 database specific entries" do
     master_tags['database'].length.should == 5
   end
+
   it "should be active" do
     master_tags['database:active'].first.value.should be_true
   end
+
   it "should have a lineage of lineage" do
     master_tags['database:lineage'].first.value.should match ('lineage')
   end
-  it "should have a master active value of 1392834749" do
-    master_tags['database:master_active'].first.value.should match ('1392834749')
-  end
-end
 
+  # We want to test that the master_active timestamp is a reasonable value; arbitrarily within the last 24 hours
+  let(:db_time) { Time.at(master_tags['database:master_active'].first.value.to_i) }
+
+  it "should have a master_active value that is valid (within the last 24 hours)" do
+    (Time.now - db_time).should < 86400
+  end
 end
