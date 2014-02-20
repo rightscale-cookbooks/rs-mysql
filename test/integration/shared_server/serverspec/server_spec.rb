@@ -40,7 +40,6 @@ end
 
 # Verify tags
 describe "Shared server database tags" do
-
   let(:host_name) { Socket.gethostname }
   let(:shared_server_tags) { MachineTag::Set.new(JSON.parse(IO.read("/vagrant/cache_dir/machine_tag_cache/#{host_name}/tags.json"))) }
 

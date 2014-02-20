@@ -27,9 +27,8 @@ tags = [
   "database:bind_port=3306"
 ]
 
-# The file containing the master server tags must be created in
-# in this path so that machine tag search work as intended in a
-# vagrant environment
+# The file containing the master server tags must be created in in this path so that machine tag search work as
+# intended in a vagrant environment
 tags_path = '/vagrant/cache_dir/machine_tag_cache/master-host'
 ::FileUtils.mkdir_p(tags_path)
 ::File.open(::File.join(tags_path, 'tags.json'), 'w') { |file| file.write(::JSON.pretty_generate(tags)) }

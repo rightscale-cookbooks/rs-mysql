@@ -87,6 +87,7 @@ describe "Verify replication setup:" do
  it "User repl should be created." do
    db.query("select distinct user from mysql.user").entries.count { |u| u['user'] == 'repl' }.should == 1
  end
+
  it "repl user should have replication privileges." do
    db.query("show grants for 'repl'").entries.first['Grants for repl@%'].should =~ /^GRANT REPLICATION SLAVE ON \*\.\* TO \'repl\'/
  end
@@ -96,6 +97,7 @@ describe "Verify master status" do
   it "Master should have entry mysql-bin file" do
    db.query("show master status").entries[0]['File'].should =~ /^mysql-bin/
   end
+
  it "with a non-zero position marker" do
    db.query("show master status").entries[0]['Position'].should_not == 0
  end
@@ -122,7 +124,6 @@ end
 
 # Verify tags
 describe "Slave database tags" do
-
   let(:host_name) { Socket.gethostname }
   let(:slave_tags) { MachineTag::Set.new(JSON.parse(IO.read("/vagrant/cache_dir/machine_tag_cache/#{host_name}/tags.json"))) }
 

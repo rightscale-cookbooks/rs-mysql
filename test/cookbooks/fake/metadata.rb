@@ -10,4 +10,4 @@ depends 'rs-mysql'
 depends 'rightscale_tag'
 
 recipe 'fake::database_mysql', 'Prepares the test mysql database'
-recipe 'fake::setup_master_db', 'Sets up master db for the slave suite'
+recipe 'fake::master', 'Sets up master db for the slave suite'

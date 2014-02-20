@@ -108,6 +108,7 @@ describe "Verify master status" do
   it "Master should have entry mysql-bin file" do
    db.query("show master status").entries[0]['File'].should =~ /^mysql-bin/
   end
+
   it "with a non-zero position marker" do
    db.query("show master status").entries[0]['Position'].should_not == 0
   end
@@ -123,7 +124,6 @@ end
 
 # Verify tags
 describe "Master database tags" do
-
   let(:host_name) { Socket.gethostname }
   let(:master_tags) { MachineTag::Set.new(JSON.parse(IO.read("/vagrant/cache_dir/machine_tag_cache/#{host_name}/tags.json"))) }
 
