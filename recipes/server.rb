@@ -94,8 +94,9 @@ mysql_connection_info = {
 }
 
 # Create the application database
-mysql_database node['rs-mysql']['application_database_name'] do
+mysql_database 'application database' do
   connection mysql_connection_info
+  database_name node['rs-mysql']['application_database_name']
   action :create
   only_if { node['rs-mysql']['application_database_name'] }
 end
