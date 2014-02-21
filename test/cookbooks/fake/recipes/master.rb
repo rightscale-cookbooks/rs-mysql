@@ -30,5 +30,14 @@ tags = [
 # The file containing the master server tags must be created in in this path so that machine tag search work as
 # intended in a vagrant environment
 tags_path = '/vagrant/cache_dir/machine_tag_cache/master-host'
-::FileUtils.mkdir_p(tags_path)
-::File.open(::File.join(tags_path, 'tags.json'), 'w') { |file| file.write(::JSON.pretty_generate(tags)) }
+
+directory tags_path do
+  recursive true
+  action :nothing
+end.run_action(:create)
+
+
+file ::File.join(tags_path, 'tags.json') do
+  content ::JSON.pretty_generate(tags)
+  action :nothing
+end.run_action(:create)
