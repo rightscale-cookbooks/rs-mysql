@@ -94,11 +94,10 @@ mysql_connection_info = {
 }
 
 # Create the application database
-if node['rs-mysql']['application_database_name']
-  mysql_database node['rs-mysql']['application_database_name'] do
-    connection mysql_connection_info
-    action :create
-  end
+mysql_database node['rs-mysql']['application_database_name'] do
+  connection mysql_connection_info
+  action :create
+  only_if { node['rs-mysql']['application_database_name'] }
 end
 
 if node['rs-mysql']['application_username'] && node['rs-mysql']['application_password']
