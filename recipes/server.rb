@@ -21,6 +21,7 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
+# Auto tune MySQL settings
 RsMysql::Tuning.tune_attributes(
   node.override['mysql']['tunable'],
   node['memory']['total'],
@@ -33,7 +34,6 @@ node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_root_p
 
 include_recipe 'mysql::server'
 
-
 # Setup collectd mysql plugin
 
 if node['rightscale'] && node['rightscale']['instance_uuid']
@@ -42,6 +42,7 @@ end
 
 log "Installing MySQL collectd plugin"
 
+# On CentOS the MySQL collectd plugin is installed separately
 package "collectd-mysql" do
   only_if { node['platform'] =~ /redhat|centos/ }
 end
