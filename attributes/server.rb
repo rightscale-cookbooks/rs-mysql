@@ -28,6 +28,9 @@ default['rs-mysql']['server_root_password'] = nil
 # The MySQL server's replication password
 default['rs-mysql']['server_repl_password'] = nil
 
+# The MySQL database backup lineage
+default['rs-mysql']['lineage'] = nil
+
 # The MySQL database application username
 default['rs-mysql']['application_username'] = nil
 
