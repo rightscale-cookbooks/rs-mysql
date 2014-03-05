@@ -18,7 +18,6 @@
 #
 
 require 'ipaddr'
-require 'mysql'
 
 module RsMysql
   module Helper
@@ -50,6 +49,7 @@ module RsMysql
     #     > {"Slave_IO_State"=>"Waiting for master to send event", ... }
     #
     def self.query(hostname, password, query_string)
+      require 'mysql'
       con = Mysql.new(hostname, 'root', password)
       Chef::Log.info "Performing query #{query_string} on #{hostname}..."
       result = con.query(query_string)
