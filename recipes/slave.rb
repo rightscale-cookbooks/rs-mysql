@@ -25,6 +25,12 @@ class Chef::Recipe
   include Rightscale::RightscaleTag
 end
 
+# Override slave specific attributes
+Chef::Log.info "Overriding mysql/tunable/read_only to 'true'..."
+node.override['mysql']['tunable']['read_only'] = true
+
+include_recipe 'rs-mysql::server'
+
 # Find the most recent master database in the deployment
 latest_master = nil
 Chef::Log.info "Finding master database servers with lineage '#{node['rs-mysql']['lineage']}' in the deployment..."
@@ -34,12 +40,6 @@ if master_dbs.empty?
 else
   latest_master = master_dbs.map { |uuid, server_hash| server_hash }.first
 end
-
-# Override slave specific attributes
-Chef::Log.info "Overriding mysql/tunable/read_only to 'true'..."
-node.override['mysql']['tunable']['read_only'] = true
-
-include_recipe 'rs-mysql::server'
 
 # Set up tags for slave database.
 # See https://github.com/rightscale-cookbooks/rightscale_tag#database-servers for more information about the
