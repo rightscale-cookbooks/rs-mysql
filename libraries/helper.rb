@@ -18,6 +18,7 @@
 #
 
 require 'ipaddr'
+require 'mysql'
 
 module RsMysql
   module Helper
@@ -33,6 +34,45 @@ module RsMysql
         IPAddr.new(node['cloud']['public_ips'].first)
       else
         IPAddr.new(node['cloud']['private_ips'].first)
+      end
+    end
+
+    # Performs a mysql query and returns the output of the query.
+    #
+    # @param hostname [String] the hostname of server to connect to mysql against
+    # @param password [String] the password for the root mysql user
+    # @param query_string [String] the mysql query string to run
+    #
+    # @return [Hash{String=>String}] the output of the mysql query
+    #
+    # @example Example usage
+    #     RsMysql::Helper.query('localhost', 'rootpass', 'SHOW SLAVE STATUS')
+    #     > {"Slave_IO_State"=>"Waiting for master to send event", ... }
+    #
+    def self.query(hostname, password, query_string)
+      con = Mysql.new(hostname, 'root', password)
+      Chef::Log.info "Performing query #{query_string} on #{hostname}..."
+      result = con.query(query_string)
+      result.fetch_hash if result
+    end
+
+    # Verifies if the slave server is functional by checking the 'Slave_IO_Running' and 'Slave_SQL_Running' in the
+    # output of SHOW SLAVE STATUS query. This verification is done with a sleep of 2 seconds and a configurable
+    # timeout.
+    #
+    # @param hostname [String] the hostname of the server to connect to mysql against
+    # @param password [String] the password of the root mysql user
+    # @param timeout [Integer] the number of seconds to use for timeout
+    #
+    # @raise [Timeout::Error] if the slave is not functional after the specified timeout
+    #
+    def self.verify_slave_functional(hostname, password, timeout)
+      Timeout.timeout(timeout) do
+        slave_status = query(hostname, password, 'SHOW SLAVE STATUS')
+        until slave_status["Slave_IO_Running"] == "Yes" && slave_status["Slave_SQL_Running"] == "Yes"
+          Chef::Log.info 'Waiting for slave to become functional...'
+          sleep 2
+        end
       end
     end
   end

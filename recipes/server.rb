@@ -56,7 +56,9 @@ include_recipe 'mysql::server'
 include_recipe 'database::mysql'
 include_recipe 'rightscale_tag::default'
 
-# Setup database tags on the server
+# Setup database tags on the server.
+# See https://github.com/rightscale-cookbooks/rightscale_tag#database-servers for more information about the
+# `rightscale_tag_database` resource.
 rightscale_tag_database node['rs-mysql']['lineage'] do
   bind_ip_address node['mysql']['bind_address']
   bind_port node['mysql']['port']

@@ -21,20 +21,6 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
-# Override slave specific attributes
-Chef::Log.info "Overriding mysql/tunable/read_only to 'true'..."
-node.override['mysql']['tunable']['read_only'] = true
-
-include_recipe 'rs-mysql::server'
-
-# Set up tags for slave database
-rightscale_tag_database node['rs-mysql']['lineage'] do
-  role 'slave'
-  bind_ip_address node['mysql']['bind_address']
-  bind_port node['mysql']['port']
-  action :create
-end
-
 class Chef::Recipe
   include Rightscale::RightscaleTag
 end
@@ -47,6 +33,22 @@ if master_dbs.empty?
   raise "No master database for the lineage '#{node['rs-mysql']['lineage']}' found in the deployment!"
 else
   latest_master = master_dbs.map { |uuid, server_hash| server_hash }.first
+end
+
+# Override slave specific attributes
+Chef::Log.info "Overriding mysql/tunable/read_only to 'true'..."
+node.override['mysql']['tunable']['read_only'] = true
+
+include_recipe 'rs-mysql::server'
+
+# Set up tags for slave database.
+# See https://github.com/rightscale-cookbooks/rightscale_tag#database-servers for more information about the
+# `rightscale_tag_database` resource.
+rightscale_tag_database node['rs-mysql']['lineage'] do
+  role 'slave'
+  bind_ip_address node['mysql']['bind_address']
+  bind_port node['mysql']['port']
+  action :create
 end
 
 # The connection hash to use to connect to mysql
@@ -83,13 +85,13 @@ mysql_database 'start slave' do
   action :query
 end
 
-# TODO: In v13 we run this 10 times and check for the 'Slave_IO_Running' and 'Slave_SQL_Running' to become 'yes'.
-# Do we need a similar logic? Or there are better ways to determine if the slave is functional and its threads are
-# running?
-#
-mysql_database 'show slave status' do
-  database_name 'mysql'
-  connection mysql_connection_info
-  sql 'SHOW SLAVE STATUS'
-  action :query
+# Verify if the slave is functional. See libraries/helper.rb for the definition of the verify_slave_fuctional method.
+ruby_block 'verify slave running' do
+  block do
+    RsMysql::Helper.verify_slave_functional(
+      'localhost',
+      node['rs-mysql']['server_root_password'],
+      node['rs-mysql']['slave_functional_timeout']
+    )
+  end
 end

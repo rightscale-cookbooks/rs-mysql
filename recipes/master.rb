@@ -27,6 +27,9 @@ node.override['mysql']['tunable']['read_only'] = false
 
 include_recipe 'rs-mysql::server'
 
+# Set up the tags for the master server.
+# See https://github.com/rightscale-cookbooks/rightscale_tag#database-servers for more information about the
+# `rightscale_tag_database` resource.
 rightscale_tag_database node['rs-mysql']['lineage'] do
   role 'master'
   bind_ip_address node['mysql']['bind_address']

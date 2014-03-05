@@ -80,7 +80,7 @@ Vagrant.configure("2") do |config|
           :private_ips => ['33.33.33.10']
         },
         :'rs-mysql' => {
-          :lineage => 'master_lineage',
+          :lineage => 'lineage',
           :server_root_password => 'rootpass',
           :server_repl_password => 'replpass',
           :application_username => 'appuser',
@@ -111,10 +111,10 @@ Vagrant.configure("2") do |config|
     slave.vm.provision :chef_solo do |chef|
       chef.json = {
         :cloud => {
-          :private_ips => ['33.33.33.10']
+          :private_ips => ['33.33.33.11']
         },
         :'rs-mysql' => {
-          :lineage => 'slave_lineage',
+          :lineage => 'lineage',
           :server_root_password => 'rootpass',
           :server_repl_password => 'replpass',
           :application_username => 'appuser',
