@@ -21,7 +21,8 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
-# Auto tune MySQL settings
+# Calculate MySQL tunable attributes based on system memory and server usage type of 'dedicated' or 'shared'.
+# Attributes will be placed in node['mysql']['tunable'] namespace.
 RsMysql::Tuning.tune_attributes(
   node.override['mysql']['tunable'],
   node['memory']['total'],
