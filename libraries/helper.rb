@@ -72,6 +72,7 @@ module RsMysql
         until slave_status["Slave_IO_Running"] == "Yes" && slave_status["Slave_SQL_Running"] == "Yes"
           Chef::Log.info 'Waiting for slave to become functional...'
           sleep 2
+          slave_status = query(hostname, password, 'SHOW SLAVE STATUS')
         end
       end
     end
