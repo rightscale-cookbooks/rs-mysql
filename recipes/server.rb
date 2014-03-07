@@ -65,7 +65,7 @@ mysql_connection_info = {
   :password => node['rs-mysql']['server_root_password']
 }
 
-# Create the database
+# Create the application database
 mysql_database node['rs-mysql']['application_database_name'] do
   only_if { node['rs-mysql']['application_database_name'] }
   connection mysql_connection_info
