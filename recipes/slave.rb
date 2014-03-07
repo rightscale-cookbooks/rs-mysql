@@ -41,6 +41,13 @@ else
   latest_master = master_dbs.map { |uuid, server_hash| server_hash }.first
 end
 
+rightscale_tag_database node['rs-mysql']['lineage'] do
+  role 'master'
+  bind_ip_address node['mysql']['bind_address']
+  bind_port node['mysql']['port']
+  action :delete
+end
+
 # Set up tags for slave database.
 # See https://github.com/rightscale-cookbooks/rightscale_tag#database-servers for more information about the
 # `rightscale_tag_database` resource.

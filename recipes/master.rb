@@ -27,6 +27,13 @@ node.override['mysql']['tunable']['read_only'] = false
 
 include_recipe 'rs-mysql::default'
 
+rightscale_tag_database node['rs-mysql']['lineage'] do
+  role 'slave'
+  bind_ip_address node['mysql']['bind_address']
+  bind_port node['mysql']['port']
+  action :delete
+end
+
 # Set up the tags for the master server.
 # See https://github.com/rightscale-cookbooks/rightscale_tag#database-servers for more information about the
 # `rightscale_tag_database` resource.
@@ -43,6 +50,20 @@ mysql_connection_info = {
   :username => 'root',
   :password => node['rs-mysql']['server_root_password']
 }
+
+mysql_database 'stop slave IO thread' do
+  database_name 'mysql'
+  connection mysql_connection_info
+  sql 'STOP SLAVE IO_THREAD'
+  action :query
+end
+
+mysql_database 'stop slave' do
+  database_name 'mysql'
+  connection mysql_connection_info
+  sql 'STOP SLAVE'
+  action :query
+end
 
 # Reset the master so the bin logs don't have information about the system tables that get created during the MySQL
 # installation.
