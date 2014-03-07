@@ -27,8 +27,3 @@ def db
     connection
   end
 end
-
-def close
-  @db.close rescue nil
-  @db = nil
-end

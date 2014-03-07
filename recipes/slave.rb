@@ -29,7 +29,7 @@ end
 Chef::Log.info "Overriding mysql/tunable/read_only to 'true'..."
 node.override['mysql']['tunable']['read_only'] = true
 
-include_recipe 'rs-mysql::server'
+include_recipe 'rs-mysql::default'
 
 # Find the most recent master database in the deployment
 latest_master = nil

@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: rs-mysql
-# Recipe:: server
+# Recipe:: default
 #
 # Copyright (C) 2013 RightScale, Inc.
 #
@@ -69,23 +69,6 @@ end
 if node['rightscale'] && node['rightscale']['instance_uuid']
   Chef::Log.info "Overriding collectd/fqdn to '#{node['rightscale']['instance_uuid']}'..."
   node.override['collectd']['fqdn'] = node['rightscale']['instance_uuid']
-end
-
-log "Installing MySQL collectd plugin..."
-
-# On CentOS the MySQL collectd plugin is installed separately
-package "collectd-mysql" do
-  only_if { node['platform'] =~ /redhat|centos/ }
-end
-
-include_recipe 'collectd::default'
-
-collectd_plugin "mysql" do
-  options({
-    "Host" => "localhost",
-    "User" => "root",
-    "Password" => node['mysql']['server_root_password']
-  })
 end
 
 # The connection hash to use to connect to MySQL

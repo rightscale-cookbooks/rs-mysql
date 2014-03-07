@@ -10,9 +10,10 @@ depends 'marker', '~> 1.0.0'
 depends 'database', '~> 1.5.2'
 depends 'mysql', '~> 4.0.18'
 depends 'collectd', '~> 1.1.0'
-depends 'rightscale_tag'
+depends 'rightscale_tag', '~> 1.0.1'
 
-recipe 'rs-mysql::server', 'Sets up a MySQL server'
+recipe 'rs-mysql::default', 'Sets up a standalone MySQL server'
+recipe 'rs-mysql::collectd', 'Sets up collectd monitoring for MySQL server'
 recipe 'rs-mysql::master', 'Sets up a MySQL master server'
 recipe 'rs-mysql::slave', 'Sets up a MySQL slave server'
 

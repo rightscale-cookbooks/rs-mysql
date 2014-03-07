@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: rs-mysql
-# Attribute:: slave
+# Recipe:: collectd
 #
 # Copyright (C) 2013 RightScale, Inc.
 #
@@ -17,6 +17,22 @@
 # limitations under the License.
 #
 
-# The timeout to use for verifying if the slave is functional. The verification is if this value is set to a negative
-# number.
-default['rs-mysql']['slave_functional_timeout'] = 60
+marker 'recipe_start_rightscale' do
+  template 'rightscale_audit_entry.erb'
+end
+
+log 'Installing MySQL collectd plugin...'
+
+package 'collectd-mysql' do
+  only_if { node['platform_family'] == 'rhel' }
+end
+
+include_recipe 'collectd::default'
+
+collectd_plugin 'mysql' do
+  options({
+    'Host' => 'localhost',
+    'User' => 'root',
+    'Password' => node['mysql']['server_root_password']
+  })
+end

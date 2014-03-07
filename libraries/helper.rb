@@ -67,12 +67,18 @@ module RsMysql
     # @raise [Timeout::Error] if the slave is not functional after the specified timeout
     #
     def self.verify_slave_functional(hostname, password, timeout)
-      Timeout.timeout(timeout) do
-        slave_status = query(hostname, password, 'SHOW SLAVE STATUS')
-        until slave_status["Slave_IO_Running"] == "Yes" && slave_status["Slave_SQL_Running"] == "Yes"
-          Chef::Log.info 'Waiting for slave to become functional...'
-          sleep 2
+      Chef::Log.info "Timeout is set to: #{timeout.inspect}"
+      # Verify slave functional only if timeout is a positive value
+      if timeout && timeout < 0
+        Chef::Log.info 'Skipping slave verification as timeout is set to a negative value'
+      else
+        Timeout.timeout(timeout) do
           slave_status = query(hostname, password, 'SHOW SLAVE STATUS')
+          until slave_status["Slave_IO_Running"] == "Yes" && slave_status["Slave_SQL_Running"] == "Yes"
+            Chef::Log.info 'Waiting for slave to become functional...'
+            sleep 2
+            slave_status = query(hostname, password, 'SHOW SLAVE STATUS')
+          end
         end
       end
     end

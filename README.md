@@ -19,7 +19,7 @@ Github Repository: [https://github.com/rightscale-cookbooks/rs-mysql](https://gi
   * [mysql](http://community.opscode.com/cookbooks/mysql)
   * [collectd](http://community.opscode.com/cookbooks/collectd)
   * [database](http://community.opscode.com/cookbooks/database)
-  * [rightscale_tag]
+  * [rightscale_tag](http://community.opscode.com/cookbooks/rightscale_tag)
 
 # Usage
 
@@ -64,10 +64,10 @@ performs the configuration. The master database specific tags are added to the s
 This recipe modifies the MySQL server to be read only and includes the `rs-mysql::server` recipe which installs
 MySQL, performs configuration, and tags the server as a slave server. It obtains the information about the master
 database with the help of the [`find_database_servers`] helper method provided by
-the [rightscale_tag] and changes the master host of the slave to the latest master
+the [rightscale_tag] cookbook and changes the master host of the slave to the latest master
 available in the deployment.
 
-[rightscale_tag]: https://github.com/rightscale-cookbooks/rightscale_tag
+[rightscale_tag]: https://github.com/rightscale-cookbooks/rightscale_tag/blob/master/README.md
 [`find_database_servers`]: https://github.com/rightscale-cookbooks/rightscale_tag#find_database_servers
 
 # Author

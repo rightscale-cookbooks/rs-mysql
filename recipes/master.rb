@@ -25,7 +25,7 @@ end
 Chef::Log.info "Overriding mysql/tunable/read_only to 'false'..."
 node.override['mysql']['tunable']['read_only'] = false
 
-include_recipe 'rs-mysql::server'
+include_recipe 'rs-mysql::default'
 
 # Set up the tags for the master server.
 # See https://github.com/rightscale-cookbooks/rightscale_tag#database-servers for more information about the
