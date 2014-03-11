@@ -2,7 +2,7 @@
 # Cookbook Name:: fake
 # Recipe:: master
 #
-# Copyright (C) 2013 RightScale, Inc.
+# Copyright (C) 2014 RightScale, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ tags = [
   "database:active=true",
   "database:master_active=#{Time.now.to_i}",
   "database:lineage=#{node['rs-mysql']['lineage']}",
-  "database:bind_ip_address=173.227.0.5",
+  "database:bind_ip_address=10.10.3.2",
   "database:bind_port=3306"
 ]
 
-# The file containing the master server tags must be created in in this path so that machine tag search work as
+# The file containing the master server tags must be created in this path so that machine tag search work as
 # intended in a vagrant environment
 tags_path = '/vagrant/cache_dir/machine_tag_cache/master-host'
 

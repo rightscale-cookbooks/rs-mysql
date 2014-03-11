@@ -2,7 +2,7 @@
 # Cookbook Name:: rs-mysql
 # Attribute:: slave
 #
-# Copyright (C) 2013 RightScale, Inc.
+# Copyright (C) 2014 RightScale, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,6 @@
 # limitations under the License.
 #
 
-# The timeout to use for verifying if the slave is functional. The verification is if this value is set to a negative
-# number.
+# The timeout to use for verifying if the slave is functional. The verification is skipped if this this value is set to
+# a negative number.
 default['rs-mysql']['slave_functional_timeout'] = 60

@@ -58,7 +58,7 @@ end
 
 # Verify tags
 describe "Slave database tags" do
-  let(:host_name) { Socket.gethostname }
+  let(:host_name) { Socket.gethostname.split('.').first }
   let(:slave_tags) do
     MachineTag::Set.new(
       JSON.parse(IO.read("/vagrant/cache_dir/machine_tag_cache/#{host_name}/tags.json"))

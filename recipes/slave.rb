@@ -2,7 +2,7 @@
 # Cookbook Name:: rs-mysql
 # Recipe:: slave
 #
-# Copyright (C) 2013 RightScale, Inc.
+# Copyright (C) 2014 RightScale, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -59,7 +59,6 @@ mysql_connection_info = {
 }
 
 # Stop the slave
-# TODO: v13 runs this twice. Do we still need to do this? If we need to, we can use `retries` and `retry_delay`.
 #
 mysql_database 'stop slave' do
   database_name 'mysql'

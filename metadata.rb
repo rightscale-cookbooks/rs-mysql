@@ -19,9 +19,9 @@ recipe 'rs-mysql::slave', 'Sets up a MySQL slave server'
 
 attribute 'rs-mysql/lineage',
   :display_name => 'MySQL Database Backup Lineage',
-  :description => 'The prefix that will be used to name/locate the backup of a particular database.',
+  :description => 'The prefix that will be used to name/locate the backup of the MySQL database server.',
   :required => 'required',
-  :recipes => ['rs-mysql::server']
+  :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
 
 attribute 'rs-mysql/server_usage',
   :display_name => 'Server Usage',
@@ -30,25 +30,25 @@ attribute 'rs-mysql/server_usage',
     " Example: 'dedicated'",
   :default => 'dedicated',
   :required => 'optional',
-  :recipes => ['rs-mysql::server']
+  :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
 
 attribute 'rs-mysql/server_root_password',
   :display_name => 'MySQL Root Password',
   :description => 'The root password for MySQL server. Example: cred:MYSQL_ROOT_PASSWORD',
   :required => 'required',
-  :recipes => ['rs-mysql::server']
+  :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
 
 attribute 'rs-mysql/application_username',
   :display_name => 'MySQL Application Username',
   :description => 'The username of the application user. Example: cred:MYSQL_APPLICATION_USERNAME',
   :required => 'optional',
-  :recipes => ['rs-mysql::server']
+  :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
 
 attribute 'rs-mysql/application_password',
   :display_name => 'MySQL Application Password',
   :description => 'The password of the application user. Example: cred:MYSQL_APPLICATION_PASSWORD',
   :required => 'optional',
-  :recipes => ['rs-mysql::server']
+  :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
 
 attribute 'rs-mysql/application_user_privileges',
   :display_name => 'MySQL Application User Privileges',
@@ -57,16 +57,17 @@ attribute 'rs-mysql/application_user_privileges',
   :required => 'optional',
   :type => 'array',
   :default => [:select, :update, :insert],
-  :recipes => ['rs-mysql::server']
+  :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
 
 attribute 'rs-mysql/application_database_name',
   :display_name => 'MySQL Database Name',
   :description => 'The name of the application database. Example: mydb',
   :required => 'optional',
-  :recipes => ['rs-mysql::server']
+  :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
 
 attribute 'rs-mysql/server_repl_password',
   :display_name => 'MySQL Slave Replication Password',
-  :description => 'The replication password for the slave database. Example cred:MYSQL_REPLICATION_PASSWORD',
+  :description => 'The replication password set on the master database and used by the slave to authenticate and' +
+    ' connect. Example cred:MYSQL_REPLICATION_PASSWORD',
   :required => 'optional',
-  :recipes => ['rs-mysql::server']
+  :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']

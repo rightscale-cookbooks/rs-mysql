@@ -2,7 +2,7 @@
 # Cookbook Name:: rs-mysql
 # Library:: helper
 #
-# Copyright (C) 2013 RightScale, Inc.
+# Copyright (C) 2014 RightScale, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ module RsMysql
       end
     end
 
-    # Performs a mysql query and returns the output of the query.
+    # Performs a mysql query as the root user and returns the output of the query.
     #
     # @param hostname [String] the hostname of server to connect to mysql against
     # @param password [String] the password for the root mysql user
@@ -45,8 +45,8 @@ module RsMysql
     # @return [Hash{String=>String}] the output of the mysql query
     #
     # @example Example usage
-    #     RsMysql::Helper.query('localhost', 'rootpass', 'SHOW SLAVE STATUS')
-    #     > {"Slave_IO_State"=>"Waiting for master to send event", ... }
+    #     RsMysql::Helper.query('localhost', 'rootpass', 'SELECT column1, column2 FROM dbname.tablename LIMIT 1')
+    #     > {"column1" => "Data from column1", "column2" => "Data from column2"}
     #
     def self.query(hostname, password, query_string)
       require 'mysql'
@@ -73,11 +73,12 @@ module RsMysql
         Chef::Log.info 'Skipping slave verification as timeout is set to a negative value'
       else
         Timeout.timeout(timeout) do
-          slave_status = query(hostname, password, 'SHOW SLAVE STATUS')
-          until slave_status["Slave_IO_Running"] == "Yes" && slave_status["Slave_SQL_Running"] == "Yes"
+          loop do
             Chef::Log.info 'Waiting for slave to become functional...'
-            sleep 2
+            # Only sleep after the initial query
+            sleep 2 if defined?(slave_status)
             slave_status = query(hostname, password, 'SHOW SLAVE STATUS')
+            break if slave_status["Slave_IO_Running"] == "Yes" && slave_status["Slave_SQL_Running"] == "Yes"
           end
         end
       end
