@@ -38,11 +38,11 @@ describe "Verify master status" do
 end
 
 describe "Check slave status" do
-  describe "Master_Host matches 173.227.0.5" do
+  describe "Master_Host matches 10.10.3.2" do
     describe command(
       "echo \"SHOW SLAVE STATUS \\G \" | mysql --user=root --password=rootpass"
     ) do
-      it { should return_stdout /Master_Host: 173\.227\.0\.5/ }
+      it { should return_stdout /Master_Host: 10\.10\.3\.2/ }
     end
   end
 
