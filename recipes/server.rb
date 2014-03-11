@@ -21,6 +21,8 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
+# Calculate MySQL tunable attributes based on system memory and server usage type of 'dedicated' or 'shared'.
+# Attributes will be placed in node['mysql']['tunable'] namespace.
 RsMysql::Tuning.tune_attributes(
   node.override['mysql']['tunable'],
   node['memory']['total'],
@@ -33,7 +35,6 @@ node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_root_p
 
 include_recipe 'mysql::server'
 
-
 # Setup collectd mysql plugin
 
 if node['rightscale'] && node['rightscale']['instance_uuid']
@@ -42,6 +43,7 @@ end
 
 log "Installing MySQL collectd plugin"
 
+# On CentOS the MySQL collectd plugin is installed separately
 package "collectd-mysql" do
   only_if { node['platform'] =~ /redhat|centos/ }
 end
@@ -63,7 +65,7 @@ mysql_connection_info = {
   :password => node['rs-mysql']['server_root_password']
 }
 
-# Create the database
+# Create the application database
 mysql_database node['rs-mysql']['application_database_name'] do
   only_if { node['rs-mysql']['application_database_name'] }
   connection mysql_connection_info
