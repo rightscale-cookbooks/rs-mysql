@@ -10,23 +10,23 @@ describe "Verify parameters directly from msyql" do
     expire_logs_days: 10
   }.each do |attribute, value|
     it "parameter #{attribute} should return #{value}" do
-      db.query("select @@global.#{attribute}").entries.first["@@global.#{attribute}"].should == value
+      db.query("SELECT @@global.#{attribute}").entries.first["@@global.#{attribute}"].should == value
     end
   end
 end
 
 describe "Verify replication setup" do
  it "should have 'repl' user created" do
-   db.query("select distinct user from mysql.user").entries.count { |u| u['user'] == 'repl' }.should == 1
+   db.query("SELECT DISTINCT user FROM mysql.user").entries.count { |u| u['user'] == 'repl' }.should == 1
  end
 
  it "repl user should have replication privileges" do
-   db.query("show grants for 'repl'").entries.first['Grants for repl@%'].should =~ /^GRANT REPLICATION SLAVE ON \*\.\* TO \'repl\'/
+   db.query("SHOW GRANTS FOR 'repl'").entries.first['Grants for repl@%'].should =~ /^GRANT REPLICATION SLAVE ON \*\.\* TO \'repl\'/
  end
 end
 
 describe "Verify master status" do
-  let(:query_entries) { db.query('show master status').entries }
+  let(:query_entries) { db.query('SHOW MASTER STATUS').entries }
 
   it "should have entry for mysql-bin file" do
    query_entries[0]['File'].should =~ /^mysql-bin/
