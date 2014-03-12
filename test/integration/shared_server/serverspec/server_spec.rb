@@ -1,3 +1,5 @@
+# Shared Server
+
 require 'spec_helper'
 
 case backend.check_os[:family]

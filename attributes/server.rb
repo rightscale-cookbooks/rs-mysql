@@ -2,7 +2,7 @@
 # Cookbook Name:: rs-mysql
 # Attribute:: server
 #
-# Copyright (C) 2013 RightScale, Inc.
+# Copyright (C) 2014 RightScale, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,6 +24,12 @@ default['rs-mysql']['server_usage'] = 'dedicated'
 
 # The MySQL server's root password
 default['rs-mysql']['server_root_password'] = nil
+
+# The MySQL server's replication password
+default['rs-mysql']['server_repl_password'] = nil
+
+# The MySQL database backup lineage
+default['rs-mysql']['lineage'] = nil
 
 # The MySQL database application username
 default['rs-mysql']['application_username'] = nil

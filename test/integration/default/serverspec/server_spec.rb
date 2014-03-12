@@ -1,4 +1,7 @@
+# Default
+
 require 'spec_helper'
+require 'socket'
 
 mysql_name = ''
 case backend.check_os[:family]
@@ -123,5 +126,43 @@ describe "mysql collectd plugin" do
     describe command("grep User #{collectd_plugin_dir}/mysql.conf") do
       it { should return_stdout /root/ }
     end
+  end
+end
+
+# Verify tags
+describe "Default database tags" do
+  let(:host_name) { Socket.gethostname.split('.').first }
+  let(:default_tags) do
+    MachineTag::Set.new(
+      JSON.parse(IO.read("/vagrant/cache_dir/machine_tag_cache/#{host_name}/tags.json"))
+    )
+  end
+
+  it "should have a UUID of 1111111" do
+    default_tags['server:uuid'].first.value.should eq('1111111')
+  end
+
+  it "should have a public of 10.10.1.1" do
+    default_tags['server:public_ip_0'].first.value.should eq('10.10.1.1')
+  end
+
+  it "should have a bind port of 3306" do
+    default_tags['database:bind_port'].first.value.should eq('3306')
+  end
+
+  it "should have a bind IP address of 10.0.2.15" do
+    default_tags['database:bind_ip_address'].first.value.should eq('10.0.2.15')
+  end
+
+  it "should have 4 database specific entries" do
+    default_tags['database'].length.should eq(4)
+  end
+
+  it "should be active" do
+    default_tags['database:active'].first.value.should be_true
+  end
+
+  it "should have a lineage of lineage" do
+    default_tags['database:lineage'].first.value.should eq('lineage')
   end
 end

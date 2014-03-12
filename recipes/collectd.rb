@@ -1,6 +1,6 @@
 #
-# Cookbook Name:: fake
-# Recipe:: database_mysql
+# Cookbook Name:: rs-mysql
+# Recipe:: collectd
 #
 # Copyright (C) 2014 RightScale, Inc.
 #
@@ -8,7 +8,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-# http://www.apache.org/licenses/LICENSE-2.0
+#    http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,15 +17,22 @@
 # limitations under the License.
 #
 
-include_recipe 'database::mysql'
-
-# Obtain the mysql dump file
-cookbook_file '/tmp/mysql.dump' do
-  source 'mysql.dump'
+marker 'recipe_start_rightscale' do
+  template 'rightscale_audit_entry.erb'
 end
 
-# Import the mysql dump
-execute 'import mysql dump' do
-  command "cat /tmp/mysql.dump | mysql --user=root -b #{node['fake']['database_name']}" +
-    " --password=#{node['mysql']['server_root_password']}"
+log 'Installing MySQL collectd plugin...'
+
+package 'collectd-mysql' do
+  only_if { node['platform_family'] == 'rhel' }
+end
+
+include_recipe 'collectd::default'
+
+collectd_plugin 'mysql' do
+  options({
+    'Host' => 'localhost',
+    'User' => 'root',
+    'Password' => node['mysql']['server_root_password']
+  })
 end
