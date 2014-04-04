@@ -75,7 +75,9 @@ Vagrant.configure("2") do |config|
     master.vm.provision :chef_solo do |chef|
       chef.json = {
         :cloud => {
-          :private_ips => ['33.33.33.10']
+          :provider => 'vagrant',
+          :private_ips => ['33.33.33.10'],
+          :local_ipv4 => '33.33.33.10'
         },
         :'rs-mysql' => {
           :lineage => 'lineage',
@@ -95,22 +97,24 @@ Vagrant.configure("2") do |config|
         #"recipe[yum::epel]",
         "recipe[rs-mysql::master]",
         #"recipe[rs-mysql::slave]",
-        "recipe[fake::database_mysql]"
+        "recipe[fake::database_mysql]",
       ]
 
       chef.arguments = "--logfile /var/log/chef-solo.log --log_level debug"
     end
   end
 
-  config.vm.define :slave do |slave|
+  config.vm.define :slave_1 do |slave|
     slave.vm.network :private_network, ip: '33.33.33.11'
 
-    slave.vm.hostname = 'rs-mysql-slave'
+    slave.vm.hostname = 'rs-mysql-slave-1'
 
     slave.vm.provision :chef_solo do |chef|
       chef.json = {
         :cloud => {
-          :private_ips => ['33.33.33.11']
+          :provider => 'vagrant',
+          :private_ips => ['33.33.33.11'],
+          :local_ipv4 => '33.33.33.11'
         },
         :'rs-mysql' => {
           :lineage => 'lineage',
@@ -128,8 +132,8 @@ Vagrant.configure("2") do |config|
       chef.run_list = [
         "recipe[apt::default]",
         #"recipe[yum::epel]",
-        "recipe[rs-mysql::slave]"
-        #"recipe[rs-mysql::master]"
+        "recipe[rs-mysql::slave]",
+        #"recipe[rs-mysql::master]",
       ]
 
       chef.arguments = "--logfile /var/log/chef-solo.log --log_level debug"
@@ -144,7 +148,9 @@ Vagrant.configure("2") do |config|
     slave.vm.provision :chef_solo do |chef|
       chef.json = {
         :cloud => {
-          :private_ips => ['33.33.33.12']
+          :provider => 'vagrant',
+          :private_ips => ['33.33.33.12'],
+          :local_ipv4 => '33.33.33.12'
         },
         :'rs-mysql' => {
           :lineage => 'lineage',

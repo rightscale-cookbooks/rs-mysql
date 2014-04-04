@@ -73,10 +73,11 @@ module RsMysql
         Chef::Log.info 'Skipping slave verification as timeout is set to a negative value'
       else
         Timeout.timeout(timeout) do
+          slave_status = nil
           loop do
             Chef::Log.info 'Waiting for slave to become functional...'
             # Only sleep after the initial query
-            sleep 2 if defined?(slave_status)
+            sleep 2 if slave_status
             slave_status = query(hostname, password, 'SHOW SLAVE STATUS')
             break if slave_status["Slave_IO_Running"] == "Yes" && slave_status["Slave_SQL_Running"] == "Yes"
           end
