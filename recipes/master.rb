@@ -48,7 +48,7 @@ end
 mysql_connection_info = {
   :host => 'localhost',
   :username => 'root',
-  :password => node['rs-mysql']['server_root_password']
+  :password => node['rs-mysql']['server_root_password'],
 }
 
 mysql_database 'stop slave IO thread' do
@@ -58,11 +58,25 @@ mysql_database 'stop slave IO thread' do
   action :query
 end
 
+ruby_block 'wait for relay log read' do
+  block do
+    RsMysql::Helper.wait_for_relay_log_read(mysql_connection_info)
+  end
+end
+
 mysql_database 'stop slave' do
   database_name 'mysql'
   connection mysql_connection_info
   sql 'STOP SLAVE'
   action :query
+end
+
+mysql_database 'reset slave' do
+  database_name 'mysql'
+  connection mysql_connection_info
+  sql 'RESET SLAVE'
+  action :query
+  notifies :restart, "service[#{node['mysql']['server']['service_name'] || 'mysql'}]"
 end
 
 # Reset the master so the bin logs don't have information about the system tables that get created during the MySQL

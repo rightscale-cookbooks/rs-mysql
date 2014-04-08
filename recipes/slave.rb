@@ -65,8 +65,26 @@ mysql_connection_info = {
   :password => node['rs-mysql']['server_root_password']
 }
 
-# Stop the slave
-#
+mysql_database 'set global read only' do
+  database_name 'mysql'
+  connection mysql_connection_info
+  sql 'SET GLOBAL READ_ONLY=1'
+  action :query
+end
+
+mysql_database 'stop slave IO thread' do
+  database_name 'mysql'
+  connection mysql_connection_info
+  sql 'STOP SLAVE IO_THREAD'
+  action :query
+end
+
+ruby_block 'wait for relay log read' do
+  block do
+    RsMysql::Helper.wait_for_relay_log_read(mysql_connection_info)
+  end
+end
+
 mysql_database 'stop slave' do
   database_name 'mysql'
   connection mysql_connection_info
@@ -94,10 +112,6 @@ end
 # Verify if the slave is functional. See libraries/helper.rb for the definition of the verify_slave_fuctional method.
 ruby_block 'verify slave running' do
   block do
-    RsMysql::Helper.verify_slave_functional(
-      'localhost',
-      node['rs-mysql']['server_root_password'],
-      node['rs-mysql']['slave_functional_timeout']
-    )
+    RsMysql::Helper.verify_slave_functional(mysql_connection_info, node['rs-mysql']['slave_functional_timeout'])
   end
 end

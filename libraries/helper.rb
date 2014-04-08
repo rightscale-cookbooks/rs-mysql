@@ -36,22 +36,26 @@ module RsMysql
       end
     end
 
-    # Performs a mysql query as the root user and returns the output of the query.
+    # Performs a mysql query and returns the output of the query.
     #
-    # @param hostname [String] the hostname of server to connect to mysql against
-    # @param password [String] the password for the root mysql user
+    # @param connection_info [Hash{Symbol, String}] MySQL connection information
     # @param query_string [String] the mysql query string to run
     #
     # @return [Hash{String=>String}] the output of the mysql query
     #
     # @example Example usage
-    #     RsMysql::Helper.query('localhost', 'rootpass', 'SELECT column1, column2 FROM dbname.tablename LIMIT 1')
+    #     connection_info {
+    #       host: 'localhost',
+    #       username: 'root',
+    #       password: 'rootpass',
+    #     }
+    #     RsMysql::Helper.query(connection_info, 'SELECT column1, column2 FROM dbname.tablename LIMIT 1')
     #     > {"column1" => "Data from column1", "column2" => "Data from column2"}
     #
-    def self.query(hostname, password, query_string)
+    def self.query(connection_info, query_string)
       require 'mysql'
-      con = Mysql.new(hostname, 'root', password)
-      Chef::Log.info "Performing query #{query_string} on #{hostname}..."
+      con = Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])
+      Chef::Log.info "Performing query #{query_string} on #{connection_info[:host]}..."
       result = con.query(query_string)
       result.fetch_hash if result
     end
@@ -60,13 +64,12 @@ module RsMysql
     # output of SHOW SLAVE STATUS query. This verification is done with a sleep of 2 seconds and a configurable
     # timeout.
     #
-    # @param hostname [String] the hostname of the server to connect to mysql against
-    # @param password [String] the password of the root mysql user
+    # @param connection_info [Hash{Symbol, String}] MySQL connection information
     # @param timeout [Integer] the number of seconds to use for timeout
     #
     # @raise [Timeout::Error] if the slave is not functional after the specified timeout
     #
-    def self.verify_slave_functional(hostname, password, timeout)
+    def self.verify_slave_functional(connection_info, timeout)
       Chef::Log.info "Timeout is set to: #{timeout.inspect}"
       # Verify slave functional only if timeout is a positive value
       if timeout && timeout < 0
@@ -78,11 +81,43 @@ module RsMysql
             Chef::Log.info 'Waiting for slave to become functional...'
             # Only sleep after the initial query
             sleep 2 if slave_status
-            slave_status = query(hostname, password, 'SHOW SLAVE STATUS')
+            slave_status = query(connection_info, 'SHOW SLAVE STATUS')
             break if slave_status["Slave_IO_Running"] == "Yes" && slave_status["Slave_SQL_Running"] == "Yes"
           end
         end
       end
+    end
+
+    # Waits for slaves to finish reading relay logs before switching the master or promoting.
+    #
+    # @param connection_info [Hash{Symbol, String}] MySQL connection information
+    #
+    def self.wait_for_relay_log_read(connection_info)
+      Chef::Log.info 'Waiting for slave to read relay log...'
+
+      require 'mysql'
+      connection = Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])
+      slave_status = connection.query('SHOW SLAVE STATUS').fetch_hash
+
+      Chef::Log.info "Slave IO state: #{(slave_status && slave_status['Slave_IO_State']).inspect}"
+
+      if slave_status && slave_status['Slave_IO_State'] != ''
+        loop do
+          read_all = false
+          connection.query('SHOW PROCESSLIST').each_hash do |item|
+            Chef::Log.info "Process state: #{item['Id']}: #{item['State'].inspect}"
+
+            if item['State'] =~ /has read all relay log/i
+              read_all = true
+              break
+            end
+          end
+          break if read_all
+          sleep 2
+        end
+      end
+
+      Chef::Log.info 'Slave relay log read.'
     end
   end
 end
