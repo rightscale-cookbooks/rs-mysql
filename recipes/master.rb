@@ -26,6 +26,7 @@ Chef::Log.info "Overriding mysql/tunable/read_only to 'false'..."
 node.override['mysql']['tunable']['read_only'] = false
 
 include_recipe 'rs-mysql::default'
+include_recipe 'dns'
 
 rightscale_tag_database node['rs-mysql']['lineage'] do
   role 'slave'
@@ -97,7 +98,7 @@ mysql_database 'reset master' do
 end
 
 # Create/update DNS records only if all these rs-mysql/dns/* attributes are set
-missing_dns_creds = RsMysql::Helper.find_missing_dns_credentials
+missing_dns_creds = RsMysql::Helper.find_missing_dns_credentials(node)
 if missing_dns_creds.empty?
   # Get the dns name and domain name from the FQDN. Split the FQDN into 2 parts
   dns_name, domain_name = node['rs-mysql']['dns']['master_fqdn'].split('.', 2)
