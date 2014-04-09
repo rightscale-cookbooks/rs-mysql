@@ -74,9 +74,17 @@ end
 mysql_database 'reset slave' do
   database_name 'mysql'
   connection mysql_connection_info
-  sql 'RESET SLAVE'
+
+  # With MySQL 5.1 (which is the default on CentOS 6.X), slave reset doesn't fully clean up until after a restart.
+  # MySQL 5.5 introduced the RESET SLAVE ALL command which does the full cleanup without restarting.
+  if node['platform_family'] == 'rhel'
+    sql 'RESET SLAVE'
+    notifies :restart, 'service[mysql-start]'
+  else
+    sql 'RESET SLAVE ALL'
+  end
+
   action :query
-  notifies :restart, "service[#{node['mysql']['server']['service_name'] || 'mysql'}]"
 end
 
 # Reset the master so the bin logs don't have information about the system tables that get created during the MySQL
