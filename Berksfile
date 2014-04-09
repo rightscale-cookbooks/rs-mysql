@@ -4,7 +4,7 @@ metadata
 
 cookbook 'build-essential', '~> 1.4.4'
 cookbook 'collectd', github: 'EfrainOlivares/chef-collectd', branch: 'generalize_install_for_both_centos_and_ubuntu'
-cookbook 'mysql', github: 'arangamani-cookbooks/mysql', branch: 'COOK-2100'
+cookbook 'mysql', github: 'arangamani-cookbooks/mysql', branch: 'rs-fixes'
 
 group :integration do
   cookbook 'apt', '~> 2.3.0'
