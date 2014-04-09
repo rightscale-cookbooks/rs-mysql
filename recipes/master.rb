@@ -26,6 +26,7 @@ Chef::Log.info "Overriding mysql/tunable/read_only to 'false'..."
 node.override['mysql']['tunable']['read_only'] = false
 
 include_recipe 'rs-mysql::default'
+include_recipe 'dns'
 
 rightscale_tag_database node['rs-mysql']['lineage'] do
   role 'slave'
@@ -94,4 +95,23 @@ mysql_database 'reset master' do
   connection mysql_connection_info
   sql 'RESET MASTER'
   action :query
+end
+
+# Create/update DNS records only if all these attributes are set
+if node['rs-mysql']['master_fqdn'] && node['rs-mysql']['dns_user'] && node['rs-mysql']['dns_password']
+  # Get the dns name and domain name from the FQDN. Split the FQDN into 2 parts
+  dns_name, domain_name = node['rs-mysql']['master_fqdn'].split('.', 2)
+
+  log "Setting DNS entry for the master database server FQDN #{node['rs-mysql']['master_fqdn']}..."
+  dns dns_name do
+    provider 'dns_dnsmadeeasy_api20'
+    domain domain_name
+    credentials(
+      :dnsmadeeasy_api_key => node['rs-mysql']['dns_user'],
+      :dnsmadeeasy_secret_key => node['rs-mysql']['dns_password']
+    )
+    entry_value node['mysql']['bind_address']
+    type node['dns']['entry']['type']
+    ttl node['dns']['entry']['ttl']
+  end
 end

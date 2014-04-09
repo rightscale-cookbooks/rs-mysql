@@ -11,6 +11,7 @@ depends 'database', '~> 1.5.2'
 depends 'mysql', '~> 4.0.18'
 depends 'collectd', '~> 1.1.0'
 depends 'rightscale_tag', '~> 1.0.1'
+depends 'dns'
 
 recipe 'rs-mysql::default', 'Sets up a standalone MySQL server'
 recipe 'rs-mysql::collectd', 'Sets up collectd monitoring for MySQL server'
@@ -71,3 +72,21 @@ attribute 'rs-mysql/server_repl_password',
     ' connect. Example cred:MYSQL_REPLICATION_PASSWORD',
   :required => 'optional',
   :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
+
+attribute 'rs-mysql/master_fqdn',
+  :display_name => 'MySQL Database FQDN',
+  :description => 'The fully qualified domain name of the MySQL master database server.',
+  :required => 'optional',
+  :recipes => ['rs-mysql::master']
+
+attribute 'rs-mysql/dns_user',
+  :display_name => 'DNS User',
+  :description => 'The user name to access and modify the DNS records.',
+  :required => 'optional',
+  :recipes => ['rs-mysql::master']
+
+attribute 'rs-mysql/dns_password',
+  :display_name => 'DNS Password',
+  :description => 'The password to access and modify the DNS records.',
+  :required => 'optional',
+  :recipes => ['rs-mysql::master']
