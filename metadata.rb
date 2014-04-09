@@ -11,7 +11,7 @@ depends 'database', '~> 1.5.2'
 depends 'mysql', '~> 4.0.18'
 depends 'collectd', '~> 1.1.0'
 depends 'rightscale_tag', '~> 1.0.1'
-depends 'dns'
+depends 'dns', '~> 1.0.3'
 
 recipe 'rs-mysql::default', 'Sets up a standalone MySQL server'
 recipe 'rs-mysql::collectd', 'Sets up collectd monitoring for MySQL server'
