@@ -43,11 +43,14 @@ default['rs-mysql']['application_user_privileges'] = [:select, :update, :insert]
 # The name of MySQL database
 default['rs-mysql']['application_database_name'] = nil
 
+# MySQL bind IP type - 'private' or 'public'
+default['rs-mysql']['bind_ip_type'] = 'private'
+
 # The fully-qualified domain name of the master database server
 default['rs-mysql']['master_fqdn'] = nil
 
-# The DNS user name to create/update DNS records
-default['rs-mysql']['dns_user'] = nil
+# The DNS user key to create/update DNS records
+default['rs-mysql']['dns']['user_key'] = nil
 
-# The DNS password to create/update DNS records
-default['rs-mysql']['dns_password'] = nil
+# The DNS secret key to create/update DNS records
+default['rs-mysql']['dns']['secret_key'] = nil

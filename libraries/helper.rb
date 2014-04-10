@@ -36,6 +36,55 @@ module RsMysql
       end
     end
 
+    # Gets the IP address that the MySQL server will bind to.
+    #
+    # @param node [Chef::Node] the chef node
+    #
+    # @return [String] the bind IP address
+    #
+    # @raise [RuntimeError] if the IP address type is not either 'public' or 'private' or
+    #   if an IP of a particular type cannot be found
+    #
+    def self.get_bind_ip_address(node)
+      case node['rs-mysql']['bind_ip_type']
+      when "private"
+        if node['cloud']['private_ips'].nil? || node['cloud']['private_ips'].empty?
+          raise 'Cannot find private IP of the server!'
+        end
+
+        node['cloud']['private_ips'].first
+      when "public"
+        if node['cloud']['public_ips'].nil? || node['cloud']['public_ips'].empty?
+          raise 'Cannot find public IP of the server!'
+        end
+
+        node['cloud']['public_ips'].first
+      else
+        raise "Unknown IP address type '#{node['rs-mysql']['bind_ip_type']}'!" +
+          " The IP address type must be either 'public' or 'private'."
+      end
+    end
+
+    # Performs a mysql query as the root user and returns the output of the query.
+    #
+    # @param hostname [String] the hostname of server to connect to mysql against
+    # @param password [String] the password for the root mysql user
+    # @param query_string [String] the mysql query string to run
+    #
+    # @return [Hash{String=>String}] the output of the mysql query
+    #
+    # @example Example usage
+    #     RsMysql::Helper.query('localhost', 'rootpass', 'SELECT column1, column2 FROM dbname.tablename LIMIT 1')
+    #     > {"column1" => "Data from column1", "column2" => "Data from column2"}
+    #
+    def self.query(hostname, password, query_string)
+      require 'mysql'
+      con = Mysql.new(hostname, 'root', password)
+      Chef::Log.info "Performing query #{query_string} on #{hostname}..."
+      result = con.query(query_string)
+      result.fetch_hash if result
+    end
+
     # Verifies if the slave server is functional by checking the 'Slave_IO_Running' and 'Slave_SQL_Running' in the
     # output of SHOW SLAVE STATUS query. This verification is done with a sleep of 2 seconds and a configurable
     # timeout.

@@ -25,8 +25,13 @@ end
 Chef::Log.info "Overriding mysql/tunable/read_only to 'false'..."
 node.override['mysql']['tunable']['read_only'] = false
 
+# Override the mysql/bind_address attribute with the private IP of the server since
+# node['cloud']['local_ipv4'] returns an inconsistent type on AWS (String) and Google (Array) clouds
+bind_ip_address = RsMysql::Helper.get_bind_ip_address(node)
+Chef::Log.info "Overriding mysql/bind_address to '#{bind_ip_address}'..."
+node.override['mysql']['bind_address'] = bind_ip_address
+
 include_recipe 'rs-mysql::default'
-include_recipe 'dns'
 
 rightscale_tag_database node['rs-mysql']['lineage'] do
   role 'slave'
@@ -98,7 +103,7 @@ mysql_database 'reset master' do
 end
 
 # Create/update DNS records only if all these attributes are set
-if node['rs-mysql']['master_fqdn'] && node['rs-mysql']['dns_user'] && node['rs-mysql']['dns_password']
+if node['rs-mysql']['master_fqdn'] && node['rs-mysql']['dns']['user_key'] && node['rs-mysql']['dns']['secret_key']
   # Get the dns name and domain name from the FQDN. Split the FQDN into 2 parts
   dns_name, domain_name = node['rs-mysql']['master_fqdn'].split('.', 2)
 
@@ -107,11 +112,11 @@ if node['rs-mysql']['master_fqdn'] && node['rs-mysql']['dns_user'] && node['rs-m
     provider 'dns_dnsmadeeasy_api20'
     domain domain_name
     credentials(
-      :dnsmadeeasy_api_key => node['rs-mysql']['dns_user'],
-      :dnsmadeeasy_secret_key => node['rs-mysql']['dns_password']
+      'dnsmadeeasy_api_key' => node['rs-mysql']['dns']['user_key'],
+      'dnsmadeeasy_secret_key' => node['rs-mysql']['dns']['secret_key'],
     )
     entry_value node['mysql']['bind_address']
     type node['dns']['entry']['type']
-    ttl node['dns']['entry']['ttl']
+    ttl 60
   end
 end

@@ -33,6 +33,15 @@ attribute 'rs-mysql/server_usage',
   :required => 'optional',
   :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
 
+attribute 'rs-mysql/bind_ip_type',
+  :display_name => 'Bind IP Interface Type',
+  :description => "The type of IP interface to use for MySQL bind. It can be either" +
+    " 'private' or 'public'.",
+  :default => 'private',
+  :choice => ['public', 'private'],
+  :required => 'optional',
+  :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
+
 attribute 'rs-mysql/server_root_password',
   :display_name => 'MySQL Root Password',
   :description => 'The root password for MySQL server. Example: cred:MYSQL_ROOT_PASSWORD',
@@ -79,14 +88,14 @@ attribute 'rs-mysql/master_fqdn',
   :required => 'optional',
   :recipes => ['rs-mysql::master']
 
-attribute 'rs-mysql/dns_user',
+attribute 'rs-mysql/dns/user_key',
   :display_name => 'DNS User',
-  :description => 'The user name to access and modify the DNS records.',
+  :description => 'The user key to access and modify the DNS records.',
   :required => 'optional',
   :recipes => ['rs-mysql::master']
 
-attribute 'rs-mysql/dns_password',
+attribute 'rs-mysql/dns/secret_key',
   :display_name => 'DNS Password',
-  :description => 'The password to access and modify the DNS records.',
+  :description => 'The secret key to access and modify the DNS records.',
   :required => 'optional',
   :recipes => ['rs-mysql::master']
