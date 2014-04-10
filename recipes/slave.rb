@@ -29,6 +29,12 @@ end
 Chef::Log.info "Overriding mysql/tunable/read_only to 'true'..."
 node.override['mysql']['tunable']['read_only'] = true
 
+# Override the mysql/bind_address attribute with the private IP of the server since
+# node['cloud']['local_ipv4'] returns an inconsistent type on AWS (String) and Google (Array) clouds
+bind_ip_address = RsMysql::Helper.get_bind_ip_address(node)
+Chef::Log.info "Overriding mysql/bind_address to '#{bind_ip_address}'..."
+node.override['mysql']['bind_address'] = bind_ip_address
+
 include_recipe 'rs-mysql::default'
 
 # Find the most recent master database in the deployment

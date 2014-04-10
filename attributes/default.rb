@@ -43,7 +43,7 @@ default['rs-mysql']['application_user_privileges'] = [:select, :update, :insert]
 # The name of MySQL database
 default['rs-mysql']['application_database_name'] = nil
 
-# MySQL bind IP type - 'private' or 'public'
+# MySQL bind network interface - 'private' or 'public'
 default['rs-mysql']['bind_network_interface'] = 'private'
 
 # The fully-qualified domain name of the master database server
