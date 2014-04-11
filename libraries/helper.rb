@@ -42,8 +42,8 @@ module RsMysql
     #
     # @return [String] the bind IP address
     #
-    # @raise [RuntimeError] if the IP address type is not either 'public' or 'private' or
-    #   if an IP of a particular type cannot be found
+    # @raise [RuntimeError] if the network interface is not either 'public' or 'private' or
+    #   if an IP of a particular network interface could not be found
     #
     def self.get_bind_ip_address(node)
       case node['rs-mysql']['bind_network_interface']
