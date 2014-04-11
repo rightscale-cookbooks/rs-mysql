@@ -17,6 +17,6 @@
 # limitations under the License.
 #
 
-# The timeout to use for verifying if the slave is functional. The verification is skipped if this this value is set to
+# The timeout (in seconds) to use for verifying if the slave is functional. The verification is skipped if this this value is set to
 # a negative number.
 default['rs-mysql']['slave_functional_timeout'] = 600
