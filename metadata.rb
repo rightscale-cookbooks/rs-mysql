@@ -90,12 +90,14 @@ attribute 'rs-mysql/master_fqdn',
 
 attribute 'rs-mysql/dns/user_key',
   :display_name => 'DNS User',
-  :description => 'The user key to access and modify the DNS records.',
+  :description => 'The user key to access and modify the DNS records. Currently, only DNSMadeEasy' +
+    ' (v2.0) DNS provider is supported.',
   :required => 'optional',
   :recipes => ['rs-mysql::master']
 
 attribute 'rs-mysql/dns/secret_key',
   :display_name => 'DNS Password',
-  :description => 'The secret key to access and modify the DNS records.',
+  :description => 'The secret key to access and modify the DNS records. Currently, only DNSMadeEasy' +
+    ' (v2.0) DNS provider is supported.',
   :required => 'optional',
   :recipes => ['rs-mysql::master']

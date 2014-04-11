@@ -42,8 +42,10 @@ added to database servers.
 * `node['rs-mysql']['application_user_privileges']` - The application user's privileges.
 * `node['rs-mysql']['application_database_name']` - The name of the application database.
 * `node['rs-mysql']['master_fqdn']` - The fully qualified domain name of the master database.
-* `node['rs-mysql']['dns_user']` - The user name for the DNS provider used to access/modify DNS records.
-* `node['rs-mysql']['dns_password']`- The password for the DNS provider to access/modify DNS records.
+* `node['rs-mysql']['dns']['user_key']` - The user key for the DNS provider to access/modify DNS
+records. Currently, only DNSMadeEasy (API v2.0) DNS provider is supported.
+* `node['rs-mysql']['dns']['secret_key']`- The secret key for the DNS provider to access/modify DNS
+records. Currently, only DNSMadeEasy (API v2.0) DNS provider is supported.
 
 # Recipes
 
@@ -63,7 +65,7 @@ the `mysql/tunable/read_only` to false and includes the `rs-mysql::server` recip
 performs the configuration. The master database specific tags are added to the server and the master is reset.
 The master database can be provided with a fully qualified domain name (FQDN) by setting the
 `node['rs-mysql']['master_fqdn']` attribute. The DNS provider credentials must be set to create/update the DNS
-records in the DNS provider. Currently, only DNSMadeEasy DNS provider is supported.
+records in the DNS provider. Currently, only DNSMadeEasy (v2.0) DNS provider is supported.
 
 ## `rs-mysql::slave`
 
