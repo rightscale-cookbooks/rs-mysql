@@ -27,6 +27,13 @@ node.override['mysql']['tunable']['read_only'] = false
 
 include_recipe 'rs-mysql::default'
 
+rightscale_tag_database node['rs-mysql']['lineage'] do
+  role 'slave'
+  bind_ip_address node['mysql']['bind_address']
+  bind_port node['mysql']['port']
+  action :delete
+end
+
 # Set up the tags for the master server.
 # See https://github.com/rightscale-cookbooks/rightscale_tag#database-servers for more information about the
 # `rightscale_tag_database` resource.
@@ -41,8 +48,44 @@ end
 mysql_connection_info = {
   :host => 'localhost',
   :username => 'root',
-  :password => node['rs-mysql']['server_root_password']
+  :password => node['rs-mysql']['server_root_password'],
 }
+
+mysql_database 'stop slave IO thread' do
+  database_name 'mysql'
+  connection mysql_connection_info
+  sql 'STOP SLAVE IO_THREAD'
+  action :query
+end
+
+ruby_block 'wait for relay log read' do
+  block do
+    RsMysql::Helper.wait_for_relay_log_read(mysql_connection_info)
+  end
+end
+
+mysql_database 'stop slave' do
+  database_name 'mysql'
+  connection mysql_connection_info
+  sql 'STOP SLAVE'
+  action :query
+end
+
+mysql_database 'reset slave' do
+  database_name 'mysql'
+  connection mysql_connection_info
+
+  # With MySQL 5.1 (which is the default on CentOS 6.X), slave reset doesn't fully clean up until after a restart.
+  # MySQL 5.5 introduced the RESET SLAVE ALL command which does the full cleanup without restarting.
+  if node['platform_family'] == 'rhel'
+    sql 'RESET SLAVE'
+    notifies :restart, 'service[mysql-start]'
+  else
+    sql 'RESET SLAVE ALL'
+  end
+
+  action :query
+end
 
 # Reset the master so the bin logs don't have information about the system tables that get created during the MySQL
 # installation.
