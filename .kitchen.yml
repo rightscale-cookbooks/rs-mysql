@@ -33,7 +33,7 @@ suites:
     cloud:
       provider: 'vagrant'
       public_ips: ['10.10.1.1']
-      private_ips: ['10.10.3.3']
+      private_ips: ['10.0.2.15']
     rs-mysql:
       lineage: 'lineage'
       server_root_password: rootpass
@@ -53,7 +53,7 @@ suites:
     cloud:
       provider: 'vagrant'
       public_ips: ['10.10.1.1']
-      private_ips: ['10.10.3.3']
+      private_ips: ['10.0.2.15']
     rs-mysql:
       lineage: 'lineage'
       server_root_password: rootpass
@@ -72,7 +72,7 @@ suites:
     cloud:
       provider: 'vagrant'
       public_ips: ['10.10.1.1']
-      private_ips: ['10.10.3.3']
+      private_ips: ['10.0.2.15']
     rs-mysql:
       lineage: 'lineage'
       server_root_password: rootpass
@@ -92,7 +92,7 @@ suites:
     cloud:
       provider: 'vagrant'
       public_ips: ['10.10.2.2']
-      private_ips: ['10.10.3.3']
+      private_ips: ['10.0.2.15']
     rs-mysql:
       lineage: 'lineage'
       server_root_password: rootpass
