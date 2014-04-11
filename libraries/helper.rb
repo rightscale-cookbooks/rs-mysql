@@ -83,30 +83,6 @@ module RsMysql
       missing_creds
     end
 
-    # Performs a mysql query and returns the output of the query.
-    #
-    # @param connection_info [Hash{Symbol, String}] MySQL connection information
-    # @param query_string [String] the mysql query string to run
-    #
-    # @return [Hash{String=>String}] the output of the mysql query
-    #
-    # @example Example usage
-    #     connection_info {
-    #       host: 'localhost',
-    #       username: 'root',
-    #       password: 'rootpass',
-    #     }
-    #     RsMysql::Helper.query(connection_info, 'SELECT column1, column2 FROM dbname.tablename LIMIT 1')
-    #     > {"column1" => "Data from column1", "column2" => "Data from column2"}
-    #
-    def self.query(connection_info, query_string)
-      require 'mysql'
-      con = Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])
-      Chef::Log.info "Performing query #{query_string} on #{connection_info[:host]}..."
-      result = con.query(query_string)
-      result.fetch_hash if result
-    end
-
     # Verifies if the slave server is functional by checking the 'Slave_IO_Running' and 'Slave_SQL_Running' in the
     # output of SHOW SLAVE STATUS query. This verification is done with a sleep of 2 seconds and a configurable
     # timeout.
