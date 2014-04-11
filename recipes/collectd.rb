@@ -21,12 +21,6 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
-# Setup MySQL collectd plugin
-if node['rightscale'] && node['rightscale']['instance_uuid']
-  Chef::Log.info "Overriding collectd/fqdn to '#{node['rightscale']['instance_uuid']}'..."
-  node.override['collectd']['fqdn'] = node['rightscale']['instance_uuid']
-end
-
 log 'Installing MySQL collectd plugin...'
 
 package 'collectd-mysql' do

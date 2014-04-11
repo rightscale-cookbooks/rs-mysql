@@ -46,7 +46,7 @@ module RsMysql
     #   if an IP of a particular type cannot be found
     #
     def self.get_bind_ip_address(node)
-      case node['rs-mysql']['bind_ip_type']
+      case node['rs-mysql']['bind_network_interface']
       when "private"
         if node['cloud']['private_ips'].nil? || node['cloud']['private_ips'].empty?
           raise 'Cannot find private IP of the server!'
@@ -60,9 +60,27 @@ module RsMysql
 
         node['cloud']['public_ips'].first
       else
-        raise "Unknown IP address type '#{node['rs-mysql']['bind_ip_type']}'!" +
-          " The IP address type must be either 'public' or 'private'."
+        raise "Unknown network interface '#{node['rs-mysql']['bind_network_interface']}'!" +
+          " The network interface must be either 'public' or 'private'."
       end
+    end
+
+    # Finds the missing DNS credentials to set DNS entry for a MySQL server.
+    #
+    # @param node [Chef::Node] the chef node
+    #
+    # @return [Array] the missing DNS credentials
+    #
+    def self.find_missing_dns_credentials(node)
+      missing_creds = []
+
+      ['master_fqdn', 'user_key', 'secret_key'].each do |cred|
+        unless node['rs-mysql']['dns'][cred] && !node['rs-mysql']['dns'][cred].empty?
+          missing_creds << cred
+        end
+      end
+
+      missing_creds
     end
 
     # Performs a mysql query as the root user and returns the output of the query.

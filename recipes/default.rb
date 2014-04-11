@@ -21,7 +21,7 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
-# Override the mysql/bind_address attribute with the private IP of the server since
+# Override the mysql/bind_address attribute with the server IP since
 # node['cloud']['local_ipv4'] returns an inconsistent type on AWS (String) and Google (Array) clouds
 bind_ip_address = RsMysql::Helper.get_bind_ip_address(node)
 Chef::Log.info "Overriding mysql/bind_address to '#{bind_ip_address}'..."
@@ -69,6 +69,12 @@ rightscale_tag_database node['rs-mysql']['lineage'] do
   bind_ip_address node['mysql']['bind_address']
   bind_port node['mysql']['port']
   action :create
+end
+
+# Setup MySQL collectd plugin
+if node['rightscale'] && node['rightscale']['instance_uuid']
+  Chef::Log.info "Overriding collectd/fqdn to '#{node['rightscale']['instance_uuid']}'..."
+  node.override['collectd']['fqdn'] = node['rightscale']['instance_uuid']
 end
 
 # The connection hash to use to connect to MySQL

@@ -33,10 +33,10 @@ attribute 'rs-mysql/server_usage',
   :required => 'optional',
   :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
 
-attribute 'rs-mysql/bind_ip_type',
-  :display_name => 'Bind IP Interface Type',
-  :description => "The type of IP interface to use for MySQL bind. It can be either" +
-    " 'private' or 'public'.",
+attribute 'rs-mysql/bind_network_interface',
+  :display_name => 'MySQL Bind Network Interface',
+  :description => "The network interface to use for MySQL bind. It can be either" +
+    " 'private' or 'public' interface.",
   :default => 'private',
   :choice => ['public', 'private'],
   :required => 'optional',
@@ -82,22 +82,20 @@ attribute 'rs-mysql/server_repl_password',
   :required => 'optional',
   :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
 
-attribute 'rs-mysql/master_fqdn',
+attribute 'rs-mysql/dns/master_fqdn',
   :display_name => 'MySQL Database FQDN',
   :description => 'The fully qualified domain name of the MySQL master database server.',
   :required => 'optional',
   :recipes => ['rs-mysql::master']
 
 attribute 'rs-mysql/dns/user_key',
-  :display_name => 'DNS User',
-  :description => 'The user key to access and modify the DNS records. Currently, only DNSMadeEasy' +
-    ' (v2.0) DNS provider is supported.',
+  :display_name => 'DNS User Key',
+  :description => 'The user key to access/modify the DNS records.',
   :required => 'optional',
   :recipes => ['rs-mysql::master']
 
 attribute 'rs-mysql/dns/secret_key',
-  :display_name => 'DNS Password',
-  :description => 'The secret key to access and modify the DNS records. Currently, only DNSMadeEasy' +
-    ' (v2.0) DNS provider is supported.',
+  :display_name => 'DNS Secret Key',
+  :description => 'The secret key to access/modify the DNS records.',
   :required => 'optional',
   :recipes => ['rs-mysql::master']

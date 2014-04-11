@@ -25,12 +25,6 @@ end
 Chef::Log.info "Overriding mysql/tunable/read_only to 'false'..."
 node.override['mysql']['tunable']['read_only'] = false
 
-# Override the mysql/bind_address attribute with the private IP of the server since
-# node['cloud']['local_ipv4'] returns an inconsistent type on AWS (String) and Google (Array) clouds
-bind_ip_address = RsMysql::Helper.get_bind_ip_address(node)
-Chef::Log.info "Overriding mysql/bind_address to '#{bind_ip_address}'..."
-node.override['mysql']['bind_address'] = bind_ip_address
-
 include_recipe 'rs-mysql::default'
 
 rightscale_tag_database node['rs-mysql']['lineage'] do
@@ -102,12 +96,13 @@ mysql_database 'reset master' do
   action :query
 end
 
-# Create/update DNS records only if all these attributes are set
-if node['rs-mysql']['master_fqdn'] && node['rs-mysql']['dns']['user_key'] && node['rs-mysql']['dns']['secret_key']
+# Create/update DNS records only if all these rs-mysql/dns/* attributes are set
+missing_dns_creds = RsMysql::Helper.find_missing_dns_credentials
+if missing_dns_creds.empty?
   # Get the dns name and domain name from the FQDN. Split the FQDN into 2 parts
-  dns_name, domain_name = node['rs-mysql']['master_fqdn'].split('.', 2)
+  dns_name, domain_name = node['rs-mysql']['dns']['master_fqdn'].split('.', 2)
 
-  log "Setting DNS entry for the master database server FQDN #{node['rs-mysql']['master_fqdn']}..."
+  log "Setting DNS entry for the master database server FQDN #{node['rs-mysql']['dns']['master_fqdn']}..."
   dns dns_name do
     provider 'dns_dnsmadeeasy_api20'
     domain domain_name
@@ -119,4 +114,7 @@ if node['rs-mysql']['master_fqdn'] && node['rs-mysql']['dns']['user_key'] && nod
     type node['dns']['entry']['type']
     ttl 60
   end
+else
+  missing_dns_creds.map! { |cred| "rs-mysql/dns/#{cred}" }
+  log "Following DNS credentials are missing #{missing_dns_creds.join(', ')}! Skipping DNS setting..."
 end
