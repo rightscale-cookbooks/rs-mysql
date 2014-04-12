@@ -73,8 +73,8 @@ describe "Slave database tags" do
     slave_tags['server:public_ip_0'].first.value.should eq('10.10.2.2')
   end
 
-  it "should have a private ip address of 10.10.3.3" do
-    slave_tags['server:private_ip_0'].first.value.should eq('10.10.3.3')
+  it "should have a private ip address of 10.0.2.15" do
+    slave_tags['server:private_ip_0'].first.value.should eq('10.0.2.15')
   end
 
   it "should have a bind port of 3306" do
