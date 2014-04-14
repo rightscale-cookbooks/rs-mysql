@@ -37,8 +37,20 @@ default['rs-mysql']['application_username'] = nil
 # The MySQL database application password
 default['rs-mysql']['application_password'] = nil
 
-# The previleges given to the application user
+# The privileges given to the application user
 default['rs-mysql']['application_user_privileges'] = [:select, :update, :insert]
 
 # The name of MySQL database
 default['rs-mysql']['application_database_name'] = nil
+
+# MySQL bind network interface - 'private' or 'public'
+default['rs-mysql']['bind_network_interface'] = 'private'
+
+# The fully-qualified domain name of the master database server
+default['rs-mysql']['dns']['master_fqdn'] = nil
+
+# The DNS user key to create/update DNS records
+default['rs-mysql']['dns']['user_key'] = nil
+
+# The DNS secret key to create/update DNS records
+default['rs-mysql']['dns']['secret_key'] = nil

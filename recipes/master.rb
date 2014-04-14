@@ -95,3 +95,26 @@ mysql_database 'reset master' do
   sql 'RESET MASTER'
   action :query
 end
+
+# Create/update DNS records only if all these rs-mysql/dns/* attributes are set
+missing_dns_creds = RsMysql::Helper.find_missing_dns_credentials(node)
+if missing_dns_creds.empty?
+  # Get the dns name and domain name from the FQDN. Split the FQDN into 2 parts
+  dns_name, domain_name = node['rs-mysql']['dns']['master_fqdn'].split('.', 2)
+
+  log "Setting DNS entry for the master database server FQDN #{node['rs-mysql']['dns']['master_fqdn']}..."
+  dns dns_name do
+    provider 'dns_dnsmadeeasy_api20'
+    domain domain_name
+    credentials(
+      'dnsmadeeasy_api_key' => node['rs-mysql']['dns']['user_key'],
+      'dnsmadeeasy_secret_key' => node['rs-mysql']['dns']['secret_key'],
+    )
+    entry_value node['mysql']['bind_address']
+    type node['dns']['entry']['type']
+    ttl 60
+  end
+else
+  missing_dns_creds.map! { |cred| "rs-mysql/dns/#{cred}" }
+  log "Following DNS credentials are missing #{missing_dns_creds.join(', ')}! Skipping DNS setting..."
+end

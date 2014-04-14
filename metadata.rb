@@ -11,6 +11,7 @@ depends 'database', '~> 1.5.2'
 depends 'mysql', '~> 4.0.18'
 depends 'collectd', '~> 1.1.0'
 depends 'rightscale_tag', '~> 1.0.1'
+depends 'dns', '~> 0.1.4'
 
 recipe 'rs-mysql::default', 'Sets up a standalone MySQL server'
 recipe 'rs-mysql::collectd', 'Sets up collectd monitoring for MySQL server'
@@ -29,6 +30,15 @@ attribute 'rs-mysql/server_usage',
     " server resources are dedicated to MySQL. In a 'shared' server, MySQL utilizes only half of the resources." +
     " Example: 'dedicated'",
   :default => 'dedicated',
+  :required => 'optional',
+  :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
+
+attribute 'rs-mysql/bind_network_interface',
+  :display_name => 'MySQL Bind Network Interface',
+  :description => "The network interface to use for MySQL bind. It can be either" +
+    " 'private' or 'public' interface.",
+  :default => 'private',
+  :choice => ['public', 'private'],
   :required => 'optional',
   :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
 
@@ -71,3 +81,21 @@ attribute 'rs-mysql/server_repl_password',
     ' connect. Example cred:MYSQL_REPLICATION_PASSWORD',
   :required => 'optional',
   :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
+
+attribute 'rs-mysql/dns/master_fqdn',
+  :display_name => 'MySQL Database FQDN',
+  :description => 'The fully qualified domain name of the MySQL master database server.',
+  :required => 'optional',
+  :recipes => ['rs-mysql::master']
+
+attribute 'rs-mysql/dns/user_key',
+  :display_name => 'DNS User Key',
+  :description => 'The user key to access/modify the DNS records.',
+  :required => 'optional',
+  :recipes => ['rs-mysql::master']
+
+attribute 'rs-mysql/dns/secret_key',
+  :display_name => 'DNS Secret Key',
+  :description => 'The secret key to access/modify the DNS records.',
+  :required => 'optional',
+  :recipes => ['rs-mysql::master']

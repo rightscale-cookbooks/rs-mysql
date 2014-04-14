@@ -36,6 +36,53 @@ module RsMysql
       end
     end
 
+    # Gets the IP address that the MySQL server will bind to.
+    #
+    # @param node [Chef::Node] the chef node
+    #
+    # @return [String] the bind IP address
+    #
+    # @raise [RuntimeError] if the network interface is not either 'public' or 'private' or
+    #   if an IP of a particular network interface could not be found
+    #
+    def self.get_bind_ip_address(node)
+      case node['rs-mysql']['bind_network_interface']
+      when "private"
+        if node['cloud']['private_ips'].nil? || node['cloud']['private_ips'].empty?
+          raise 'Cannot find private IP of the server!'
+        end
+
+        node['cloud']['private_ips'].first
+      when "public"
+        if node['cloud']['public_ips'].nil? || node['cloud']['public_ips'].empty?
+          raise 'Cannot find public IP of the server!'
+        end
+
+        node['cloud']['public_ips'].first
+      else
+        raise "Unknown network interface '#{node['rs-mysql']['bind_network_interface']}'!" +
+          " The network interface must be either 'public' or 'private'."
+      end
+    end
+
+    # Finds the missing DNS credentials to set DNS entry for a MySQL server.
+    #
+    # @param node [Chef::Node] the chef node
+    #
+    # @return [Array] the missing DNS credentials
+    #
+    def self.find_missing_dns_credentials(node)
+      missing_creds = []
+
+      ['master_fqdn', 'user_key', 'secret_key'].each do |cred|
+        unless node['rs-mysql']['dns'][cred] && !node['rs-mysql']['dns'][cred].empty?
+          missing_creds << cred
+        end
+      end
+
+      missing_creds
+    end
+
     # Verifies if the slave server is functional by checking the 'Slave_IO_Running' and 'Slave_SQL_Running' in the
     # output of SHOW SLAVE STATUS query. This verification is done with a sleep of 2 seconds and a configurable
     # timeout.

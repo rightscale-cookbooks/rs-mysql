@@ -21,6 +21,12 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
+# Override the mysql/bind_address attribute with the server IP since
+# node['cloud']['local_ipv4'] returns an inconsistent type on AWS (String) and Google (Array) clouds
+bind_ip_address = RsMysql::Helper.get_bind_ip_address(node)
+Chef::Log.info "Overriding mysql/bind_address to '#{bind_ip_address}'..."
+node.override['mysql']['bind_address'] = bind_ip_address
+
 # Calculate MySQL tunable attributes based on system memory and server usage type of 'dedicated' or 'shared'.
 # Attributes will be placed in node['mysql']['tunable'] namespace.
 RsMysql::Tuning.tune_attributes(

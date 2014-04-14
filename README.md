@@ -41,6 +41,11 @@ added to database servers.
 * `node['rs-mysql']['application_password']` - The database password to be used for the application user.
 * `node['rs-mysql']['application_user_privileges']` - The application user's privileges.
 * `node['rs-mysql']['application_database_name']` - The name of the application database.
+* `node['rs-mysql']['dns']['master_fqdn']` - The fully qualified domain name of the master database.
+* `node['rs-mysql']['dns']['user_key']` - The user key for the DNS provider to access/modify DNS
+records.
+* `node['rs-mysql']['dns']['secret_key']`- The secret key for the DNS provider to access/modify DNS
+records.
 
 # Recipes
 
@@ -58,6 +63,10 @@ the server as a standalone MySQL server.
 This recipe sets up the database to act as the master. It makes sure the database is not read only by overriding
 the `mysql/tunable/read_only` to false and includes the `rs-mysql::server` recipe which installs MySQL and
 performs the configuration. The master database specific tags are added to the server and the master is reset.
+The master database can be provided with a fully qualified domain name (FQDN) by setting the
+`node['rs-mysql']['dns']['master_fqdn']` attribute. The DNS provider credentials
+(`node['rs-mysql']['dns']['user_key']` and `node['rs-mysql']['dns']['secret_key']`) must also be set
+to create/update the DNS records in the DNS provider.
 
 ## `rs-mysql::slave`
 
