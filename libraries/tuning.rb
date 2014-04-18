@@ -23,7 +23,7 @@ module RsMysql
   module Tuning
 
     # The constant multiplied with megabytes to obtain the value in gigabytes
-    GB = 1024
+    GB = 1024 unless const_defined?(:GB)
 
     # Tunes the MySQL attributes based on the available memory and server usage type.
     #

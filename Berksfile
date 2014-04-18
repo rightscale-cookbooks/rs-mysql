@@ -2,6 +2,7 @@ site :opscode
 
 metadata
 
+cookbook 'filesystem', github: 'douglaswth-cookbooks/filesystem_cookbook', branch: 'fsfreeze'
 cookbook 'collectd', github: 'EfrainOlivares/chef-collectd', branch: 'generalize_install_for_both_centos_and_ubuntu'
 cookbook 'mysql', github: 'arangamani-cookbooks/mysql', branch: 'rs-fixes'
 cookbook 'dns', github: 'lopakadelp/dns', branch: 'rightscale_development_v2'

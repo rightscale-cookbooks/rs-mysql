@@ -43,9 +43,13 @@ node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_p
 Chef::Log.info "Overriding mysql/tunable/expire_log_days to '2'"
 node.override['mysql']['tunable']['expire_log_days'] = 2
 
-# The directory that contains the MySQL binary logs.
-Chef::Log.info "Overriding mysql/server/directories/bin_log_dir to '#{node['mysql']['data_dir']}/mysql_binlogs'"
-node.override['mysql']['server']['directories']['bin_log_dir'] = "#{node['mysql']['data_dir']}/mysql_binlogs"
+# The directory that contains the MySQL binary logs. This directory will only be created as part of the initial MySQL
+# installation and setup. If the data directory is changed, this should not be creaed again as the data from
+# /var/lib/mysql will be moved to the new location.
+if node['mysql']['data_dir'] == '/var/lib/mysql'
+  Chef::Log.info "Overriding mysql/server/directories/bin_log_dir to '#{node['mysql']['data_dir']}/mysql_binlogs'"
+  node.override['mysql']['server']['directories']['bin_log_dir'] = "#{node['mysql']['data_dir']}/mysql_binlogs"
+end
 
 Chef::Log.info "Overriding mysql/tunable/log_bin to '#{node['mysql']['data_dir']}/mysql_binlogs/mysql-bin'"
 node.override['mysql']['tunable']['log_bin'] = "#{node['mysql']['data_dir']}/mysql_binlogs/mysql-bin"
@@ -61,6 +65,8 @@ node.override['mysql']['tunable']['server_id'] = server_id
 include_recipe 'mysql::server'
 include_recipe 'database::mysql'
 include_recipe 'rightscale_tag::default'
+include_recipe 'rightscale_volume::default'
+include_recipe 'rightscale_backup::default'
 
 # Setup database tags on the server.
 # See https://github.com/rightscale-cookbooks/rightscale_tag#database-servers for more information about the
