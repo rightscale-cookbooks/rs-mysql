@@ -33,15 +33,15 @@ include_recipe 'rs-mysql::default'
 
 # Find the most recent master database in the deployment
 latest_master = nil
-Chef::Log.info "Finding master database servers with lineage '#{node['rs-mysql']['lineage']}' in the deployment..."
-master_dbs = find_database_servers(node, node['rs-mysql']['lineage'], 'master', {:only_latest_for_role => true})
+Chef::Log.info "Finding master database servers with lineage '#{node['rs-mysql']['backup']['lineage']}' in the deployment..."
+master_dbs = find_database_servers(node, node['rs-mysql']['backup']['lineage'], 'master', {:only_latest_for_role => true})
 if master_dbs.empty?
-  raise "No master database for the lineage '#{node['rs-mysql']['lineage']}' found in the deployment!"
+  raise "No master database for the lineage '#{node['rs-mysql']['backup']['lineage']}' found in the deployment!"
 else
   latest_master = master_dbs.map { |uuid, server_hash| server_hash }.first
 end
 
-rightscale_tag_database node['rs-mysql']['lineage'] do
+rightscale_tag_database node['rs-mysql']['backup']['lineage'] do
   role 'master'
   bind_ip_address node['mysql']['bind_address']
   bind_port node['mysql']['port']
@@ -51,7 +51,7 @@ end
 # Set up tags for slave database.
 # See https://github.com/rightscale-cookbooks/rightscale_tag#database-servers for more information about the
 # `rightscale_tag_database` resource.
-rightscale_tag_database node['rs-mysql']['lineage'] do
+rightscale_tag_database node['rs-mysql']['backup']['lineage'] do
   role 'slave'
   bind_ip_address node['mysql']['bind_address']
   bind_port node['mysql']['port']

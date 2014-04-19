@@ -71,7 +71,7 @@ include_recipe 'rightscale_backup::default'
 # Setup database tags on the server.
 # See https://github.com/rightscale-cookbooks/rightscale_tag#database-servers for more information about the
 # `rightscale_tag_database` resource.
-rightscale_tag_database node['rs-mysql']['lineage'] do
+rightscale_tag_database node['rs-mysql']['backup']['lineage'] do
   bind_ip_address node['mysql']['bind_address']
   bind_port node['mysql']['port']
   action :create
