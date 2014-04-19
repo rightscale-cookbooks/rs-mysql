@@ -2,9 +2,14 @@ require_relative 'spec_helper'
 
 describe 'rs-mysql::volume' do
   let(:chef_runner) do
-    ChefSpec::Runner.new do |node|
+    ChefSpec::Runner.new(platform: 'ubuntu', version: '12.04') do |node|
+      node.set['cloud']['private_ips'] = ['10.0.2.15']
+      node.set['memory']['total'] = '1011228kB'
       node.set['rightscale_volume']['data_storage']['device'] = '/dev/sda'
       node.set['rightscale_backup']['data_storage']['devices'] = ['/dev/sda']
+      node.set['rs-mysql']['backup']['lineage'] = 'testing'
+      node.set['rs-mysql']['server_repl_password'] = 'replpass'
+      node.set['rs-mysql']['server_root_password'] = 'rootpass'
     end
   end
   let(:nickname) { chef_run.node['rs-mysql']['device']['nickname'] }
