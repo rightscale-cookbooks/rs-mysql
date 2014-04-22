@@ -17,7 +17,7 @@ Github Repository: [https://github.com/rightscale-cookbooks/rs-mysql](https://gi
 * Cookbooks
   * [marker](http://community.opscode.com/cookbooks/marker)
   * [mysql](http://community.opscode.com/cookbooks/mysql)
-  * [collectd](http://community.opscode.com/cookbooks/collectd)
+  * [collectd](https://github.com/EfrainOlivares/chef-collectd)
   * [database](http://community.opscode.com/cookbooks/database)
   * [rightscale_tag](http://community.opscode.com/cookbooks/rightscale_tag)
 
