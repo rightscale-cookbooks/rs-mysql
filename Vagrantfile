@@ -153,7 +153,7 @@ Vagrant.configure("2") do |config|
           :local_ipv4 => '33.33.33.12'
         },
         :'rs-mysql' => {
-          {
+          :backup => {
             :lineage => 'lineage'
           },
           :server_root_password => 'rootpass',
