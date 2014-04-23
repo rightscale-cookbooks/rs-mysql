@@ -137,4 +137,14 @@ if !node['rs-mysql']['application_username'].to_s.empty? && !node['rs-mysql']['a
       action [:create, :grant]
     end
   end
+
+  # Create the application user to connect from any host
+  mysql_database_user node['rs-mysql']['application_username'] do
+    connection mysql_connection_info
+    password node['rs-mysql']['application_password']
+    database_name node['rs-mysql']['application_database_name']
+    host '%'
+    privileges node['rs-mysql']['application_user_privileges']
+    action [:create, :grant]
+  end
 end
