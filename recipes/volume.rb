@@ -81,7 +81,6 @@ new_mysql_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
 directory new_mysql_dir do
   owner 'mysql'
   group 'mysql'
-  mode '0755'
   action :create
 end
 

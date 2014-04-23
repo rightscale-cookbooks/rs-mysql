@@ -48,6 +48,22 @@ describe 'rs-mysql::volume' do
       expect(chef_run).to mount_filesystem(nickname)
     end
 
+    it 'creates the MySQL directory on the volume' do
+      expect(chef_run).to create_directory('/mnt/storage/mysql').with(
+        owner: 'mysql',
+        group: 'mysql',
+      )
+    end
+
+    it 'overrides the MySQL directory attributes' do
+      expect(chef_run.node['mysql']['data_dir']).to eq('/mnt/storage/mysql')
+      expect(chef_run.node['mysql']['server']['directories']['log_dir']).to eq('/mnt/storage/mysql')
+    end
+
+    it 'includes the default recipe' do
+      expect(chef_run).to include_recipe('rs-mysql::default')
+    end
+
     context 'iops is set to 100' do
       let(:chef_run) do
         chef_runner.node.set['rs-mysql']['device']['iops'] = 100
@@ -90,6 +106,21 @@ describe 'rs-mysql::volume' do
       expect(chef_run).to enable_mount(device)
     end
 
+    it 'creates the MySQL directory on the volume' do
+      expect(chef_run).to create_directory('/mnt/storage/mysql').with(
+        owner: 'mysql',
+        group: 'mysql',
+      )
+    end
+
+    it 'overrides the MySQL directory attributes' do
+      expect(chef_run.node['mysql']['data_dir']).to eq('/mnt/storage/mysql')
+      expect(chef_run.node['mysql']['server']['directories']['log_dir']).to eq('/mnt/storage/mysql')
+    end
+
+    it 'includes the default recipe' do
+      expect(chef_run).to include_recipe('rs-mysql::default')
+    end
     context 'iops is set to 100' do
       let(:chef_run) do
         chef_runner_restore.node.set['rs-mysql']['device']['iops'] = 100
