@@ -95,12 +95,22 @@ end
 if node['rs-mysql']['application_username'] && node['rs-mysql']['application_password']
   raise 'rs-mysql/application_database_name is required for creating user!' unless node['rs-mysql']['application_database_name']
 
-  # Create the application user
+  # Create the application user to connect from localhost
   mysql_database_user node['rs-mysql']['application_username'] do
     connection mysql_connection_info
     password node['rs-mysql']['application_password']
     database_name node['rs-mysql']['application_database_name']
     host 'localhost'
+    privileges node['rs-mysql']['application_user_privileges']
+    action [:create, :grant]
+  end
+
+  # Create the application user to connect from any host
+  mysql_database_user node['rs-mysql']['application_username'] do
+    connection mysql_connection_info
+    password node['rs-mysql']['application_password']
+    database_name node['rs-mysql']['application_database_name']
+    host '%'
     privileges node['rs-mysql']['application_user_privileges']
     action [:create, :grant]
   end
