@@ -74,7 +74,7 @@ end
 describe "can run MySQL queries on the server" do
   describe "'appuser' mysql user is created for localhost and all other hosts" do
     describe command(
-      "echo \"SELECT User,Host FROM mysql.user\" | mysql --user=root --password=rootpass"
+      "echo \"SELECT User, Host FROM mysql.user\" | mysql --user=root --password=rootpass"
     ) do
       it { should return_stdout /appuser\tlocalhost/ }
       it { should return_stdout /appuser\t%/ }
