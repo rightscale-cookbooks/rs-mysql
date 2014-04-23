@@ -1,51 +1,63 @@
 require_relative 'spec_helper'
 
-describe 'rs-mysql::volume' do
+describe 'rs-mysql::stripe' do
   let(:chef_runner) do
-    ChefSpec::Runner.new(platform: 'ubuntu', version: '12.04') do |node|
+    ChefSpec::Runner.new do |node|
       node.set['cloud']['private_ips'] = ['10.0.2.15']
       node.set['memory']['total'] = '1011228kB'
-      node.set['rightscale_volume']['data_storage']['device'] = '/dev/sda'
-      node.set['rightscale_backup']['data_storage']['devices'] = ['/dev/sda']
+      node.set['rightscale_volume']['data_storage_1']['device'] = '/dev/sda'
+      node.set['rightscale_volume']['data_storage_2']['device'] = '/dev/sdb'
+      node.set['rightscale_backup']['data_storage']['devices'] = ['/dev/sda', '/dev/sdb']
       node.set['rs-mysql']['backup']['lineage'] = 'testing'
       node.set['rs-mysql']['server_repl_password'] = 'replpass'
       node.set['rs-mysql']['server_root_password'] = 'rootpass'
     end
   end
   let(:nickname) { chef_run.node['rs-mysql']['device']['nickname'] }
+  let(:nickname_1) { "#{nickname}_1" }
+  let(:nickname_2) { "#{nickname}_2" }
+  let(:volume_group) { "#{nickname.gsub('_', '-')}-vg" }
+  let(:logical_volume) { "#{nickname.gsub('_', '-')}-lv" }
   let(:detach_timeout) do
     chef_runner.converge(described_recipe).node['rs-mysql']['device']['detach_timeout'].to_i
   end
 
   before do
-    stub_command('[ `rs_config --get decommission_timeout` -eq 300 ]').and_return(false)
+    stub_command('[ `rs_config --get decommission_timeout` -eq 600 ]').and_return(false)
   end
 
   context 'rs-mysql/restore/lineage is not set' do
     let(:chef_run) { chef_runner.converge(described_recipe) }
 
     it 'sets the decommission timeout' do
-      expect(chef_run).to run_execute("set decommission timeout to #{detach_timeout}").with(
-        command: "rs_config --set decommission_timeout #{detach_timeout}",
+      expect(chef_run).to run_execute("set decommission timeout to #{detach_timeout * 2}").with(
+        command: "rs_config --set decommission_timeout #{detach_timeout * 2}",
       )
     end
 
-    it 'creates a new volume and attaches it' do
-      expect(chef_run).to create_rightscale_volume(nickname).with(
-        size: 10,
+    it 'creates two new volumes and attaches them' do
+      expect(chef_run).to create_rightscale_volume(nickname_1).with(
+        size: 5,
         options: {},
       )
-      expect(chef_run).to attach_rightscale_volume(nickname)
+      expect(chef_run).to create_rightscale_volume(nickname_2).with(
+        size: 5,
+        options: {},
+      )
+      expect(chef_run).to attach_rightscale_volume(nickname_1)
+      expect(chef_run).to attach_rightscale_volume(nickname_2)
     end
 
-    it 'formats the volume and mounts it' do
-      expect(chef_run).to create_filesystem(nickname).with(
-        fstype: 'ext4',
-        mkfs_options: '-F',
-        mount: '/mnt/storage',
+    it 'creates an LVM volume' do
+      expect(chef_run).to create_lvm_volume_group(volume_group).with(physical_volumes: ['/dev/sda', '/dev/sdb'])
+      expect(chef_run).to create_lvm_logical_volume(logical_volume).with(
+        group: volume_group,
+        size: '100%VG',
+        filesystem: 'ext4',
+        mount_point: '/mnt/storage',
+        stripes: 2,
+        stripe_size: 512,
       )
-      expect(chef_run).to enable_filesystem(nickname)
-      expect(chef_run).to mount_filesystem(nickname)
     end
 
     it 'creates the MySQL directory on the volume' do
@@ -70,12 +82,17 @@ describe 'rs-mysql::volume' do
         chef_runner.converge(described_recipe)
       end
 
-      it 'creates a new volume with iops set to 100 and attaches it' do
-        expect(chef_run).to create_rightscale_volume(nickname).with(
-          size: 10,
+      it 'creates two new volumes with iops set to 100 and attaches them' do
+        expect(chef_run).to create_rightscale_volume(nickname_1).with(
+          size: 5,
           options: {iops: 100},
         )
-        expect(chef_run).to attach_rightscale_volume(nickname)
+        expect(chef_run).to create_rightscale_volume(nickname_2).with(
+          size: 5,
+          options: {iops: 100},
+        )
+        expect(chef_run).to attach_rightscale_volume(nickname_1)
+        expect(chef_run).to attach_rightscale_volume(nickname_2)
       end
     end
   end
@@ -88,22 +105,26 @@ describe 'rs-mysql::volume' do
     let(:chef_run) do
       chef_runner_restore.converge(described_recipe)
     end
-    let(:device) { chef_run.node['rightscale_volume'][nickname]['device'] }
 
-    it 'creates a volume from the backup' do
+    it 'creates volumes from the backup' do
       expect(chef_run).to restore_rightscale_backup(nickname).with(
         lineage: 'testing',
         timestamp: nil,
-        size: 10,
+        size: 5,
         options: {},
       )
     end
 
-    it 'mounts and enables the restored volume' do
-      expect(chef_run).to mount_mount(device).with(
-        fstype: 'ext4',
+    it 'creates an LVM volume' do
+      expect(chef_run).to create_lvm_volume_group(volume_group).with(physical_volumes: ['/dev/sda', '/dev/sdb'])
+      expect(chef_run).to create_lvm_logical_volume(logical_volume).with(
+        group: volume_group,
+        size: '100%VG',
+        filesystem: 'ext4',
+        mount_point: '/mnt/storage',
+        stripes: 2,
+        stripe_size: 512,
       )
-      expect(chef_run).to enable_mount(device)
     end
 
     it 'creates the MySQL directory on the volume' do
@@ -128,11 +149,11 @@ describe 'rs-mysql::volume' do
         chef_runner_restore.converge(described_recipe)
       end
 
-      it 'creates a volume from the backup with iops' do
+      it 'creates volumes from the backup with iops' do
         expect(chef_run).to restore_rightscale_backup(nickname).with(
           lineage: 'testing',
           timestamp: nil,
-          size: 10,
+          size: 5,
           options: {iops: 100},
         )
       end
@@ -145,11 +166,11 @@ describe 'rs-mysql::volume' do
         chef_runner_restore.converge(described_recipe)
       end
 
-      it 'creates a volume from the backup with the timestamp' do
+      it 'creates volumes from the backup with the timestamp' do
         expect(chef_run).to restore_rightscale_backup(nickname).with(
           lineage: 'testing',
           timestamp: timestamp,
-          size: 10,
+          size: 5,
           options: {},
         )
       end
