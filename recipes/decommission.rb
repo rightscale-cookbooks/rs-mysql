@@ -55,9 +55,9 @@ end
 mysql_service_name = node['mysql']['server']['service_name'] || 'mysql'
 
 # Stop the MySQL service to prepare for moving the data back to the /var/lib/mysql directory
-service mysql_service_name do
-  action :stop
-end
+#service mysql_service_name do
+#  action :stop
+#end
 
 mysql_data_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
 
@@ -65,14 +65,25 @@ mysql_data_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
 bash 'move mysql data back from datadir' do
   user 'root'
   code <<-EOH
+    rm -f #{mysql_data_dir}/ib_logfile*
     mv #{mysql_data_dir}/* /var/lib/mysql
   EOH
   only_if '[ `stat -c %h /var/lib/mysql/` -eq 2 ]'
   only_if { ::File.directory?(mysql_data_dir) }
 end
 
-node.override['mysql']['data_dir'] = '/var/lib/mysql'
-include_recipe 'rs-mysql::default'
+# Override mysql cookbook attributes
+node.override['mysql']['tunable']['log_bin'] = false
+# Override the mysql/bind_address attribute with the server IP since
+# node['cloud']['local_ipv4'] returns an inconsistent type on AWS (String) and Google (Array) clouds
+bind_ip_address = RsMysql::Helper.get_bind_ip_address(node)
+Chef::Log.info "Overriding mysql/bind_address to '#{bind_ip_address}'..."
+node.override['mysql']['bind_address'] = bind_ip_address
+node.override['mysql']['server_root_password'] = node['rs-mysql']['server_root_password']
+node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root_password']
+node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password']
+
+include_recipe 'mysql::server'
 
 # Check for the safety attribute first
 if node['rs-mysql']['device']['destroy_on_decommission'] != true &&
