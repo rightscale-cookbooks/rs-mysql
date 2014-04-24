@@ -40,7 +40,7 @@ node.override['mysql']['server_root_password'] = node['rs-mysql']['server_root_p
 node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root_password']
 node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password']
 
-Chef::Log.info "Overriding mysql/tunable/expire_log_days to '2'"
+Chef::Log.info 'Overriding mysql/tunable/expire_log_days to 2'
 node.override['mysql']['tunable']['expire_log_days'] = 2
 
 # The directory that contains the MySQL binary logs. This directory will only be created as part of the initial MySQL
@@ -61,6 +61,35 @@ node.override['mysql']['tunable']['binlog_format'] = 'MIXED'
 server_id = RsMysql::Helper.get_server_ip(node).to_i
 Chef::Log.info "Overriding mysql/tunable/server_id to '#{server_id}'"
 node.override['mysql']['tunable']['server_id'] = server_id
+
+mysql_service_name = node['mysql']['server']['service_name'] || 'mysql'
+
+service mysql_service_name do
+  action :stop
+  only_if do
+    ::File.exists?("#{node['mysql']['data_dir']}/ib_logfile0") &&
+    ::File.size("#{node['mysql']['data_dir']}/ib_logfile0") != RsMysql::Tuning.megabytes_to_bytes(
+      node['mysql']['tunable']['innodb_log_file_size']
+    )
+  end
+end
+
+execute 'delete innodb log files' do
+  command "rm -f #{node['mysql']['data_dir']}/ib_logfile*"
+  only_if do
+    ::File.exists?("#{node['mysql']['data_dir']}/ib_logfile0") &&
+    ::File.size("#{node['mysql']['data_dir']}/ib_logfile0") != RsMysql::Tuning.megabytes_to_bytes(
+      node['mysql']['tunable']['innodb_log_file_size']
+    )
+  end
+end
+
+data_dir = node['mysql']['data_dir']
+
+execute 'update mysql binlog index with new data_dir' do
+  command "sed -i -r -e 's#^.*/(mysql_binlogs/.*)$##{data_dir}/\\1#' '#{data_dir}/mysql_binlogs/mysql-bin.index'"
+  only_if {  ::File.exists?("#{data_dir}/mysql_binlogs/mysql-bin.index") }
+end
 
 include_recipe 'mysql::server'
 include_recipe 'database::mysql'

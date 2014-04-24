@@ -50,15 +50,6 @@ directory '/var/lib/mysql' do
   recursive true
 end
 
-# MySQL service_name is set to 'mysqld' in the node['mysql']['server']['service_name'] attribute for RHEL platform
-# family.
-mysql_service_name = node['mysql']['server']['service_name'] || 'mysql'
-
-# Stop the MySQL service to prepare for moving the data back to the /var/lib/mysql directory
-#service mysql_service_name do
-#  action :stop
-#end
-
 mysql_data_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
 
 # Move the data from the volume to the /var/lib/mysql directory
@@ -73,12 +64,15 @@ bash 'move mysql data back from datadir' do
 end
 
 # Override mysql cookbook attributes
-node.override['mysql']['tunable']['log_bin'] = false
+
 # Override the mysql/bind_address attribute with the server IP since
 # node['cloud']['local_ipv4'] returns an inconsistent type on AWS (String) and Google (Array) clouds
 bind_ip_address = RsMysql::Helper.get_bind_ip_address(node)
 Chef::Log.info "Overriding mysql/bind_address to '#{bind_ip_address}'..."
 node.override['mysql']['bind_address'] = bind_ip_address
+Chef::Log.info 'Overriding mysql/tunable/log_bin to false...'
+node.override['mysql']['tunable']['log_bin'] = false
+Chef::Log.info 'Overriding mysql server passwords...'
 node.override['mysql']['server_root_password'] = node['rs-mysql']['server_root_password']
 node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root_password']
 node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password']

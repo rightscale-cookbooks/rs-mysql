@@ -100,6 +100,17 @@ module RsMysql
       end
     end
 
+    # Given a memory attribute in megabytes as a string, it will return the bytes equivalent.
+    #
+    # @param [String] attr the string attribute in megabytes
+    #
+    # @return [Integer] the value in bytes
+    #
+    def self.megabytes_to_bytes(attr)
+      matched = attr.match(/(\d+)M/)
+      matched[1].to_i * 1024 * 1024 if matched
+    end
+
   private
 
     # Given the memory in either kilobytes as a String or in bytes as an Integer (the formats Ohai returns),
