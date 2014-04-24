@@ -35,6 +35,8 @@ end
 volume_options = {}
 volume_options[:iops] = node['rs-mysql']['device']['iops'] if node['rs-mysql']['device']['iops']
 
+new_mysql_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
+
 if node['rs-mysql']['restore']['lineage'].to_s.empty?
   log "Creating a new volume '#{nickname}' with size #{size}"
   rightscale_volume nickname do
@@ -73,9 +75,16 @@ else
     device lazy { node['rightscale_backup'][nickname]['devices'].first }
     action [:mount, :enable]
   end
-end
 
-new_mysql_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
+  directory '/var/lib/mysql' do
+    recursive true
+    action :delete
+  end
+
+  link '/var/lib/mysql' do
+    to new_mysql_dir
+  end
+end
 
 # Make sure that there is a 'mysql' directory on the mount point of the volume
 directory new_mysql_dir do

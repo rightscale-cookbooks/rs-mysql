@@ -127,6 +127,18 @@ describe 'rs-mysql::stripe' do
       )
     end
 
+    it 'deletes the old MySQL directory' do
+      expect(chef_run).to delete_directory('/var/lib/mysql').with(
+        recursive: true,
+      )
+    end
+
+    it 'creates the MySQL directory symlink' do
+      expect(chef_run).to create_link('/var/lib/mysql').with(
+        to: '/mnt/storage/mysql',
+      )
+    end
+
     it 'creates the MySQL directory on the volume' do
       expect(chef_run).to create_directory('/mnt/storage/mysql').with(
         owner: 'mysql',

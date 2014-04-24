@@ -49,6 +49,8 @@ volume_options[:iops] = node['rs-mysql']['device']['iops'] if node['rs-mysql']['
 # Install packages required for setting up LVM
 include_recipe 'lvm::default'
 
+new_mysql_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
+
 # rs-mysql/restore/lineage is empty, creating new volume(s) and setting up LVM
 if node['rs-mysql']['restore']['lineage'].to_s.empty?
   1.upto(device_count) do |device_num|
@@ -67,6 +69,15 @@ else
     size each_device_size
     options volume_options
     action :restore
+  end
+
+  directory '/var/lib/mysql' do
+    recursive true
+    action :delete
+  end
+
+  link '/var/lib/mysql' do
+    to new_mysql_dir
   end
 end
 
@@ -95,8 +106,6 @@ lvm_logical_volume "#{sanitized_nickname}-lv" do
   stripes device_count
   stripe_size node['rs-mysql']['device']['stripe_size']
 end
-
-new_mysql_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
 
 # Make sure that there is a 'mysql' directory on the mount point of the volume
 directory new_mysql_dir do
