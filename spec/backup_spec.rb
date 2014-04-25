@@ -1,12 +1,38 @@
 require_relative 'spec_helper'
+require 'mysql'
 
 describe 'rs-mysql::backup' do
   let(:chef_run) do
     ChefSpec::Runner.new do |node|
+      node.set['rs-mysql']['server_root_password'] = 'rootpass'
       node.set['rs-mysql']['backup']['lineage'] = 'testing'
     end.converge(described_recipe)
   end
   let(:nickname) { chef_run.node['rs-mysql']['device']['nickname'] }
+  let(:mysql_master_info_json) do
+    <<-EOF.gsub('    ', '').chomp
+    {
+      "file": "mysql-bin.000012",
+      "position": "394"
+    }
+    EOF
+  end
+
+  before do
+    connection = double
+    master_status = double
+    slave_status = double
+    Mysql.stub(:new).with('localhost', 'root', 'rootpass').and_return(connection)
+    allow(connection).to receive(:query).with('SHOW MASTER STATUS').and_return(master_status)
+    allow(connection).to receive(:query).with('SHOW SLAVE STATUS').and_return(slave_status)
+    allow(master_status).to receive(:fetch_hash).and_return({
+      'File' => 'mysql-bin.000012',
+      'Position' => '394',
+      'Binlog_Do_DB' => '',
+      'Binlog_Ignore' => '',
+    })
+    allow(slave_status).to receive(:fetch_hash).and_return(nil)
+  end
 
   it 'sets up chef error handler' do
     expect(chef_run).to include_recipe('chef_handler::default')
@@ -22,6 +48,13 @@ describe 'rs-mysql::backup' do
     expect(chef_run).to query_mysql_database('flush tables with read lock').with(
       database_name: 'mysql',
       sql: 'FLUSH TABLES WITH READ LOCK',
+    )
+  end
+
+  it 'writes the master info JSON file' do
+    expect(chef_run).to create_file('generate master info JSON file').with(
+      content: mysql_master_info_json,
+      path: '/mnt/storage/mysql_master_info.json',
     )
   end
 
@@ -42,6 +75,12 @@ describe 'rs-mysql::backup' do
     expect(chef_run).to unfreeze_filesystem("unfreeze #{nickname}").with(
       label: nickname,
       mount: '/mnt/storage',
+    )
+  end
+
+  it 'deletes the master info JSON file' do
+    expect(chef_run).to delete_file('delete master info JSON file').with(
+      path: '/mnt/storage/mysql_master_info.json',
     )
   end
 

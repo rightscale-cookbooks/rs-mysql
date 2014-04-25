@@ -1,4 +1,4 @@
-require_relative 'spec_helper.rb'
+require_relative 'spec_helper'
 
 describe 'rs-mysql::schedule' do
   context 'rs-mysql/schedule/enable is true' do
