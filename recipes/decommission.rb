@@ -21,72 +21,6 @@ marker "recipe_start_rightscale" do
   template "rightscale_audit_entry.erb"
 end
 
-# TODO: Drop the database before proceeding further
-# The connection hash to use to connect to MySQL
-mysql_connection_info = {
-  :host => 'localhost',
-  :username => 'root',
-  :password => node['rs-mysql']['server_root_password']
-}
-
-# Drop the application database
-mysql_database 'application database' do
-  connection mysql_connection_info
-  database_name node['rs-mysql']['application_database_name']
-  action :drop
-  only_if { node['rs-mysql']['application_database_name'] }
-end
-
-# Delete the link created as /var/lib/mysql
-link '/var/lib/mysql' do
-  action :delete
-  only_if 'test -L /var/lib/mysql'
-end
-
-directory '/var/lib/mysql' do
-  owner 'mysql'
-  group 'mysql'
-  action :create
-  recursive true
-end
-
-mysql_data_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
-
-# Move the data from the volume to the /var/lib/mysql directory
-bash 'move mysql data back from datadir' do
-  user 'root'
-  code <<-EOH
-    mv #{mysql_data_dir}/* /var/lib/mysql
-  EOH
-  only_if '[ `stat -c %h /var/lib/mysql/` -eq 2 ]'
-  only_if { ::File.directory?(mysql_data_dir) }
-end
-
-# Remove innodb logfiles from /var/lib/mysql
-bash 'remove innodb log files' do
-  user 'root'
-  code <<-EOH
-    rm -f /var/lib/mysql/ib_logfile*
-  EOH
-  only_if { ::File.exists?('/var/lib/mysql/ib_logfile0') }
-end
-
-# Override mysql cookbook attributes
-
-# Override the mysql/bind_address attribute with the server IP since
-# node['cloud']['local_ipv4'] returns an inconsistent type on AWS (String) and Google (Array) clouds
-bind_ip_address = RsMysql::Helper.get_bind_ip_address(node)
-Chef::Log.info "Overriding mysql/bind_address to '#{bind_ip_address}'..."
-node.override['mysql']['bind_address'] = bind_ip_address
-Chef::Log.info 'Overriding mysql/tunable/log_bin to false...'
-node.override['mysql']['tunable']['log_bin'] = false
-Chef::Log.info 'Overriding mysql server passwords...'
-node.override['mysql']['server_root_password'] = node['rs-mysql']['server_root_password']
-node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root_password']
-node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password']
-
-include_recipe 'mysql::server'
-
 # Check for the safety attribute first
 if node['rs-mysql']['device']['destroy_on_decommission'] != true &&
   node['rs-mysql']['device']['destroy_on_decommission'] != 'true'
@@ -97,6 +31,65 @@ elsif ['shutting-down:reboot', 'shutting-down:stop'].include?(get_rs_run_state)
   log 'Skipping deletion of volumes as the instance is either rebooting or entering the stop state...'
 # Detach and delete the volumes if the above safety conditions are satisfied
 else
+  # The connection hash to use to connect to MySQL
+  mysql_connection_info = {
+    :host => 'localhost',
+    :username => 'root',
+    :password => node['rs-mysql']['server_root_password']
+  }
+
+  # Drop the application database
+  mysql_database 'drop application database' do
+    connection mysql_connection_info
+    database_name node['rs-mysql']['application_database_name']
+    action :drop
+    only_if { node['rs-mysql']['application_database_name'] }
+  end
+
+  # Delete the link created as /var/lib/mysql
+  link '/var/lib/mysql' do
+    action :delete
+    only_if 'test -L /var/lib/mysql'
+  end
+
+  directory '/var/lib/mysql' do
+    owner 'mysql'
+    group 'mysql'
+    recursive true
+    action :create
+  end
+
+  mysql_data_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
+
+  # Move the data from the volume to the /var/lib/mysql directory
+  bash 'move mysql data back from datadir' do
+    code "mv #{mysql_data_dir}/* /var/lib/mysql"
+    only_if '[ `stat -c %h /var/lib/mysql/` -eq 2 ]'
+    only_if "test -d #{mysql_data_dir}"
+  end
+
+  # Remove innodb logfiles from /var/lib/mysql
+  bash 'remove innodb log files' do
+    code 'rm -f /var/lib/mysql/ib_logfile*'
+    only_if 'test -f /var/lib/mysql/ib_logfile0'
+  end
+
+  # Override mysql cookbook attributes
+
+  # Override the mysql/bind_address attribute with the server IP since
+  # node['cloud']['local_ipv4'] returns an inconsistent type on AWS (String) and Google (Array) clouds
+  bind_ip_address = RsMysql::Helper.get_bind_ip_address(node)
+  Chef::Log.info "Overriding mysql/bind_address to '#{bind_ip_address}'..."
+  node.override['mysql']['bind_address'] = bind_ip_address
+  Chef::Log.info 'Overriding mysql/tunable/log_bin to false...'
+  node.override['mysql']['tunable']['log_bin'] = false
+  Chef::Log.info 'Overriding mysql server passwords...'
+  node.override['mysql']['server_root_password'] = node['rs-mysql']['server_root_password']
+  node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root_password']
+  node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password']
+
+  include_recipe 'mysql::server'
+
   nickname = node['rs-mysql']['device']['nickname']
 
   # If LVM is used, we will have one or more devices with the device nickname appended with the device number. Destroy
