@@ -11,6 +11,23 @@ describe RsMysql::Helper do
     }
   end
 
+  context 'with a MySQL server that is not a master or slave' do
+    before do
+      connection = double
+      master_status = double
+      slave_status = double
+      Mysql.stub(:new).with('localhost', 'root', 'rootpass').and_return(connection)
+      allow(connection).to receive(:query).with('SHOW MASTER STATUS').and_return(master_status)
+      allow(connection).to receive(:query).with('SHOW SLAVE STATUS').and_return(slave_status)
+      allow(master_status).to receive(:fetch_hash).and_return(nil)
+      allow(slave_status).to receive(:fetch_hash).and_return(nil)
+    end
+
+    it 'does not get any MySQL master info' do
+      expect(described_class.get_master_info(mysql_connection_info)).to eq({})
+    end
+  end
+
   context 'with a MySQL master' do
     before do
       connection = double

@@ -166,11 +166,13 @@ module RsMysql
           file: slave_status['Relay_Master_Log_File'],
           position: slave_status['Exec_Master_Log_Pos'],
         }
-      else
+      elsif master_status
         master_info = {
           file: master_status['File'],
           position: master_status['Position'],
         }
+      else
+        master_info = {}
       end
 
       master_info
