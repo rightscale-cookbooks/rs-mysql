@@ -49,6 +49,12 @@ mysql_database 'flush tables with read lock' do
   action :query
 end
 
+file 'generate master info JSON file' do
+  content lazy { JSON.pretty_generate(get_master_info(mysql_connection_info)) }
+  path "#{node['rs-mysql']['device']['mount_point']}/mysql_master_info.json"
+  action :create
+end
+
 nickname = node['rs-mysql']['device']['nickname']
 
 log "Freezing the filesystem mounted on #{node['rs-mysql']['device']['mount_point']}"
@@ -72,6 +78,11 @@ filesystem "unfreeze #{nickname}" do
   label nickname
   mount node['rs-mysql']['device']['mount_point']
   action :unfreeze
+end
+
+file 'delete master info JSON file' do
+  path "#{node['rs-mysql']['device']['mount_point']}/mysql_master_info.json"
+  action :delete
 end
 
 mysql_database 'unlock tables' do

@@ -148,7 +148,32 @@ module RsMysql
       Chef::Log.info 'Slave relay log read.'
     end
 
-        # Given a mount point this method will inspect if an LVM is used for the device mounted at the mount point.
+    def self.get_master_info(connection_info)
+      require 'mysql'
+      connection = Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])
+      master_status = connection.query('SHOW MASTER STATUS').fetch_hash
+      slave_status = connection.query('SHOW SLAVE STATUS').fetch_hash
+
+      if slave_status
+        master_info = {
+          file: slave_status['Relay_Master_Log_File'],
+          position: slave_status['Exec_Master_Log_Pos'],
+        }
+      else
+        master_info = {
+          file: master_status['File'],
+          position: master_status['Position'],
+        }
+      end
+
+      master_info
+    end
+
+    def get_master_info(connection_info)
+      RsMysql::Helper.get_master_info(connection_info)
+    end
+
+    # Given a mount point this method will inspect if an LVM is used for the device mounted at the mount point.
     #
     # @param mount_point [String] the mount point of the device
     #
@@ -301,3 +326,4 @@ end
 # Include this helper to recipes
 ::Chef::Recipe.send(:include, RsMysql::Helper)
 ::Chef::Resource::RubyBlock.send(:include, RsMysql::Helper)
+::Chef::Resource::File.send(:include, RsMysql::Helper)
