@@ -92,13 +92,26 @@ mysql_database 'stop slave' do
   action :query
 end
 
+mysql_master_info_file = "#{node['rs-mysql']['device']['mount_point']}/mysql_master_info.json"
+if ::File.exists?(mysql_master_info_file)
+  mysql_master_info = JSON.parse(::File.read(mysql_master_info_file), :symbolize_names => true)
+end
+
+log "MySQL master info: #{mysql_master_info.inspect}"
+
+change_master = "CHANGE MASTER TO" +
+  " MASTER_HOST='#{latest_master['bind_ip_address']}'," +
+  " MASTER_USER='repl'," +
+  " MASTER_PASSWORD='#{node['rs-mysql']['server_repl_password']}'"
+
+if mysql_master_info && mysql_master_info.has_key?(:file) && mysql_master_info.has_key?(:position)
+  change_master << ", MASTER_LOG_FILE='#{mysql_master_info[:file]}', MASTER_LOG_POS=#{mysql_master_info[:position]}"
+end
+
 mysql_database 'change master host' do
   database_name 'mysql'
   connection mysql_connection_info
-  sql "CHANGE MASTER TO" +
-    " MASTER_HOST='#{latest_master['bind_ip_address']}'," +
-    " MASTER_USER='repl'," +
-    " MASTER_PASSWORD='#{node['rs-mysql']['server_repl_password']}'"
+  sql change_master
   action :query
 end
 
@@ -114,4 +127,9 @@ ruby_block 'verify slave running' do
   block do
     RsMysql::Helper.verify_slave_functional(mysql_connection_info, node['rs-mysql']['slave_functional_timeout'])
   end
+end
+
+file mysql_master_info_file do
+  backup false
+  action :delete
 end

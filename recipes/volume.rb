@@ -70,6 +70,10 @@ else
     action :restore
   end
 
+  directory node['rs-mysql']['device']['mount_point'] do
+    recursive true
+  end
+
   mount node['rs-mysql']['device']['mount_point'] do
     fstype node['rs-mysql']['device']['filesystem']
     device lazy { node['rightscale_backup'][nickname]['devices'].first }

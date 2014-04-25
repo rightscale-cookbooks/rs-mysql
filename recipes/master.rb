@@ -96,6 +96,13 @@ mysql_database 'reset master' do
   action :query
 end
 
+mysql_master_info_file = "#{node['rs-mysql']['device']['mount_point']}/mysql_master_info.json"
+
+file mysql_master_info_file do
+  backup false
+  action :delete
+end
+
 # Create/update DNS records only if all these rs-mysql/dns/* attributes are set
 missing_dns_creds = RsMysql::Helper.find_missing_dns_credentials(node)
 if missing_dns_creds.empty?
