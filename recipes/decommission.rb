@@ -56,11 +56,19 @@ mysql_data_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
 bash 'move mysql data back from datadir' do
   user 'root'
   code <<-EOH
-    rm -f #{mysql_data_dir}/ib_logfile*
     mv #{mysql_data_dir}/* /var/lib/mysql
   EOH
   only_if '[ `stat -c %h /var/lib/mysql/` -eq 2 ]'
   only_if { ::File.directory?(mysql_data_dir) }
+end
+
+# Remove innodb logfiles from /var/lib/mysql
+bash 'remove innodb log files' do
+  user 'root'
+  code <<-EOH
+    rm -f /var/lib/mysql/ib_logfile*
+  EOH
+  only_if { ::File.exists?('/var/lib/mysql/ib_logfile0') }
 end
 
 # Override mysql cookbook attributes
