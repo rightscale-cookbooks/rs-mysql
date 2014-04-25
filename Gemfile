@@ -13,4 +13,5 @@ group :integration do
   gem 'strainer', '~> 3.3'
   gem 'chefspec', '~> 3.4.0'
   gem 'travis-lint'
+  gem 'mysql'
 end

@@ -148,6 +148,13 @@ module RsMysql
       Chef::Log.info 'Slave relay log read.'
     end
 
+    # Get the MySQL master info for use in backups.
+    #
+    # @param connection_info [Hash{Symbol, String}] MySQL connection information
+    #
+    # @return [Hash{Symbol => String}] MySQL master info, `:file` is the MySQL binlog file and `:position` is the MySQL
+    #   binlog position
+    #
     def self.get_master_info(connection_info)
       require 'mysql'
       connection = Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])
@@ -169,6 +176,15 @@ module RsMysql
       master_info
     end
 
+    # Get the MySQL master info for use in backups.
+    #
+    # @param connection_info [Hash{Symbol, String}] MySQL connection information
+    #
+    # @return [Hash{Symbol => String}] MySQL master info, `:file` is the MySQL binlog file and `:position` is the MySQL
+    #   binlog position
+    #
+    # @see .get_master_info
+    #
     def get_master_info(connection_info)
       RsMysql::Helper.get_master_info(connection_info)
     end
