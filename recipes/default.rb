@@ -88,7 +88,7 @@ data_dir = node['mysql']['data_dir']
 
 execute 'update mysql binlog index with new data_dir' do
   command "sed -i -r -e 's#^.*/(mysql_binlogs/.*)$##{data_dir}/\\1#' '#{data_dir}/mysql_binlogs/mysql-bin.index'"
-  only_if {  ::File.exists?("#{data_dir}/mysql_binlogs/mysql-bin.index") }
+  only_if { ::File.exists?("#{data_dir}/mysql_binlogs/mysql-bin.index") }
 end
 
 include_recipe 'mysql::server'
