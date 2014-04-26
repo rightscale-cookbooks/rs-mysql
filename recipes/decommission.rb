@@ -103,8 +103,11 @@ else
     logical_volume_device = "/dev/mapper/#{to_dm_name("#{sanitized_nickname}-vg")}-#{to_dm_name("#{sanitized_nickname}-lv")}"
 
     log "Unmounting #{node['rs-mysql']['device']['mount_point']}"
+    # There might still be some open files from the mount point if the database is bigger. Just ignore the failure for
+    # now.
     mount node['rs-mysql']['device']['mount_point'] do
       device logical_volume_device
+      ignore_failure true
       action [:umount, :disable]
     end
 
@@ -126,8 +129,11 @@ else
   else
     # Unmount the volume
     log "Unmounting #{node['rs-mysql']['device']['mount_point']}"
+    # There might still be some open files from the mount point if the database is bigger. Just ignore the failure for
+    # now.
     mount node['rs-mysql']['device']['mount_point'] do
       device lazy { node['rightscale_volume'][nickname]['device'] }
+      ignore_failure true
       action [:umount, :disable]
       only_if { node.attribute?('rightscale_volume') && node['rightscale_volume'].attribute?(nickname) }
     end
