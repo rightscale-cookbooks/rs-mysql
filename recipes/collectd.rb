@@ -21,6 +21,15 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
+# Setup MySQL collectd plugin
+if node['rightscale'] && node['rightscale']['instance_uuid']
+  Chef::Log.info "Overriding collectd/fqdn to '#{node['rightscale']['instance_uuid']}'..."
+  node.override['collectd']['fqdn'] = node['rightscale']['instance_uuid']
+end
+
+chef_gem 'chef-rewind'
+require 'chef/rewind'
+
 log 'Installing MySQL collectd plugin...'
 
 package 'collectd-mysql' do
@@ -29,10 +38,18 @@ end
 
 include_recipe 'collectd::default'
 
+# collectd::default recipe attempts to delete collectd plugins that were not
+# created during the same runlist as this recipe. Some common plugins are installed
+# as a part of base install which runs in a different runlist. This resource
+# will safeguard the base plugins from being removed.
+rewind 'ruby_block[delete_old_plugins]' do
+  action :nothing
+end
+
 collectd_plugin 'mysql' do
   options({
     'Host' => 'localhost',
     'User' => 'root',
-    'Password' => node['mysql']['server_root_password']
+    'Password' => node['rs-mysql']['server_root_password']
   })
 end
