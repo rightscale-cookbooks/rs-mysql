@@ -43,7 +43,7 @@ else
     connection mysql_connection_info
     database_name node['rs-mysql']['application_database_name']
     action :drop
-    only_if { node['rs-mysql']['application_database_name'] }
+    not_if { node['rs-mysql']['application_database_name'].to_s.empty? }
   end
 
   # Delete the link created as /var/lib/mysql
