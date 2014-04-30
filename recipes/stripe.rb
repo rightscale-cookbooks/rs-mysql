@@ -122,5 +122,5 @@ end
 node.override['mysql']['data_dir'] = new_mysql_dir
 node.override['mysql']['server']['directories']['log_dir'] = new_mysql_dir
 
-# Include the rs-mysql::default so
+# Include the rs-mysql::default so the tuning attributes and tags are set properly.
 include_recipe 'rs-mysql::default'
