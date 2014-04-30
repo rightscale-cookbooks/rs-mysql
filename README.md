@@ -67,7 +67,7 @@ the following attributes set:
 - `node['rs-mysql']['device']['mount_point']` - the location to mount the logical volume of LVM stripe
 
 This will create the number of volumes specified in `node['rs-mysql']['device']['count']`. Each volume created will have
-a nickname of `"#{nickname}-#{stripe_number}"`. The size for each volume is calculated by the following formula:
+a nickname of `"#{nickname}_#{device_number}"`. The size for each volume is calculated by the following formula:
 
 ```ruby
 (total_size.to_f / device_count.to_f).ceil
