@@ -34,7 +34,7 @@ See the `Berksfile` and `metadata.rb` for up to date dependency information.
 
 # Usage
 
-To setup a standalone MySQL server, place the `rs-mysql::server` recipe in the runlist.
+To setup a standalone MySQL server, place the `rs-mysql::default` recipe in the runlist.
 
 ## Creating a new volume
 
@@ -212,7 +212,7 @@ records.
 
 # Recipes
 
-## `rs-mysql::server`
+## `rs-mysql::default`
 
 Installs the MySQL server and tunes the attributes used in the `my.cnf` based on the available system memory
 and the server usage type. If the server usage type is `'dedicated'`, all resources in the system are dedicated
@@ -241,7 +241,7 @@ LVM stripe on the volumes and formats the logical volume using the filesystem sp
 ## `rs-mysql::master`
 
 This recipe sets up the database to act as the master. It makes sure the database is not read only by overriding
-the `mysql/tunable/read_only` to false and includes the `rs-mysql::server` recipe which installs MySQL and
+the `mysql/tunable/read_only` to false and includes the `rs-mysql::default` recipe which installs MySQL and
 performs the configuration. The master database specific tags are added to the server and the master is reset.
 The master database can be provided with a fully qualified domain name (FQDN) by setting the
 `node['rs-mysql']['dns']['master_fqdn']` attribute. The DNS provider credentials
@@ -250,7 +250,7 @@ to create/update the DNS records in the DNS provider.
 
 ## `rs-mysql::slave`
 
-This recipe modifies the MySQL server to be read only and includes the `rs-mysql::server` recipe which installs
+This recipe modifies the MySQL server to be read only and includes the `rs-mysql::default` recipe which installs
 MySQL, performs configuration, and tags the server as a slave server. It obtains the information about the master
 database with the help of the [`find_database_servers`] helper method provided by the [rightscale_tag] cookbook and
 changes the master host of the slave to the latest master available in the deployment. If this recipe is run after
