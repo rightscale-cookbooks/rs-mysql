@@ -125,7 +125,7 @@ To restore a volume from backup, run the `rs-mysql::volume` recipe with the same
 This will restore the volume from the backup instead of creating a new one. By default, the backup with the latest
 timestamp will be restored. To restore backup from a specific timestamp, set the following attribute:
 
-- `node['rs-mysql']['restore']['timestamp']` - the timestamp of the backup to restore from
+- `node['rs-mysql']['restore']['timestamp']` - the timestamp of the backup to restore from (in seconds since UNIX epoch)
 
 ## Restoring stripe of volumes from a backup
 
@@ -137,7 +137,7 @@ mentioned in the [previous section](#creating-stripe-of-volumes) along with the 
 This will restore the stripe of volumes from the backup matching the lineage. By default, the backup with the latest
 timestamp will be restored. To restore backup from a specific timestamp, set the following attribute:
 
-- `node['rs-mysql']['restore']['timestamp']` - the timestamp of the backup to restore from
+- `node['rs-mysql']['restore']['timestamp']` - the timestamp of the backup to restore from (in seconds since UNIX epoch)
 
 ## Scheduling automated backups of volume(s)
 
@@ -163,7 +163,7 @@ nothing in the following conditions:
 
 This recipe also has a safety attribute `node['rs-mysql']['device']['destroy_on_decommission']`. This attribute will be
 set to `false` by default and should be overridden and set to `true` in order for the devices to be detached and
-deleted. If an LVM is found (with multiple stripe using `rs-mysql::stripe`), the LVM will be conditionally removed
+deleted. If an LVM is found (created stripe using `rs-mysql::stripe`), the LVM will be conditionally removed
 before detaching the volume.
 
 # Attributes
@@ -236,7 +236,7 @@ Creates a new stripe of volumes from scratch or from an existing backup based on
 backup matching this lineage otherwise a new stripe of volumes will be created from scratch. This recipe will create an
 LVM stripe on the volumes and formats the logical volume using the filesystem specified in
 `node['rs-mysql']['device']['filesystem']`. This will also mount the volume on the location specified in
-`node['rs-mysql']['device']['mount_point']` and move the MySQL database directory to the volume.
+`node['rs-mysql']['device']['mount_point']` and move the MySQL database directory to the LVM stripe.
 
 ## `rs-mysql::master`
 
