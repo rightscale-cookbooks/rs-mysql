@@ -118,11 +118,13 @@ mysql_database 'application database' do
   connection mysql_connection_info
   database_name node['rs-mysql']['application_database_name']
   action :create
-  only_if { node['rs-mysql']['application_database_name'] }
+  not_if { node['rs-mysql']['application_database_name'].to_s.empty? }
 end
 
-if node['rs-mysql']['application_username'] && node['rs-mysql']['application_password']
-  raise 'rs-mysql/application_database_name is required for creating user!' unless node['rs-mysql']['application_database_name']
+if !node['rs-mysql']['application_username'].to_s.empty? && !node['rs-mysql']['application_password'].to_s.empty?
+  if node['rs-mysql']['application_database_name'].to_s.empty?
+    raise 'rs-mysql/application_database_name is required for creating user!'
+  end
 
   # Create the application user to connect from localhost and any other hosts
   ['localhost', '%'].each do |hostname|
