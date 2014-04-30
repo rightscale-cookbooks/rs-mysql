@@ -2,8 +2,11 @@
 
 [![Build Status](https://travis-ci.org/rightscale-cookbooks/rs-mysql.png?branch=master)](https://travis-ci.org/rightscale-cookbooks/rs-mysql)
 
-Sets up a MySQL server and tunes the attributes used in `my.cnf` based on available system memory and the server
-usage type.
+Provides recipes for managing a MySQL server with RightScale, including:
+
+* Automatic tuning based on available system memory and server usage type
+* High availability with master/slave replication including failover
+* Database storage with cloud volumes including backup and restore
 
 Github Repository: [https://github.com/rightscale-cookbooks/rs-mysql](https://github.com/rightscale-cookbooks/rs-mysql)
 
@@ -27,16 +30,11 @@ Github Repository: [https://github.com/rightscale-cookbooks/rs-mysql](https://gi
   * [chef_handler](http://community.opscode.com/cookbooks/chef_handler)
   * [dns](http://community.opscode.com/cookbooks/dns)
 
+See the `Berksfile` and `metadata.rb` for up to date dependency information.
+
 # Usage
 
 To setup a standalone MySQL server, place the `rs-mysql::server` recipe in the runlist.
-
-To setup a MySQL master-slave replication, place the `rs-mysql::master` recipe in the runlist for the master
-server and the `rs-mysql::slave` recipe in the runlist for the slave server. The master server should be
-operational before bringing up the slave server. Both the master and slave servers are tagged with required
-information for replication. Please refer to the [rightscale_tag] cookbook for more information about the tags
-added to database servers. When using volumes with master-slave replication, the `rs-mysql::volume` or
-`rs-mysql::stripe` recipe should be run before the `rs-mysql::master` or `rs-mysql::slave` recipe.
 
 ## Creating a new volume
 
@@ -82,6 +80,20 @@ a nickname of `"#{nickname}-#{stripe_number}"`. The size for each volume is calc
 This will create a volume group with the name `"#{nickname}-vg"` and logical volume in it with the name
 `"#{nickname}-lv"`, format it with the filesystem specified, mount it on the location specified, and move the MySQL
 database to it.
+
+## Master/Slave replication and Failover
+
+To setup a MySQL master/slave replication, place the `rs-mysql::master` recipe in the runlist for the master
+server and the `rs-mysql::slave` recipe in the runlist for the slave server. The master server should be
+operational before bringing up the slave server. Both the master and slave servers are tagged with required
+information for replication. Please refer to the [rightscale_tag] cookbook for more information about the tags
+added to database servers. When using volumes with master/slave replication, the `rs-mysql::volume` or
+`rs-mysql::stripe` recipe should be run before the `rs-mysql::master` or `rs-mysql::slave` recipe.
+
+To promote a slave to master in a failover situation just run the `rs-mysql::master` recipe on the slave that needs to
+be promoted. If there are other slaves in the deployment, the `rs-mysql::slave` recipe should be re-run on those servers
+as well. If the old master is still working, it can be demoted to a slave by running the `rs-mysql::slave` recipe as
+well.
 
 ## Backing up volume(s) & Cleaning up backups
 
