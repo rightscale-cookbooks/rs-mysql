@@ -55,10 +55,10 @@ To create a volume with IOPS on EC2, set the following attribute before running 
 
 - `node['rs-mysql']['device']['iops']` - the value of IOPS to use
 
-## Creating a stripe of volumes
+## Creating a logical volume with striping
 
-To create a new stripe of volumes using LVM and move the MySQL database to it, run the `rs-mysql::stripe` recipe with
-the following attributes set:
+To create a logical volume with striping using LVM and move the MySQL database to it, run the `rs-mysql::stripe` recipe
+with the following attributes set:
 
 - `node['rs-mysql']['device']['nickname']` - the nickname to use as prefix for the stripe of volumes
 - `node['rs-mysql']['device']['count']` - number of volumes to create in the stripe
