@@ -5,7 +5,7 @@ describe 'rs-mysql::schedule' do
     let(:chef_run) do
       ChefSpec::Runner.new do |node|
         node.set['rs-mysql']['schedule']['enable'] = true
-        node.set['rs-mysql']['lineage'] = 'testing'
+        node.set['rs-mysql']['backup']['lineage'] = 'testing'
         node.set['rs-mysql']['schedule']['hour'] = '10'
         node.set['rs-mysql']['schedule']['minute'] = '30'
       end.converge(described_recipe)
@@ -25,7 +25,7 @@ describe 'rs-mysql::schedule' do
     let(:chef_run) do
       ChefSpec::Runner.new do |node|
         node.set['rs-mysql']['schedule']['enable'] = false
-        node.set['rs-mysql']['lineage'] = 'testing'
+        node.set['rs-mysql']['backup']['lineage'] = 'testing'
         node.set['rs-mysql']['schedule']['hour'] = '10'
         node.set['rs-mysql']['schedule']['minute'] = '30'
       end.converge(described_recipe)
