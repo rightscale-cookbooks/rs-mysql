@@ -16,7 +16,7 @@ depends 'filesystem', '~> 0.8.3'
 depends 'lvm', '~> 1.1.0'
 depends 'rightscale_volume', '~> 1.1.0'
 depends 'rightscale_backup', '~> 1.1.1'
-depends 'dns', '~> 0.1.4'
+depends 'dns', '~> 0.1.3'
 
 recipe 'rs-mysql::default', 'Sets up a standalone MySQL server'
 recipe 'rs-mysql::collectd', 'Sets up collectd monitoring for MySQL server'
