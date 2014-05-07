@@ -25,6 +25,7 @@ describe 'rs-mysql::backup' do
     Mysql.stub(:new).with('localhost', 'root', 'rootpass').and_return(connection)
     allow(connection).to receive(:query).with('SHOW MASTER STATUS').and_return(master_status)
     allow(connection).to receive(:query).with('SHOW SLAVE STATUS').and_return(slave_status)
+    allow(connection).to receive(:close)
     allow(master_status).to receive(:fetch_hash).and_return({
       'File' => 'mysql-bin.000012',
       'Position' => '394',
