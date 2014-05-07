@@ -19,12 +19,18 @@
 
 module Rightscale
   class BackupErrorHandler < Chef::Handler
+    # Handle a failure of the backup recipe by unfreezing the filesystem, deleting the master info JSON file, and
+    # unlocking the database.
+    #
     def report
       nickname = run_context.node['rs-mysql']['device']['nickname']
+
       filesystem_resource = run_context.resource_collection.lookup("filesystem[unfreeze #{nickname}]")
       filesystem_resource.run_action(:unfreeze)
+
       file_resource = run_context.resource_collection.lookup('file[delete master info JSON file]')
       file_resource.run_action(:delete)
+
       mysql_database_resource = run_context.resource_collection.lookup('mysql_database[unlock tables]')
       mysql_database_resource.run_action(:query)
     end
