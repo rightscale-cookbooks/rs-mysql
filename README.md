@@ -60,11 +60,11 @@ To create a volume with IOPS on EC2, set the following attribute before running 
 To create a logical volume with striping using LVM and move the MySQL database to it, run the `rs-mysql::stripe` recipe
 with the following attributes set:
 
-- `node['rs-mysql']['device']['nickname']` - the nickname to use as prefix for the stripe of volumes
-- `node['rs-mysql']['device']['count']` - number of volumes to create in the stripe
-- `node['rs-mysql']['device']['volume_size']` - the total size of the stripe
-- `node['rs-mysql']['device']['filesystem']` - the filesystem to use on the volume
-- `node['rs-mysql']['device']['mount_point']` - the location to mount the logical volume of LVM stripe
+- `node['rs-mysql']['device']['nickname']` - the nickname to use as prefix for the logical volume
+- `node['rs-mysql']['device']['count']` - number of volumes to create in the logical volume
+- `node['rs-mysql']['device']['volume_size']` - the total size of the logical volume
+- `node['rs-mysql']['device']['filesystem']` - the filesystem to use on the logical volume
+- `node['rs-mysql']['device']['mount_point']` - the location to mount the logical volume
 
 This will create the number of volumes specified in `node['rs-mysql']['device']['count']`. Each volume created will have
 a nickname of `"#{nickname}_#{device_number}"`. The size for each volume is calculated by the following formula:
@@ -88,7 +88,7 @@ server and the `rs-mysql::slave` recipe in the runlist for the slave server. The
 operational before bringing up the slave server. Both the master and slave servers are tagged with required
 information for replication. Please refer to the [rightscale_tag] cookbook for more information about the tags
 added to database servers. When using volumes with master/slave replication, the `rs-mysql::volume` or
-`rs-mysql::stripe` recipe should be run before the `rs-mysql::master` or `rs-mysql::slave` recipe.
+`rs-mysql::stripe` recipe should run before the `rs-mysql::master` or `rs-mysql::slave` recipe.
 
 To promote a slave to master in a failover situation just run the `rs-mysql::master` recipe on the slave that needs to
 be promoted. If there are other slaves in the deployment, the `rs-mysql::slave` recipe should be re-run on those servers
@@ -103,9 +103,9 @@ attributes set:
 - `node['rs-mysql']['backup']['lineage']` - the lineage to be used for the backup
 
 The backup process will create a snapshot of all volumes attached to the server (except the boot disk if there is one).
-During the backup process, the MySQL database will be read-only for a period to ensure a consistent backup, so it should
-usually only be run from a slave MySQL database server. The backup recipe also handles the cleanup of old volume
-snapshots and accepts the following attributes:
+During the backup process, the MySQL database will be read-only for a period to ensure a consistent backup, so it is
+recommended that it only runs on a slave MySQL database server. The backup recipe also handles the cleanup of old
+volume snapshots and accepts the following attributes:
 
 - `node['rs-mysql']['backup']['keep']['keep_last']` - number of last backups to keep from deleting
 - `node['rs-mysql']['backup']['keep']['dailies']` - number of daily backups to keep
@@ -127,14 +127,15 @@ timestamp will be restored. To restore backup from a specific timestamp, set the
 
 - `node['rs-mysql']['restore']['timestamp']` - the timestamp of the backup to restore from (in seconds since UNIX epoch)
 
-## Restoring stripe of volumes from a backup
+## Restoring a logical volume composed of multiple volumes from a backup
 
-To restore a stripe of volumes from the backup, run the `rs-mysql::stripe` recipe with the same set of attributes
-mentioned in the [previous section](#creating-stripe-of-volumes) along with the following attribute:
+To restore a logical volume composed of multiple volumes from the backup, run the `rs-mysql::stripe` recipe with the
+same set of attributes mentioned in the [previous section](#creating-stripe-of-volumes) along with the following
+attribute:
 
 - `node['rs-mysql']['restore']['lineage']` - the lineage to restore the backup from
 
-This will restore the stripe of volumes from the backup matching the lineage. By default, the backup with the latest
+This will restore multiple volumes from the backup matching the lineage. By default, the backup with the latest
 timestamp will be restored. To restore backup from a specific timestamp, set the following attribute:
 
 - `node['rs-mysql']['restore']['timestamp']` - the timestamp of the backup to restore from (in seconds since UNIX epoch)
@@ -154,17 +155,17 @@ disable the automated backups, simply set `node['rs-mysql']['schedule']['enable'
 
 ## Deleting volume(s)
 
-This operation will be part of the decommission bundle in a RightScale ServerTemplate where the volumes attached to the
-server are detached and deleted from the cloud but this can also be used as an operational recipe. This recipe will do
-nothing in the following conditions:
+This operation should be part of the decommission bundle in a RightScale ServerTemplate where the volumes attached to
+the server are detached and deleted from the cloud but this can also be used as an operational recipe. This recipe will
+do nothing in the following conditions:
 
 - when the server enters a stop state
 - when server reboots
 
 This recipe also has a safety attribute `node['rs-mysql']['device']['destroy_on_decommission']`. This attribute will be
 set to `false` by default and should be overridden and set to `true` in order for the devices to be detached and
-deleted. If an LVM is found (created stripe using `rs-mysql::stripe`), the LVM will be conditionally removed
-before detaching the volume.
+deleted. If an LVM is found (created using `rs-mysql::stripe`), the LVM will be conditionally removed before detaching
+the volume.
 
 # Attributes
 
@@ -181,12 +182,12 @@ before detaching the volume.
 records.
 - `node['rs-mysql']['dns']['secret_key']`- The secret key for the DNS provider to access/modify DNS
 records.
-- `node['rs-mysql']['device']['nickname']` - The nickname for the device or stripe of devices. Default is
-  `'data_storage'`.
+- `node['rs-mysql']['device']['nickname']` - The nickname of the device or the logical volume comprising multiple
+  devices. Default is `'data_storage'`.
 - `node['rs-mysql']['device']['mount_point']` - The mount point for the device. Default is `'/mnt/storage'`.
-- `node['rs-mysql']['device']['volume_size']` - The size of volume to be created. If stripe of devices is used, this
-  will be the total size of the stripe. Default is `10`.
-- `node['rs-mysql']['device']['count']` - The number of devices to be created for the stripe. Default is `2`.
+- `node['rs-mysql']['device']['volume_size']` - The size (in gigabytes) of volume to be created. If stripe of devices
+  is used, this will be the total size of the logical volume. Default is `10`.
+- `node['rs-mysql']['device']['count']` - The number of devices to be created for the logical volume. Default is `2`.
 - `node['rs-mysql']['device']['iops']` - The IOPS value to be used for EC2 Provisioned IOPS. This attribute should only
   be used with Amazon EC2. Default is `nil`.
 - `node['rs-mysql']['device']['filesystem']` - The filesystem to be used on the device. Default is `'ext4'`.
@@ -194,8 +195,8 @@ records.
   decommission. Default is `300` (5 minutes).
 - `node['rs-mysql']['device']['destroy_on_decommission']` - Whether to destroy the device during the decommission of the
   server. Default is `false`.
-- `node['rs-mysql']['device']['mkfs_options']` - Additional mkfs options for formatting the device. Default is `'-F'`.
-  This is required to avoid warnings about formatting the whole device when LVM is not used.
+- `node['rs-mysql']['device']['mkfs_options']` - Additional mkfs options for formatting the device. Default is `'-F'`
+  which is required to avoid warnings about formatting the whole device.
 - `node['rs-mysql']['device']['stripe_size']` - The stripe size to use on LVM. Default is `512`.
 - `node['rs-mysql']['backup']['lineage']` - The backup lineage. Default is `nil`.
 - `node['rs-mysql']['backup']['keep']['keep_last']` - Maximum snapshots to keep. Default is `60`.
@@ -231,12 +232,13 @@ specified in `node['rs-mysql']['device']['mount_point']`, and move the MySQL dat
 
 ## `rs-mysql::stripe`
 
-Creates a new stripe of volumes from scratch or from an existing backup based on the value provided in
-`node['rs-mysql']['restore']['lineage']` attribute. If this attribute is set, the volumes will be restored from a
-backup matching this lineage otherwise a new stripe of volumes will be created from scratch. This recipe will create an
-LVM stripe on the volumes and formats the logical volume using the filesystem specified in
-`node['rs-mysql']['device']['filesystem']`. This will also mount the volume on the location specified in
-`node['rs-mysql']['device']['mount_point']` and move the MySQL database directory to the LVM stripe.
+Creates a logical volume composed of volumes that are created from scratch or from an existing backup based on the
+value provided in `node['rs-mysql']['restore']['lineage']` attribute. If this attribute is set, the volumes will be
+restored from a backup matching this lineage otherwise otherwise volumes comprising the logical volume will be created
+from scratch. This recipe will create a striped logical volume using LVM on the volumes and format the logical volume
+using the filesystem specified in `node['rs-mysql']['device']['filesystem']`. This will also mount the volume on the
+location specified in `node['rs-mysql']['device']['mount_point']` and move the MySQL database directory to the logical
+volume.
 
 ## `rs-mysql::master`
 
@@ -260,9 +262,9 @@ assist with catching up with the master MySQL database.
 ## `rs-mysql::backup`
 
 Takes a backup of all volumes attached to the server (except boot disks if there were any) with the lineage specified
-in the `node['rs-mysql']['backup']['lineage']` attribute. During the backup process, the MySQL database will be read
-only and the filesystem will be frozen. The filesystem will be unfrozen and the MySQL datbase will no longer be read
-only after the backup even if the backup process fails with the help of a chef exception handler. This recipe will
+in the `node['rs-mysql']['backup']['lineage']` attribute. During the backup process, the MySQL database will be
+read-only and the filesystem will be frozen. The filesystem will be unfrozen and the MySQL database will no longer be
+read-only after the backup even if the backup process fails with the help of a chef exception handler. This recipe will
 also cleanup the volume snapshots based on the criteria specified in the `rs-mysql/backup/keep/*` attributes.
 
 ## `rs-mysql::schedule`
