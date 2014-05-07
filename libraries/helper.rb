@@ -101,16 +101,17 @@ module RsMysql
         Chef::Log.info 'Skipping slave verification as timeout is set to a negative value'
       else
         require 'mysql'
-        connection = Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])
 
-        Timeout.timeout(timeout) do
-          slave_status = nil
-          loop do
-            Chef::Log.info 'Waiting for slave to become functional...'
-            # Only sleep after the initial query
-            sleep 2 if slave_status
-            slave_status = connection.query('SHOW SLAVE STATUS').fetch_hash
-            break if slave_status["Slave_IO_Running"] == "Yes" && slave_status["Slave_SQL_Running"] == "Yes"
+        with_closing(Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])) do |connection|
+          Timeout.timeout(timeout) do
+            slave_status = nil
+            loop do
+              Chef::Log.info 'Waiting for slave to become functional...'
+              # Only sleep after the initial query
+              sleep 2 if slave_status
+              slave_status = connection.query('SHOW SLAVE STATUS').fetch_hash
+              break if slave_status["Slave_IO_Running"] == "Yes" && slave_status["Slave_SQL_Running"] == "Yes"
+            end
           end
         end
       end
@@ -124,24 +125,26 @@ module RsMysql
       Chef::Log.info 'Waiting for slave to read relay log...'
 
       require 'mysql'
-      connection = Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])
-      slave_status = connection.query('SHOW SLAVE STATUS').fetch_hash
 
-      Chef::Log.info "Slave IO state: #{(slave_status && slave_status['Slave_IO_State']).inspect}"
+      with_closing(Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])) do |connection|
+        slave_status = connection.query('SHOW SLAVE STATUS').fetch_hash
 
-      if slave_status && slave_status['Slave_IO_State'] != ''
-        loop do
-          read_all = false
-          connection.query('SHOW PROCESSLIST').each_hash do |item|
-            Chef::Log.info "Process state: #{item['Id']}: #{item['State'].inspect}"
+        Chef::Log.info "Slave IO state: #{(slave_status && slave_status['Slave_IO_State']).inspect}"
 
-            if item['State'] =~ /has read all relay log/i
-              read_all = true
-              break
+        if slave_status && slave_status['Slave_IO_State'] != ''
+          loop do
+            read_all = false
+            connection.query('SHOW PROCESSLIST').each_hash do |item|
+              Chef::Log.info "Process state: #{item['Id']}: #{item['State'].inspect}"
+
+              if item['State'] =~ /has read all relay log/i
+                read_all = true
+                break
+              end
             end
+            break if read_all
+            sleep 2
           end
-          break if read_all
-          sleep 2
         end
       end
 
@@ -157,25 +160,27 @@ module RsMysql
     #
     def self.get_master_info(connection_info)
       require 'mysql'
-      connection = Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])
-      master_status = connection.query('SHOW MASTER STATUS').fetch_hash
-      slave_status = connection.query('SHOW SLAVE STATUS').fetch_hash
 
-      if slave_status
-        master_info = {
-          file: slave_status['Relay_Master_Log_File'],
-          position: slave_status['Exec_Master_Log_Pos'],
-        }
-      elsif master_status
-        master_info = {
-          file: master_status['File'],
-          position: master_status['Position'],
-        }
-      else
-        master_info = {}
+      with_closing(Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])) do |connection|
+        master_status = connection.query('SHOW MASTER STATUS').fetch_hash
+        slave_status = connection.query('SHOW SLAVE STATUS').fetch_hash
+
+        if slave_status
+          master_info = {
+            file: slave_status['Relay_Master_Log_File'],
+            position: slave_status['Exec_Master_Log_Pos'],
+          }
+        elsif master_status
+          master_info = {
+            file: master_status['File'],
+            position: master_status['Position'],
+          }
+        else
+          master_info = {}
+        end
+
+        master_info
       end
-
-      master_info
     end
 
     # Get the MySQL master info for use in backups.
@@ -337,6 +342,21 @@ module RsMysql
     #
     def get_rs_run_state
       RsMysql::Helper.get_rs_run_state
+    end
+
+    private
+
+    # Run a block with an object and call its `close` method when finished.
+    #
+    # @param object [#close] the object to use and close when done
+    # @param block [Proc(Object)] the block which will use the object
+    #
+    # @return [Object] the value returned by the block
+    #
+    def self.with_closing(object, &block)
+      block.call(object)
+    ensure
+      object.close
     end
   end
 end
