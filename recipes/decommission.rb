@@ -37,6 +37,7 @@ else
     only_if 'test -L /var/lib/mysql'
   end
 
+  # The version of the mysql cookbook we are using does not consistently set mysql/server/service_name
   mysql_service_name = node['mysql']['server']['service_name'] || 'mysql'
 
   service mysql_service_name do
