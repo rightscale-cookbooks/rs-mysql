@@ -62,6 +62,7 @@ server_id = RsMysql::Helper.get_server_ip(node).to_i
 Chef::Log.info "Overriding mysql/tunable/server_id to '#{server_id}'"
 node.override['mysql']['tunable']['server_id'] = server_id
 
+# The version of the mysql cookbook we are using does not consistently set mysql/server/service_name
 mysql_service_name = node['mysql']['server']['service_name'] || 'mysql'
 
 service mysql_service_name do
