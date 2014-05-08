@@ -104,6 +104,9 @@ change_master = "CHANGE MASTER TO" +
   " MASTER_USER='repl'," +
   " MASTER_PASSWORD='#{node['rs-mysql']['server_repl_password']}'"
 
+# Set master info from a recently restored backup; if no backup was recently restored there will not be any master info
+# so nothing will be changed.
+#
 if mysql_master_info && mysql_master_info.has_key?(:file) && mysql_master_info.has_key?(:position)
   change_master << ", MASTER_LOG_FILE='#{mysql_master_info[:file]}', MASTER_LOG_POS=#{mysql_master_info[:position]}"
 end

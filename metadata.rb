@@ -23,7 +23,7 @@ recipe 'rs-mysql::collectd', 'Sets up collectd monitoring for MySQL server'
 recipe 'rs-mysql::master', 'Sets up a MySQL master server'
 recipe 'rs-mysql::slave', 'Sets up a MySQL slave server'
 recipe 'rs-mysql::volume', 'Creates a volume, attaches it to the server, and moves the MySQL data to the volume'
-recipe 'rs-mysql::stripe', 'Creates volumes, attaches them to the server, sets up LVM stripe, and moves the MySQL' +
+recipe 'rs-mysql::stripe', 'Creates volumes, attaches them to the server, sets up a striped LVM, and moves the MySQL' +
   ' data to the volume'
 recipe 'rs-mysql::backup', :description => 'Creates a backup', :thread => 'storage_backup'
 recipe 'rs-mysql::decommission', 'Destroys LVM conditionally, detaches and destroys volumes. This recipe should' +
@@ -91,8 +91,8 @@ attribute 'rs-mysql/server_repl_password',
 
 attribute 'rs-mysql/device/count',
   :display_name => 'Device Count',
-  :description => 'The number of devices to create and add to the Logical Volume. If this value is set to more than 1,' +
-    ' it will create the specified number of devices and create an LVM on the devices.',
+  :description => 'The number of devices to create and use in the Logical Volume. If this value is set to more than' +
+    ' 1, it will create the specified number of devices and create an LVM on the devices.',
   :default => '2',
   :recipes => ['rs-mysql::stripe', 'rs-mysql::decommission'],
   :required => 'recommended'
@@ -134,7 +134,7 @@ attribute 'rs-mysql/device/filesystem',
 
 attribute 'rs-mysql/device/detach_timeout',
   :display_name => 'Detach Timeout',
-  :description => 'Amount of time (in seconds) to wait for a volume to detach at decommission. Example: 300',
+  :description => 'Amount of time (in seconds) to wait for a single volume to detach at decommission. Example: 300',
   :default => '300',
   :recipes => ['rs-mysql::volume', 'rs-mysql::stripe'],
   :required => 'optional'

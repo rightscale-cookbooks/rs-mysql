@@ -44,7 +44,7 @@ Chef::Log.info 'Overriding mysql/tunable/expire_log_days to 2'
 node.override['mysql']['tunable']['expire_log_days'] = 2
 
 # The directory that contains the MySQL binary logs. This directory will only be created as part of the initial MySQL
-# installation and setup. If the data directory is changed, this should not be creaed again as the data from
+# installation and setup. If the data directory is changed, this should not be created again as the data from
 # /var/lib/mysql will be moved to the new location.
 if node['mysql']['data_dir'] == '/var/lib/mysql'
   Chef::Log.info "Overriding mysql/server/directories/bin_log_dir to '#{node['mysql']['data_dir']}/mysql_binlogs'"

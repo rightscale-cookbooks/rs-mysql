@@ -37,6 +37,7 @@ volume_options[:iops] = node['rs-mysql']['device']['iops'] if node['rs-mysql']['
 
 new_mysql_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
 
+# rs-mysql/restore/lineage is empty, creating new volume
 if node['rs-mysql']['restore']['lineage'].to_s.empty?
   log "Creating a new volume '#{nickname}' with size #{size}"
   rightscale_volume nickname do
@@ -52,6 +53,7 @@ if node['rs-mysql']['restore']['lineage'].to_s.empty?
     mount node['rs-mysql']['device']['mount_point']
     action [:create, :enable, :mount]
   end
+# rs-mysql/restore/lineage is set, restore from the backup
 else
   node.override['rs-mysql']['lineage'] = node['rs-mysql']['restore']['lineage']
   lineage = node['rs-mysql']['restore']['lineage']

@@ -55,27 +55,27 @@ file 'generate master info JSON file' do
   action :create
 end
 
-nickname = node['rs-mysql']['device']['nickname']
+device_nickname = node['rs-mysql']['device']['nickname']
 
 log "Freezing the filesystem mounted on #{node['rs-mysql']['device']['mount_point']}"
 
-filesystem "freeze #{nickname}" do
-  label nickname
+filesystem "freeze #{device_nickname}" do
+  label device_nickname
   mount node['rs-mysql']['device']['mount_point']
   action :freeze
 end
 
 log "Taking a backup of lineage '#{node['rs-mysql']['backup']['lineage']}'"
 
-rightscale_backup nickname do
+rightscale_backup device_nickname do
   lineage node['rs-mysql']['backup']['lineage']
   action :create
 end
 
 log "Unfreezing the filesystem mounted on #{node['rs-mysql']['device']['mount_point']}"
 
-filesystem "unfreeze #{nickname}" do
-  label nickname
+filesystem "unfreeze #{device_nickname}" do
+  label device_nickname
   mount node['rs-mysql']['device']['mount_point']
   action :unfreeze
 end
@@ -94,7 +94,7 @@ end
 
 log 'Cleaning up old snapshots'
 
-rightscale_backup nickname do
+rightscale_backup device_nickname do
   lineage node['rs-mysql']['backup']['lineage']
   keep_last node['rs-mysql']['backup']['keep']['keep_last'].to_i
   dailies node['rs-mysql']['backup']['keep']['dailies'].to_i

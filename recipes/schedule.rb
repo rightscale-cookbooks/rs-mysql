@@ -26,9 +26,11 @@ schedule_hour = node['rs-mysql']['schedule']['hour']
 schedule_minute = node['rs-mysql']['schedule']['minute']
 lineage = node['rs-mysql']['backup']['lineage']
 
-# Both schedule hour and minute should be set
-unless schedule_hour && schedule_minute
-  raise 'rs-mysql/schedule/hour and rs-mysql/schedule/minute inputs should be set'
+if schedule_enable
+  # Both schedule hour and minute should be set
+  unless schedule_hour && schedule_minute
+    raise 'rs-mysql/schedule/hour and rs-mysql/schedule/minute inputs should be set'
+  end
 end
 
 # Adds or removes the crontab entry for backup schedule based on rs-mysql/schedule/enable
