@@ -58,43 +58,8 @@ describe 'rs-mysql::decommission' do
           chef_runner_decommission.converge(described_recipe)
         end
 
-        it 'drops the application database' do
-          expect(chef_run).to drop_mysql_database('drop application database').with(
-            connection: {
-              host: 'localhost',
-              username: 'root',
-              password: 'rootpass',
-            },
-            database_name: 'apptest',
-          )
-        end
-
         it 'removes /var/lib/mysql symlink' do
           expect(chef_run).to delete_link('/var/lib/mysql')
-        end
-
-        it 'creates the /var/lib/mysql directory' do
-          expect(chef_run).to create_directory('/var/lib/mysql').with(
-            owner: 'mysql',
-            group: 'mysql',
-            recursive: true,
-          )
-        end
-
-        it 'moves the MySQL database from /mnt/storage/mysql to /var/lib/mysql' do
-          expect(chef_run).to run_bash('move mysql data back from datadir').with(
-            code: 'mv /mnt/storage/mysql/* /var/lib/mysql',
-          )
-        end
-
-        it 'removes InnoDB log files' do
-          expect(chef_run).to run_bash('remove innodb log files').with(
-            code: 'rm -f /var/lib/mysql/ib_logfile*',
-          )
-        end
-
-        it 'includes mysql::server recipes' do
-          expect(chef_run).to include_recipe('mysql::server')
         end
 
         it 'unmounts and disables the volume on the instance' do
@@ -137,43 +102,8 @@ describe 'rs-mysql::decommission' do
           "/dev/mapper/#{nickname.gsub('_', '--')}--vg-#{nickname.gsub('_', '--')}--lv"
         end
 
-        it 'drops the application database' do
-          expect(chef_run).to drop_mysql_database('drop application database').with(
-            connection: {
-              host: 'localhost',
-              username: 'root',
-              password: 'rootpass',
-            },
-            database_name: 'apptest',
-          )
-        end
-
         it 'removes /var/lib/mysql symlink' do
           expect(chef_run).to delete_link('/var/lib/mysql')
-        end
-
-        it 'creates the /var/lib/mysql directory' do
-          expect(chef_run).to create_directory('/var/lib/mysql').with(
-            owner: 'mysql',
-            group: 'mysql',
-            recursive: true,
-          )
-        end
-
-        it 'moves the MySQL database from /mnt/storage/mysql to /var/lib/mysql' do
-          expect(chef_run).to run_bash('move mysql data back from datadir').with(
-            code: 'mv /mnt/storage/mysql/* /var/lib/mysql',
-          )
-        end
-
-        it 'removes InnoDB log files' do
-          expect(chef_run).to run_bash('remove innodb log files').with(
-            code: 'rm -f /var/lib/mysql/ib_logfile*',
-          )
-        end
-
-        it 'includes mysql::server recipes' do
-          expect(chef_run).to include_recipe('mysql::server')
         end
 
         it 'unmounts and disables the volume on the instance' do
