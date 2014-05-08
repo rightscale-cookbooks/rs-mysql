@@ -31,72 +31,34 @@ elsif ['shutting-down:reboot', 'shutting-down:stop'].include?(get_rs_run_state)
   log 'Skipping deletion of volumes as the instance is either rebooting or entering the stop state...'
 # Detach and delete the volumes if the above safety conditions are satisfied
 else
-  # The connection hash to use to connect to MySQL
-  mysql_connection_info = {
-    :host => 'localhost',
-    :username => 'root',
-    :password => node['rs-mysql']['server_root_password']
-  }
-
-  # Drop the application database
-  mysql_database 'drop application database' do
-    connection mysql_connection_info
-    database_name node['rs-mysql']['application_database_name']
-    action :drop
-    not_if { node['rs-mysql']['application_database_name'].to_s.empty? }
-  end
-
   # Delete the link created as /var/lib/mysql
   link '/var/lib/mysql' do
     action :delete
     only_if 'test -L /var/lib/mysql'
   end
 
-  directory '/var/lib/mysql' do
-    owner 'mysql'
-    group 'mysql'
-    recursive true
-    action :create
+  mysql_service_name = node['mysql']['server']['service_name'] || 'mysql'
+
+  service mysql_service_name do
+    action :stop
   end
 
-  mysql_data_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
-
-  # Move the data from the volume to the /var/lib/mysql directory
-  bash 'move mysql data back from datadir' do
-    code "mv #{mysql_data_dir}/* /var/lib/mysql"
-    only_if '[ `stat -c %h /var/lib/mysql/` -eq 2 ]'
-    only_if "test -d #{mysql_data_dir}"
+  # The file /etc/mysql_grants.sql has SQL commands to install grants to the database including setting the root
+  # password. Deleting this file during decommission will make the rs-mysql::default recipe to create this file and
+  # install grants.
+  ['/etc/my.cnf', '/etc/mysql/my.cnf', '/etc/mysql_grants.sql'].each do |filename|
+    file filename do
+      action :delete
+    end
   end
 
-  # Remove innodb logfiles from /var/lib/mysql
-  bash 'remove innodb log files' do
-    code 'rm -f /var/lib/mysql/ib_logfile*'
-    only_if 'test -f /var/lib/mysql/ib_logfile0'
-  end
-
-  # Override mysql cookbook attributes
-
-  # Override the mysql/bind_address attribute with the server IP since
-  # node['cloud']['local_ipv4'] returns an inconsistent type on AWS (String) and Google (Array) clouds
-  bind_ip_address = RsMysql::Helper.get_bind_ip_address(node)
-  Chef::Log.info "Overriding mysql/bind_address to '#{bind_ip_address}'..."
-  node.override['mysql']['bind_address'] = bind_ip_address
-  Chef::Log.info 'Overriding mysql/tunable/log_bin to false...'
-  node.override['mysql']['tunable']['log_bin'] = false
-  Chef::Log.info 'Overriding mysql server passwords...'
-  node.override['mysql']['server_root_password'] = node['rs-mysql']['server_root_password']
-  node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root_password']
-  node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password']
-
-  include_recipe 'mysql::server'
-
-  nickname = node['rs-mysql']['device']['nickname']
+  device_nickname = node['rs-mysql']['device']['nickname']
 
   # If LVM is used, we will have one or more devices with the device nickname appended with the device number. Destroy
   # the LVM conditionally and then detach and delete all the volumes.
   if is_lvm_used?(node['rs-mysql']['device']['mount_point'])
     # Remove any characters other than alphanumeric and dashes and replace with dashes
-    sanitized_nickname = nickname.downcase.gsub(/[^-a-z0-9]/, '-')
+    sanitized_nickname = device_nickname.downcase.gsub(/[^-a-z0-9]/, '-')
 
     # Construct the logical volume from the name of the volume group and the name of the logical volume similar to how the
     # lvm cookbook constructs the name during the creation of the logical volume
@@ -121,7 +83,7 @@ else
 
     # Detach and delete all attached volumes
     1.upto(node['rs-mysql']['device']['count'].to_i) do |device_num|
-      rightscale_volume "#{nickname}_#{device_num}" do
+      rightscale_volume "#{device_nickname}_#{device_num}" do
         action [:detach, :delete]
       end
     end
@@ -132,15 +94,15 @@ else
     # There might still be some open files from the mount point if the database is bigger. Just ignore the failure for
     # now.
     mount node['rs-mysql']['device']['mount_point'] do
-      device lazy { node['rightscale_volume'][nickname]['device'] }
+      device lazy { node['rightscale_volume'][device_nickname]['device'] }
       ignore_failure true
       action [:umount, :disable]
-      only_if { node.attribute?('rightscale_volume') && node['rightscale_volume'].attribute?(nickname) }
+      only_if { node.attribute?('rightscale_volume') && node['rightscale_volume'].attribute?(device_nickname) }
     end
 
     # Detach and delete the volume
     log 'LVM was not used on the device, simply detaching the deleting the device.'
-    rightscale_volume nickname do
+    rightscale_volume device_nickname do
       action [:detach, :delete]
     end
   end
