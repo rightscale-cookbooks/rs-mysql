@@ -22,7 +22,7 @@ marker "recipe_start_rightscale" do
 end
 
 device_count = node['rs-mysql']['device']['count'].to_i
-nickname = node['rs-mysql']['device']['nickname']
+device_nickname = node['rs-mysql']['device']['nickname']
 size = node['rs-mysql']['device']['volume_size'].to_i
 
 raise 'rs-mysql/device/count should be at least 2 for setting up stripe' if device_count < 2
@@ -54,8 +54,8 @@ new_mysql_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
 # rs-mysql/restore/lineage is empty, creating new volume(s) and setting up LVM
 if node['rs-mysql']['restore']['lineage'].to_s.empty?
   1.upto(device_count) do |device_num|
-    device_nicknames << "#{nickname}_#{device_num}"
-    rightscale_volume "#{nickname}_#{device_num}" do
+    device_nicknames << "#{device_nickname}_#{device_num}"
+    rightscale_volume "#{device_nickname}_#{device_num}" do
       size each_device_size
       options volume_options
       action [:create, :attach]
@@ -63,7 +63,7 @@ if node['rs-mysql']['restore']['lineage'].to_s.empty?
   end
 # rs-mysql/restore/lineage is set, restore from the backup
 else
-  rightscale_backup nickname do
+  rightscale_backup device_nickname do
     lineage node['rs-mysql']['restore']['lineage']
     timestamp node['rs-mysql']['restore']['timestamp'].to_i if node['rs-mysql']['restore']['timestamp']
     size each_device_size
@@ -82,7 +82,7 @@ else
 end
 
 # Remove any characters other than alphanumeric and dashes and replace with dashes
-sanitized_nickname = nickname.downcase.gsub(/[^-a-z0-9]/, '-')
+sanitized_nickname = device_nickname.downcase.gsub(/[^-a-z0-9]/, '-')
 
 # Setup LVM on the volumes. The following resources will:
 #   - initialize the physical volumes for use by LVM
@@ -91,9 +91,9 @@ sanitized_nickname = nickname.downcase.gsub(/[^-a-z0-9]/, '-')
 lvm_volume_group "#{sanitized_nickname}-vg" do
   physical_volumes(lazy do
     if node['rs-mysql']['restore']['lineage'].to_s.empty?
-      device_nicknames.map { |nickname| node['rightscale_volume'][nickname]['device'] }
+      device_nicknames.map { |device_nickname| node['rightscale_volume'][device_nickname]['device'] }
     else
-      node['rightscale_backup'][nickname]['devices']
+      node['rightscale_backup'][device_nickname]['devices']
     end
   end)
 end
