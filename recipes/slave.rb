@@ -33,15 +33,15 @@ include_recipe 'rs-mysql::default'
 
 # Find the most recent master database in the deployment
 latest_master = nil
-Chef::Log.info "Finding master database servers with lineage '#{node['rs-mysql']['lineage']}' in the deployment..."
-master_dbs = find_database_servers(node, node['rs-mysql']['lineage'], 'master', {:only_latest_for_role => true})
+Chef::Log.info "Finding master database servers with lineage '#{node['rs-mysql']['backup']['lineage']}' in the deployment..."
+master_dbs = find_database_servers(node, node['rs-mysql']['backup']['lineage'], 'master', {:only_latest_for_role => true})
 if master_dbs.empty?
-  raise "No master database for the lineage '#{node['rs-mysql']['lineage']}' found in the deployment!"
+  raise "No master database for the lineage '#{node['rs-mysql']['backup']['lineage']}' found in the deployment!"
 else
   latest_master = master_dbs.map { |uuid, server_hash| server_hash }.first
 end
 
-rightscale_tag_database node['rs-mysql']['lineage'] do
+rightscale_tag_database node['rs-mysql']['backup']['lineage'] do
   role 'master'
   bind_ip_address node['mysql']['bind_address']
   bind_port node['mysql']['port']
@@ -51,7 +51,7 @@ end
 # Set up tags for slave database.
 # See https://github.com/rightscale-cookbooks/rightscale_tag#database-servers for more information about the
 # `rightscale_tag_database` resource.
-rightscale_tag_database node['rs-mysql']['lineage'] do
+rightscale_tag_database node['rs-mysql']['backup']['lineage'] do
   role 'slave'
   bind_ip_address node['mysql']['bind_address']
   bind_port node['mysql']['port']
@@ -92,13 +92,29 @@ mysql_database 'stop slave' do
   action :query
 end
 
+mysql_master_info_file = "#{node['rs-mysql']['device']['mount_point']}/mysql_master_info.json"
+if ::File.exists?(mysql_master_info_file)
+  mysql_master_info = JSON.parse(::File.read(mysql_master_info_file), :symbolize_names => true)
+end
+
+log "MySQL master info: #{mysql_master_info.inspect}"
+
+change_master = "CHANGE MASTER TO" +
+  " MASTER_HOST='#{latest_master['bind_ip_address']}'," +
+  " MASTER_USER='repl'," +
+  " MASTER_PASSWORD='#{node['rs-mysql']['server_repl_password']}'"
+
+# Set master info from a recently restored backup; if no backup was recently restored there will not be any master info
+# so nothing will be changed.
+#
+if mysql_master_info && mysql_master_info.has_key?(:file) && mysql_master_info.has_key?(:position)
+  change_master << ", MASTER_LOG_FILE='#{mysql_master_info[:file]}', MASTER_LOG_POS=#{mysql_master_info[:position]}"
+end
+
 mysql_database 'change master host' do
   database_name 'mysql'
   connection mysql_connection_info
-  sql "CHANGE MASTER TO" +
-    " MASTER_HOST='#{latest_master['bind_ip_address']}'," +
-    " MASTER_USER='repl'," +
-    " MASTER_PASSWORD='#{node['rs-mysql']['server_repl_password']}'"
+  sql change_master
   action :query
 end
 
@@ -114,4 +130,9 @@ ruby_block 'verify slave running' do
   block do
     RsMysql::Helper.verify_slave_functional(mysql_connection_info, node['rs-mysql']['slave_functional_timeout'])
   end
+end
+
+file mysql_master_info_file do
+  backup false
+  action :delete
 end

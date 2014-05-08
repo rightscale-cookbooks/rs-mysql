@@ -27,7 +27,7 @@ node.override['mysql']['tunable']['read_only'] = false
 
 include_recipe 'rs-mysql::default'
 
-rightscale_tag_database node['rs-mysql']['lineage'] do
+rightscale_tag_database node['rs-mysql']['backup']['lineage'] do
   role 'slave'
   bind_ip_address node['mysql']['bind_address']
   bind_port node['mysql']['port']
@@ -37,7 +37,7 @@ end
 # Set up the tags for the master server.
 # See https://github.com/rightscale-cookbooks/rightscale_tag#database-servers for more information about the
 # `rightscale_tag_database` resource.
-rightscale_tag_database node['rs-mysql']['lineage'] do
+rightscale_tag_database node['rs-mysql']['backup']['lineage'] do
   role 'master'
   bind_ip_address node['mysql']['bind_address']
   bind_port node['mysql']['port']
@@ -94,6 +94,13 @@ mysql_database 'reset master' do
   connection mysql_connection_info
   sql 'RESET MASTER'
   action :query
+end
+
+mysql_master_info_file = "#{node['rs-mysql']['device']['mount_point']}/mysql_master_info.json"
+
+file mysql_master_info_file do
+  backup false
+  action :delete
 end
 
 # Create/update DNS records only if all these rs-mysql/dns/* attributes are set

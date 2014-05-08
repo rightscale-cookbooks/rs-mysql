@@ -22,7 +22,7 @@ tags = [
   "server:uuid=1111111111",
   "database:active=true",
   "database:master_active=#{Time.now.to_i}",
-  "database:lineage=#{node['rs-mysql']['lineage']}",
+  "database:lineage=#{node['rs-mysql']['backup']['lineage']}",
   "database:bind_ip_address=10.10.3.2",
   "database:bind_port=3306"
 ]

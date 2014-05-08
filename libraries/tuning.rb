@@ -23,7 +23,7 @@ module RsMysql
   module Tuning
 
     # The constant multiplied with megabytes to obtain the value in gigabytes
-    GB = 1024
+    GB = 1024 unless const_defined?(:GB)
 
     # Tunes the MySQL attributes based on the available memory and server usage type.
     #
@@ -98,6 +98,17 @@ module RsMysql
         node_tuning['innodb_additional_mem_pool_size'] = (500 * factor).to_i.to_s + 'M'
         node_tuning['myisam_sort_buffer_size'] = (512 * factor).to_i.to_s + 'M'
       end
+    end
+
+    # Given a memory attribute in megabytes as a string, it will return the bytes equivalent.
+    #
+    # @param [String] attr the string attribute in megabytes
+    #
+    # @return [Integer] the value in bytes
+    #
+    def self.megabytes_to_bytes(attr)
+      matched = attr.match(/(\d+)M/)
+      matched[1].to_i * 1024 * 1024 if matched
     end
 
   private

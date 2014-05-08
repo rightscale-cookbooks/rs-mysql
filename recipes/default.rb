@@ -40,12 +40,16 @@ node.override['mysql']['server_root_password'] = node['rs-mysql']['server_root_p
 node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root_password']
 node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password']
 
-Chef::Log.info "Overriding mysql/tunable/expire_log_days to '2'"
+Chef::Log.info 'Overriding mysql/tunable/expire_log_days to 2'
 node.override['mysql']['tunable']['expire_log_days'] = 2
 
-# The directory that contains the MySQL binary logs.
-Chef::Log.info "Overriding mysql/server/directories/bin_log_dir to '#{node['mysql']['data_dir']}/mysql_binlogs'"
-node.override['mysql']['server']['directories']['bin_log_dir'] = "#{node['mysql']['data_dir']}/mysql_binlogs"
+# The directory that contains the MySQL binary logs. This directory will only be created as part of the initial MySQL
+# installation and setup. If the data directory is changed, this should not be created again as the data from
+# /var/lib/mysql will be moved to the new location.
+if node['mysql']['data_dir'] == '/var/lib/mysql'
+  Chef::Log.info "Overriding mysql/server/directories/bin_log_dir to '#{node['mysql']['data_dir']}/mysql_binlogs'"
+  node.override['mysql']['server']['directories']['bin_log_dir'] = "#{node['mysql']['data_dir']}/mysql_binlogs"
+end
 
 Chef::Log.info "Overriding mysql/tunable/log_bin to '#{node['mysql']['data_dir']}/mysql_binlogs/mysql-bin'"
 node.override['mysql']['tunable']['log_bin'] = "#{node['mysql']['data_dir']}/mysql_binlogs/mysql-bin"
@@ -58,14 +62,46 @@ server_id = RsMysql::Helper.get_server_ip(node).to_i
 Chef::Log.info "Overriding mysql/tunable/server_id to '#{server_id}'"
 node.override['mysql']['tunable']['server_id'] = server_id
 
+# The version of the mysql cookbook we are using does not consistently set mysql/server/service_name
+mysql_service_name = node['mysql']['server']['service_name'] || 'mysql'
+
+service mysql_service_name do
+  action :stop
+  only_if do
+    ::File.exists?("#{node['mysql']['data_dir']}/ib_logfile0") &&
+    ::File.size("#{node['mysql']['data_dir']}/ib_logfile0") != RsMysql::Tuning.megabytes_to_bytes(
+      node['mysql']['tunable']['innodb_log_file_size']
+    )
+  end
+end
+
+execute 'delete innodb log files' do
+  command "rm -f #{node['mysql']['data_dir']}/ib_logfile*"
+  only_if do
+    ::File.exists?("#{node['mysql']['data_dir']}/ib_logfile0") &&
+    ::File.size("#{node['mysql']['data_dir']}/ib_logfile0") != RsMysql::Tuning.megabytes_to_bytes(
+      node['mysql']['tunable']['innodb_log_file_size']
+    )
+  end
+end
+
+data_dir = node['mysql']['data_dir']
+
+execute 'update mysql binlog index with new data_dir' do
+  command "sed -i -r -e 's#^.*/(mysql_binlogs/.*)$##{data_dir}/\\1#' '#{data_dir}/mysql_binlogs/mysql-bin.index'"
+  only_if { ::File.exists?("#{data_dir}/mysql_binlogs/mysql-bin.index") }
+end
+
 include_recipe 'mysql::server'
 include_recipe 'database::mysql'
 include_recipe 'rightscale_tag::default'
+include_recipe 'rightscale_volume::default'
+include_recipe 'rightscale_backup::default'
 
 # Setup database tags on the server.
 # See https://github.com/rightscale-cookbooks/rightscale_tag#database-servers for more information about the
 # `rightscale_tag_database` resource.
-rightscale_tag_database node['rs-mysql']['lineage'] do
+rightscale_tag_database node['rs-mysql']['backup']['lineage'] do
   bind_ip_address node['mysql']['bind_address']
   bind_port node['mysql']['port']
   action :create
@@ -83,11 +119,13 @@ mysql_database 'application database' do
   connection mysql_connection_info
   database_name node['rs-mysql']['application_database_name']
   action :create
-  only_if { node['rs-mysql']['application_database_name'] }
+  not_if { node['rs-mysql']['application_database_name'].to_s.empty? }
 end
 
-if node['rs-mysql']['application_username'] && node['rs-mysql']['application_password']
-  raise 'rs-mysql/application_database_name is required for creating user!' unless node['rs-mysql']['application_database_name']
+if !node['rs-mysql']['application_username'].to_s.empty? && !node['rs-mysql']['application_password'].to_s.empty?
+  if node['rs-mysql']['application_database_name'].to_s.empty?
+    raise 'rs-mysql/application_database_name is required for creating user!'
+  end
 
   # Create the application user to connect from localhost and any other hosts
   ['localhost', '%'].each do |hostname|
