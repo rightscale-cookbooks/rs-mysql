@@ -322,8 +322,9 @@ module RsMysql
     # @return [String] the current system run state
     #
     def self.get_rs_run_state
-      state = shell_out!('rs_state --type=run')
-      state.stdout.chomp
+      state = shell_out!('rs_state --type=run').stdout.chomp
+      Chef::Log.info "The RightScale run state is: #{state.inspect}"
+      state
     end
 
     # Obtains the run state of the server. It uses the `rs_state` utility to get the current system run state.
