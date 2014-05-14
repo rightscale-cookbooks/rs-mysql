@@ -110,7 +110,8 @@ else
 
   # Remove tags created when server took a master or slave role.
   ['master', 'slave'].each do |tag_role|
-    rightscale_tag_database node['rs-mysql']['backup']['lineage'] do
+    rightscale_tag_database "#{tag_role} #{node['rs-mysql']['backup']['lineage']}" do
+      lineage node['rs-mysql']['backup']['lineage']
       role tag_role
       bind_ip_address node['mysql']['bind_address']
       bind_port node['mysql']['port']

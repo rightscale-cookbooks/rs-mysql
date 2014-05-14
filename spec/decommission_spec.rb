@@ -78,9 +78,10 @@ describe 'rs-mysql::decommission' do
         end
 
         it 'deletes tags for master and slave roles from the instance' do
-          expect(chef_run).to delete_rightscale_tag_database('master')
-          expect(chef_run).to delete_rightscale_tag_database('slave')
+          expect(chef_run).to delete_rightscale_tag_database('master testing').with(role: 'master', lineage: 'testing')
+          expect(chef_run).to delete_rightscale_tag_database('slave testing').with(role: 'slave', lineage: 'testing')
         end
+
       end
 
       context 'LVM is used' do
@@ -133,8 +134,8 @@ describe 'rs-mysql::decommission' do
         end
 
         it 'deletes tags for master and slave roles from the instance' do
-          expect(chef_run).to delete_rightscale_tag_database('master')
-          expect(chef_run).to delete_rightscale_tag_database('slave')
+          expect(chef_run).to delete_rightscale_tag_database('master testing').with(role: 'master')
+          expect(chef_run).to delete_rightscale_tag_database('slave testing').with(role: 'slave')
         end
 
       end
