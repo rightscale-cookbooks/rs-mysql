@@ -76,6 +76,11 @@ describe 'rs-mysql::decommission' do
         it 'deletes the volume from the cloud' do
           expect(chef_run).to delete_rightscale_volume(nickname)
         end
+
+        it 'deletes tags for master and slave roles from the instance' do
+          expect(chef_run).to delete_rightscale_tag_database('master')
+          expect(chef_run).to delete_rightscale_tag_database('slave')
+        end
       end
 
       context 'LVM is used' do
@@ -126,6 +131,12 @@ describe 'rs-mysql::decommission' do
           expect(chef_run).to delete_rightscale_volume("#{nickname}_1")
           expect(chef_run).to delete_rightscale_volume("#{nickname}_2")
         end
+
+        it 'deletes tags for master and slave roles from the instance' do
+          expect(chef_run).to delete_rightscale_tag_database('master')
+          expect(chef_run).to delete_rightscale_tag_database('slave')
+        end
+
       end
     end
 
