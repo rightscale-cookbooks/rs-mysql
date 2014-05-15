@@ -19,10 +19,12 @@
 
 if defined?(ChefSpec)
 
-  # 'create' and 'delete' action for rightscale_tag_database resource
+  # 'create' action for rightscale_tag_database resource
   def create_rightscale_tag_database(resource_name)
     ChefSpec::Matchers::ResourceMatcher.new('rightscale_tag_database', :create, resource_name)
   end
+
+  # 'delete' action for rightscale_tag_database resource
   def delete_rightscale_tag_database(resource_name)
     ChefSpec::Matchers::ResourceMatcher.new('rightscale_tag_database', :delete, resource_name)
   end
