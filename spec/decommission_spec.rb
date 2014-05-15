@@ -78,8 +78,18 @@ describe 'rs-mysql::decommission' do
         end
 
         it 'deletes tags for master and slave roles from the instance' do
-          expect(chef_run).to delete_rightscale_tag_database('master testing').with(role: 'master', lineage: 'testing')
-          expect(chef_run).to delete_rightscale_tag_database('slave testing').with(role: 'slave', lineage: 'testing')
+          expect(chef_run).to delete_rightscale_tag_database('master testing').with(
+            role: 'master',
+            lineage: 'testing',
+            bind_ip_address: '10.0.2.15',
+            bind_port: 3306,
+          )
+          expect(chef_run).to delete_rightscale_tag_database('slave testing').with(
+            role: 'slave',
+            lineage: 'testing',
+            bind_ip_address: '10.0.2.15',
+            bind_port: 3306,
+          )
         end
 
       end
@@ -134,8 +144,18 @@ describe 'rs-mysql::decommission' do
         end
 
         it 'deletes tags for master and slave roles from the instance' do
-          expect(chef_run).to delete_rightscale_tag_database('master testing').with(role: 'master', lineage: 'testing')
-          expect(chef_run).to delete_rightscale_tag_database('slave testing').with(role: 'slave', lineage: 'testing')
+          expect(chef_run).to delete_rightscale_tag_database('master testing').with(
+            role: 'master',
+            lineage: 'testing',
+            bind_ip_address: '10.0.2.15',
+            bind_port: 3306,
+          )
+          expect(chef_run).to delete_rightscale_tag_database('slave testing').with(
+            role: 'slave',
+            lineage: 'testing',
+            bind_ip_address: '10.0.2.15',
+            bind_port: 3306,
+          )
         end
 
       end
