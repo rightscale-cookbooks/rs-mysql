@@ -107,4 +107,17 @@ else
       action [:detach, :delete]
     end
   end
+
+  # Remove tags created when server took a master or slave role.
+  tag_bind_ip_address = RsMysql::Helper.get_bind_ip_address(node)
+  ['master', 'slave'].each do |tag_role|
+    rightscale_tag_database "#{tag_role} #{node['rs-mysql']['backup']['lineage']}" do
+      lineage node['rs-mysql']['backup']['lineage']
+      role tag_role
+      bind_ip_address tag_bind_ip_address
+      bind_port node['mysql']['port']
+      action :delete
+    end
+  end
+
 end
