@@ -210,8 +210,8 @@ attribute 'rs-mysql/schedule/enable',
 
 attribute 'rs-mysql/schedule/hour',
   :display_name => 'Backup Schedule Hour',
-  :description => "The hour to schedule the backup on. This value should abide by crontab syntax. Use '*' for taking' +
-    ' backups every hour. Example: 23",
+  :description => "The hour to schedule the backup on. This value should abide by crontab syntax. Use '*' for taking" +
+    ' backups every hour. Example: 23',
   :recipes => ['rs-mysql::schedule'],
   :required => 'required'
 
