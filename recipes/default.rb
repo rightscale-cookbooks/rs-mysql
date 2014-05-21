@@ -38,7 +38,7 @@ RsMysql::Tuning.tune_attributes(
 # Override mysql cookbook attributes
 node.override['mysql']['server_root_password'] = node['rs-mysql']['server_root_password']
 node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root_password']
-node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password']
+node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password'] || node['rs-mysql']['server_root_password']
 
 Chef::Log.info 'Overriding mysql/tunable/expire_log_days to 2'
 node.override['mysql']['tunable']['expire_log_days'] = 2
