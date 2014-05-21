@@ -85,7 +85,7 @@ attribute 'rs-mysql/application_database_name',
 attribute 'rs-mysql/server_repl_password',
   :display_name => 'MySQL Slave Replication Password',
   :description => 'The replication password set on the master database and used by the slave to authenticate and' +
-    ' connect. Example cred:MYSQL_REPLICATION_PASSWORD',
+    ' connect. If not set, rs-mysql/server_root_password will be used. Example cred:MYSQL_REPLICATION_PASSWORD',
   :required => 'optional',
   :recipes => ['rs-mysql::default', 'rs-mysql::master', 'rs-mysql::slave']
 
