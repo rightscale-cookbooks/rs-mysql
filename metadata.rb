@@ -29,6 +29,7 @@ recipe 'rs-mysql::backup', :description => 'Creates a backup', :thread => 'stora
 recipe 'rs-mysql::decommission', 'Destroys LVM conditionally, detaches and destroys volumes. This recipe should' +
   ' be used as a decommission recipe in a RightScale ServerTemplate.'
 recipe 'rs-mysql::schedule', 'Enable/disable periodic backups based on rs-mysql/schedule/enable'
+recipe 'rs-mysql::dump_import', 'Download and import mysql dump file.'
 
 
 attribute 'rs-mysql/server_usage',
