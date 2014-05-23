@@ -18,6 +18,7 @@
 #
 
 require 'ipaddr'
+require 'socket'
 
 module RsMysql
   module Helper
@@ -38,7 +39,8 @@ module RsMysql
       end
     end
 
-    # Gets the IP address that the MySQL server will bind to.
+    # Gets the IP address that the MySQL server will bind to. If `node['rs-mysql']['bind_address']` is set to an IP
+    # address or host name, the IP address value of the attribute will be used instead.
     #
     # @param node [Chef::Node] the chef node
     #
@@ -48,22 +50,26 @@ module RsMysql
     #   if an IP of a particular network interface could not be found
     #
     def self.get_bind_ip_address(node)
-      case node['rs-mysql']['bind_network_interface']
-      when "private"
-        if node['cloud']['private_ips'].nil? || node['cloud']['private_ips'].empty?
-          raise 'Cannot find private IP of the server!'
-        end
-
-        node['cloud']['private_ips'].first
-      when "public"
-        if node['cloud']['public_ips'].nil? || node['cloud']['public_ips'].empty?
-          raise 'Cannot find public IP of the server!'
-        end
-
-        node['cloud']['public_ips'].first
+      if node['rs-mysql']['bind_address']
+        Addrinfo.getaddrinfo(node['rs-mysql']['bind_address'], nil, Socket::PF_INET).first.ip_address
       else
-        raise "Unknown network interface '#{node['rs-mysql']['bind_network_interface']}'!" +
-          " The network interface must be either 'public' or 'private'."
+        case node['rs-mysql']['bind_network_interface']
+        when "private"
+          if node['cloud']['private_ips'].nil? || node['cloud']['private_ips'].empty?
+            raise 'Cannot find private IP of the server!'
+          end
+
+          node['cloud']['private_ips'].first
+        when "public"
+          if node['cloud']['public_ips'].nil? || node['cloud']['public_ips'].empty?
+            raise 'Cannot find public IP of the server!'
+          end
+
+          node['cloud']['public_ips'].first
+        else
+          raise "Unknown network interface '#{node['rs-mysql']['bind_network_interface']}'!" +
+            " The network interface must be either 'public' or 'private'."
+        end
       end
     end
 

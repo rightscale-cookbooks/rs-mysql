@@ -43,6 +43,9 @@ default['rs-mysql']['application_database_name'] = nil
 # MySQL bind network interface - 'private' or 'public'
 default['rs-mysql']['bind_network_interface'] = 'private'
 
+# MySQL bind IP address
+default['rs-mysql']['bind_address'] = nil
+
 # The fully-qualified domain name of the master database server
 default['rs-mysql']['dns']['master_fqdn'] = nil
 
