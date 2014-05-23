@@ -39,7 +39,8 @@ module RsMysql
       end
     end
 
-    # Gets the IP address that the MySQL server will bind to.
+    # Gets the IP address that the MySQL server will bind to. If `node['rs-mysql']['bind_address']` is set to an IP
+    # address or host name, the IP address value of the attribute will be used instead.
     #
     # @param node [Chef::Node] the chef node
     #
