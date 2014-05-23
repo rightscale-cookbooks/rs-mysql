@@ -240,3 +240,30 @@ attribute 'rs-mysql/dns/secret_key',
   :description => 'The secret key to access/modify the DNS records.',
   :required => 'optional',
   :recipes => ['rs-mysql::master']
+
+attribute 'rs-mysql/import/private_key',
+  :display_name => 'Import Secret Key',
+  :description => 'The private key to access the repository via SSH. Example: Cred:DB_IMPORT_KEY',
+  :required => 'optional',
+  :recipes => ['rs-mysql::dump_import']
+
+attribute 'rs-mysql/import/repository',
+  :display_name => 'Import Repository URL',
+  :description => 'The repository location to download database dump file to import.' +
+    ' Example: git://github.com/rightscale/database_dumpfiles.git',
+  :required => 'optional',
+  :recipes => ['rs-mysql::dump_import']
+
+attribute 'rs-mysql/import/revision',
+  :display_name => 'Import Repository Revision',
+  :description => 'The revision of the database dump file to import.' +
+    ' Example: master',
+  :required => 'optional',
+  :recipes => ['rs-mysql::dump_import']
+
+attribute 'rs-mysql/import/dump_file',
+  :display_name => 'Import Filename',
+  :description => 'Filename of the database dump file to import.' +
+    ' Example: dumpfile_20140102.tgz',
+  :required => 'optional',
+  :recipes => ['rs-mysql::dump_import']
