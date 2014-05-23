@@ -64,6 +64,10 @@ suites:
       application_username: appuser
       application_password: apppass
       application_database_name: app_test
+      import:
+        repository: https://github.com/rightscale/examples.git
+        revision: unified_php
+        dump_file: app_test.sql.bz2
     rightscale:
       instance_uuid: '1111111'
 
