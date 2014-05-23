@@ -21,6 +21,12 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
+include_recipe 'git'
+
+key_file = "/tmp/git_key"
+ssh_wrapper = "/tmp/git_ssh.sh"
+destination_dir = "/tmp/git_download"
+
 #ssh_private_key = node['rs-mysql']['import']['private_key']
 ssh_private_key = <<-END
 -----BEGIN RSA PRIVATE KEY-----
@@ -30,10 +36,8 @@ END
 # Use git to download source
 # Verify if source was already downloaded (idempontent) or if DB being restored is already restored?
 
-#SshWrapper.generate(:user=>"root", :group=>"root", :prefix=>"/tmp/foo", :private_key=>"ssh private key")
-
 # Create private key file
-file "/tmp/private_key" do
+file key_file do
   owner "root"
   group "root"
   mode "0700"
@@ -43,10 +47,10 @@ end
 
 # Create bash script to use for GIT_SSH
 bash_script = <<-END
-exec ssh -o StrictHostKeyChecking=no -i /tmp/private_key "$@"
+exec ssh -o StrictHostKeyChecking=no -i #{key_file} "$@"
 END
 
-file "/tmp/git_ssh.sh" do
+file ssh_wrapper do
   owner "root"
   group "root"
   mode "0700"
@@ -54,12 +58,19 @@ file "/tmp/git_ssh.sh" do
   action :create
 end
 
-git "/tmp/info" do
+git destination_dir do
   repository "git@github.com:rightscale/examples.git"
   revision "unified_php"
-  ssh_wrapper "/tmp/git_ssh.sh"
+  ssh_wrapper ssh_wrapper
 end
 
+file key_file do
+  action :delete
+end
+
+file ssh_wrapper do
+  action :delete
+end
 
 #dump_file = node['rs-mysql']['import']['dump_file']
 #node['rs-mysql']['import']['repository']
