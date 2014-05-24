@@ -19,12 +19,34 @@ describe 'rs-mysql::dump_import' do
     it 'installs git' do
       expect(chef_run).to include_recipe('git')
     end
+
+    it 'will not create key_file' do
+      expect(chef_run).to_not create_file('/tmp/git_key')
+    end
+
+    it 'will not create git_ssh wrapper' do
+      expect(chef_run).to_not create_file('/tmp/git_ssh.sh')
+    end
+
+    it 'downloads git repository without ssh_wrapper' do
+      expect(chef_run).to sync_git('/tmp/git_download').with(
+        repository: 'https://github.com/rightscale/examples.git',
+        revision: 'master',
+        ssh_wrapper: nil
+      )
+    end
+
+    it 'deletes key_file and git_ssh wrapper file' do
+      expect(chef_run).to delete_file('/tmp/git_key')
+      expect(chef_run).to delete_file('/tmp/git_ssh.sh')
+    end
+
   end
 
   context 'rs-mysql/import/private_key is set' do
     let(:chef_run) do
       ChefSpec::Runner.new do |node|
-        node.set['rs-mysql']['import']['repository'] = 'https://github.com/rightscale/examples.git'
+        node.set['rs-mysql']['import']['repository'] = 'git@github.com:rightscale/examples.git'
         node.set['rs-mysql']['import']['revision'] = 'unified_php'
         node.set['rs-mysql']['import']['dump_file'] = 'app_test.sql.bz2'
         node.set['rs-mysql']['import']['private_key'] = 'private_key_data'
@@ -42,6 +64,29 @@ describe 'rs-mysql::dump_import' do
         mode: '0700'
       )
     end
+
+    it 'creates git_ssh wrapper' do
+      expect(chef_run).to create_file('/tmp/git_ssh.sh').with(
+        owner: 'root',
+        group: 'root',
+        mode: '0700'
+      )
+    end
+
+    it 'downloads git repository with ssh_wrapper' do
+      expect(chef_run).to sync_git('/tmp/git_download').with(
+        repository: 'git@github.com:rightscale/examples.git',
+        revision: 'unified_php',
+        ssh_wrapper: '/tmp/git_ssh.sh'
+      )
+    end
+
+    it 'deletes key_file and git_ssh wrapper file' do
+      expect(chef_run).to delete_file('/tmp/git_key')
+      expect(chef_run).to delete_file('/tmp/git_ssh.sh')
+    end
+
+
   end
 
 end
