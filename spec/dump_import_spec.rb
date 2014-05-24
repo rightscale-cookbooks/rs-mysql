@@ -11,9 +11,8 @@ describe 'rs-mysql::dump_import' do
         node.set['rs-mysql']['server_repl_password'] = 'replpass'
         node.set['rs-mysql']['server_root_password'] = 'rootpass'
         node.set['rs-mysql']['import']['repository'] = 'https://github.com/rightscale/examples.git'
-        node.set['rs-mysql']['import']['revision'] = 'unified_php'
+        node.set['rs-mysql']['import']['revision'] = 'master'
         node.set['rs-mysql']['import']['dump_file'] = 'app_test.sql.bz2'
-        node.set['rs-mysql']['import']['private_key'] = nil
       end.converge(described_recipe)
     end
 
@@ -25,12 +24,23 @@ describe 'rs-mysql::dump_import' do
   context 'rs-mysql/import/private_key is set' do
     let(:chef_run) do
       ChefSpec::Runner.new do |node|
-        node.set['rs-mysql']['import']['private_key'] = "private_key_data"
+        node.set['rs-mysql']['import']['repository'] = 'https://github.com/rightscale/examples.git'
+        node.set['rs-mysql']['import']['revision'] = 'unified_php'
+        node.set['rs-mysql']['import']['dump_file'] = 'app_test.sql.bz2'
+        node.set['rs-mysql']['import']['private_key'] = 'private_key_data'
       end.converge(described_recipe)
     end
 
     it 'installs git' do
       expect(chef_run).to include_recipe('git')
+    end
+
+    it 'creates key_file' do
+      expect(chef_run).to create_file('/tmp/git_key').with(
+        owner: 'root',
+        group: 'root',
+        mode: '0700'
+      )
     end
   end
 
