@@ -25,18 +25,18 @@ end
 include_recipe 'git'
 
 # Set temporary file locations.
-key_file = "/tmp/git_key"
-ssh_wrapper = "/tmp/git_ssh.sh"
-destination_dir = "/tmp/git_download"
+key_file = '/tmp/git_key'
+ssh_wrapper = '/tmp/git_ssh.sh'
+destination_dir = '/tmp/git_download'
 
 ssh_private_key = node['rs-mysql']['import']['private_key']
 
 if ssh_private_key
   # Create private key file
   file key_file do
-    owner "root"
-    group "root"
-    mode "0700"
+    owner 'root'
+    group 'root'
+    mode '0700'
     content ssh_private_key
     action :create
   end
@@ -46,9 +46,9 @@ if ssh_private_key
 
   # Create wrapper script used if private key was provided
   file ssh_wrapper do
-    owner "root"
-    group "root"
-    mode "0700"
+    owner 'root'
+    group 'root'
+    mode '0700'
     content bash_script
     action :create
   end
@@ -65,13 +65,14 @@ end
 [key_file, ssh_wrapper].each do |filename|
   file filename do
     action :delete
-    only_if ssh_private_key
   end
 end
 
 dump_file = ::File.join(destination_dir, node['rs-mysql']['import']['dump_file'])
 
-touch_file = "/var/lib/rightscale/rs-mysql-import-#{::File.basename(dump_file)}.touch"
+resource_name = ::File.basename(dump_file) + '-' + node['rs-mysql']['import']['revision']
+
+touch_file = "/var/lib/rightscale/rs-mysql-import-#{resource_name}.touch"
 
 if ::File.exists?(touch_file)
   log "The dump file was already imported at #{::File.ctime(touch_file)}"
@@ -93,7 +94,7 @@ else
   }
 
   # Import from MySQL dump
-  mysql_database ::File.basename(dump_file) do
+  mysql_database resource_name do
     connection mysql_connection_info
     sql do
       if uncompress_command
