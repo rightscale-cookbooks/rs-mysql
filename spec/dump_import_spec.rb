@@ -13,6 +13,7 @@ describe 'rs-mysql::dump_import' do
         node.set['rs-mysql']['import']['repository'] = 'https://github.com/rightscale/examples.git'
         node.set['rs-mysql']['import']['revision'] = 'master'
         node.set['rs-mysql']['import']['dump_file'] = 'app_test.sql.bz2'
+
       end.converge(described_recipe)
     end
 
@@ -41,6 +42,24 @@ describe 'rs-mysql::dump_import' do
       expect(chef_run).to delete_file('/tmp/git_ssh.sh')
     end
 
+    it 'restores from mysql dump file' do
+      expect(chef_run).to query_mysql_database('app_test.sql.bz2-master')
+    end
+
+    it 'assures that /var/lib/rightscale directory exists' do
+      expect(chef_run).to create_directory('/var/lib/rightscale').with(
+        mode: 0755,
+        recursive: true
+      )
+    end
+
+    it 'creates touch file' do
+      expect(chef_run).to touch_file('/var/lib/rightscale/rs-mysql-import-app_test.sql.bz2-master.touch')
+    end
+
+    it 'deletes destination directory' do
+      expect(chef_run).to delete_directory('/tmp/git_download').with(recursive: true)
+    end
   end
 
   context 'rs-mysql/import/private_key is set' do
@@ -86,7 +105,23 @@ describe 'rs-mysql::dump_import' do
       expect(chef_run).to delete_file('/tmp/git_ssh.sh')
     end
 
+    it 'restores from mysql dump file' do
+      expect(chef_run).to query_mysql_database('app_test.sql.bz2-unified_php')
+    end
 
+    it 'assures that /var/lib/rightscale directory exists' do
+      expect(chef_run).to create_directory('/var/lib/rightscale').with(
+        mode: 0755,
+        recursive: true
+      )
+    end
+
+    it 'creates touch file' do
+      expect(chef_run).to touch_file('/var/lib/rightscale/rs-mysql-import-app_test.sql.bz2-unified_php.touch')
+    end
+
+    it 'deletes destination directory' do
+      expect(chef_run).to delete_directory('/tmp/git_download').with(recursive: true)
+    end
   end
-
 end
