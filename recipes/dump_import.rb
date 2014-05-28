@@ -69,13 +69,12 @@ end
 end
 
 dump_file = ::File.join(destination_dir, node['rs-mysql']['import']['dump_file'])
-
 resource_name = ::File.basename(dump_file) + '-' + node['rs-mysql']['import']['revision']
-
 touch_file = "/var/lib/rightscale/rs-mysql-import-#{resource_name}.touch"
 
+# Check if touch_file exists, signifying that an import with this dump file already occurred.
 if ::File.exists?(touch_file)
-  log "The dump file was already imported at #{::File.ctime(touch_file)}"
+  log "The dump file was already imported at #{::File.ctime(touch_file)}. Therefore, no data will be imported."
 else
   case dump_file
   when /\.gz$/
