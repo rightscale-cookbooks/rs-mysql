@@ -43,7 +43,9 @@ describe 'rs-mysql::dump_import' do
     end
 
     it 'restores from mysql dump file' do
-      expect(chef_run).to query_mysql_database('app_test.sql.bz2-master')
+      expect(chef_run).to query_mysql_database('app_test.sql.bz2-master').with(
+        connection: { host: 'localhost', username: 'root', password: 'rootpass' },
+      )
     end
 
     it 'assures that /var/lib/rightscale directory exists' do
@@ -65,6 +67,7 @@ describe 'rs-mysql::dump_import' do
   context 'rs-mysql/import/private_key is set' do
     let(:chef_run) do
       ChefSpec::Runner.new do |node|
+        node.set['rs-mysql']['server_root_password'] = 'rootpass'
         node.set['rs-mysql']['import']['repository'] = 'git@github.com:rightscale/examples.git'
         node.set['rs-mysql']['import']['revision'] = 'unified_php'
         node.set['rs-mysql']['import']['dump_file'] = 'app_test.sql.bz2'
@@ -106,7 +109,9 @@ describe 'rs-mysql::dump_import' do
     end
 
     it 'restores from mysql dump file' do
-      expect(chef_run).to query_mysql_database('app_test.sql.bz2-unified_php')
+      expect(chef_run).to query_mysql_database('app_test.sql.bz2-unified_php').with(
+        connection: { host: 'localhost', username: 'root', password: 'rootpass' }
+      )
     end
 
     it 'assures that /var/lib/rightscale directory exists' do
