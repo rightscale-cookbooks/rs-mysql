@@ -1,6 +1,14 @@
 require_relative 'spec_helper'
 
 describe 'rs-mysql::dump_import' do
+  before do
+    uncompress = double
+    Mixlib::ShellOut.stub(:new).with("bunzip2 --stdout '/tmp/git_download/app_test.sql.bz2'").and_return(uncompress)
+    allow(uncompress).to receive(:run_command).and_return(uncompress)
+    allow(uncompress).to receive(:error!)
+    allow(uncompress).to receive(:stdout).and_return('CREATE DATABASE IF NOT EXISTS app_test;')
+  end
+
   context 'rs-mysql/import/private_key is NOT set' do
     let(:chef_run) do
       ChefSpec::Runner.new do |node|
@@ -45,6 +53,7 @@ describe 'rs-mysql::dump_import' do
     it 'restores from mysql dump file' do
       expect(chef_run).to query_mysql_database('app_test.sql.bz2-master').with(
         connection: { host: 'localhost', username: 'root', password: 'rootpass' },
+        sql: "CREATE DATABASE IF NOT EXISTS app_test;"
       )
     end
 
@@ -110,7 +119,8 @@ describe 'rs-mysql::dump_import' do
 
     it 'restores from mysql dump file' do
       expect(chef_run).to query_mysql_database('app_test.sql.bz2-unified_php').with(
-        connection: { host: 'localhost', username: 'root', password: 'rootpass' }
+        connection: { host: 'localhost', username: 'root', password: 'rootpass' },
+        sql: "CREATE DATABASE IF NOT EXISTS app_test;"
       )
     end
 
