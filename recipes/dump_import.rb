@@ -76,25 +76,16 @@ touch_file = "/var/lib/rightscale/rs-mysql-import-#{resource_name}.touch"
 if ::File.exists?(touch_file)
   log "The dump file was already imported at #{::File.ctime(touch_file)}. Therefore, no data will be imported."
 else
-
-  # Determine by filename extension the command to use to uncompress
+  # Determine by filename extension the command to read in the dump file
   case dump_file
   when /\.gz$/
-    uncompress_command = "gunzip --stdout '#{dump_file}'"
+    stream_command = "gunzip --stdout '#{dump_file}'"
   when /\.bz2$/
-    uncompress_command = "bunzip2 --stdout '#{dump_file}'"
+    stream_command = "bunzip2 --stdout '#{dump_file}'"
   when /\.xz$/
-    uncompress_command = "xz --decompress --stdout '#{dump_file}'"
+    stream_command = "xz --decompress --stdout '#{dump_file}'"
   else
-    uncompress_command = nil
-  end
-
-  if uncompress_command
-    cmd = Mixlib::ShellOut.new(uncompress_command).run_command
-    cmd.error!
-    dump_data = cmd.stdout
-  else
-    dump_data = ::File.read(dump_file)
+    stream_command = "cat '#{dump_file}'"
   end
 
   # The connection hash to use to connect to MySQL
@@ -107,7 +98,7 @@ else
   # Import from MySQL dump
   mysql_database resource_name do
     connection mysql_connection_info
-    sql dump_data
+    sql Mixlib::ShellOut.new(stream_command).run_command.stdout
     action :query
   end
 
