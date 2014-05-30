@@ -62,9 +62,6 @@ suites:
       server_root_password: rootpass
       server_repl_password: realpass
       server_usage: dedicated
-      application_username: appuser
-      application_password: apppass
-      application_database_name: app_test
       import:
         repository: https://github.com/rightscale/examples.git
         revision: unified_php
