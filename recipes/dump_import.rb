@@ -29,10 +29,9 @@ key_file = '/tmp/git_key'
 ssh_wrapper = '/tmp/git_ssh.sh'
 destination_dir = '/tmp/git_download'
 
+# Create private key file
 ssh_private_key = node['rs-mysql']['import']['private_key']
-
 if ssh_private_key
-  # Create private key file
   file key_file do
     owner 'root'
     group 'root'
@@ -54,7 +53,7 @@ if ssh_private_key
   end
 end
 
-# Download from repository
+# Download repository
 git destination_dir do
   repository node['rs-mysql']['import']['repository']
   revision node['rs-mysql']['import']['revision']
@@ -76,17 +75,32 @@ touch_file = "/var/lib/rightscale/rs-mysql-import-#{resource_name}.touch"
 if ::File.exists?(touch_file)
   log "The dump file was already imported at #{::File.ctime(touch_file)}. Therefore, no data will be imported."
 else
-  # Determine by filename extension the command to read in the dump file
-  case dump_file
-  when /\.gz$/
-    stream_command = "gunzip --stdout '#{dump_file}'"
-  when /\.bz2$/
-    stream_command = "bunzip2 --stdout '#{dump_file}'"
-  when /\.xz$/
-    stream_command = "xz --decompress --stdout '#{dump_file}'"
-  else
-    stream_command = "cat '#{dump_file}'"
+  # Make sure directory /var/lib/rightscale exists which will contain the touch file
+  directory '/var/lib/rightscale' do
+    mode 0755
+    recursive true
+    action :create
   end
+
+  # Prepare for creating the touch file after dump has been imported. Once the touch file has
+  # been created importing will be skipped if the recipe runs again with the same dump_file name
+  # and revision.
+  file touch_file do
+    action :nothing
+  end
+
+  # Determine by filename extension the command to read in the dump file
+  read_command =
+    case dump_file
+    when /\.gz$/
+      "gunzip --stdout '#{dump_file}'"
+    when /\.bz2$/
+      "bunzip2 --stdout '#{dump_file}'"
+    when /\.xz$/
+      "xz --decompress --stdout '#{dump_file}'"
+    else
+      "cat '#{dump_file}'"
+    end
 
   # The connection hash to use to connect to MySQL
   mysql_connection_info = {
@@ -95,28 +109,25 @@ else
     :password => node['rs-mysql']['server_root_password']
   }
 
-  # Import from MySQL dump
+  # Import from MySQL dump.
+  # Note: the application database must exist beforehand due to a condition
+  # in the 'database' cookbook.  Otherwise importing will not occur.
   mysql_database resource_name do
     connection mysql_connection_info
-    sql Mixlib::ShellOut.new(stream_command).run_command.stdout
+    database_name node['rs-mysql']['application_database_name']
+    sql do
+      streaming_file = Mixlib::ShellOut.new(read_command).run_command
+      streaming_file.error!
+      streaming_file.stdout
+    end
     action :query
+    not_if { node['rs-mysql']['application_database_name'].to_s.empty? }
+    notifies :create, "file[#{touch_file}]", :immediately
   end
 
-  # Make sure directory /var/lib/rightscale exists which will contain the touch file
-  directory '/var/lib/rightscale' do
-    mode 0755
-    recursive true
-    action :create
-  end
-
-  # Create a touch file containing the name of the dump file so this action can be skipped if the
-  # recipe is run with the same input multiple times.
-  file touch_file do
-    action :touch
-  end
 end
 
-# After importing dump file, remove whole downloaded destination directory.
+# After importing dump file, delete entire downloaded destination directory.
 directory destination_dir do
   recursive true
   action :delete
