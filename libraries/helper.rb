@@ -32,9 +32,9 @@ module RsMysql
     # @return [IPAddr] the IP address of the server
     #
     def self.get_server_ip(node)
-      if node['cloud']['public_ips'] && !node['cloud']['public_ips'].empty?
+      begin
         IPAddr.new(node['cloud']['public_ips'].first)
-      else
+      rescue ArgumentError
         IPAddr.new(node['cloud']['private_ips'].first)
       end
     end
