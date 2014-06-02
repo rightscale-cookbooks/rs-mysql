@@ -52,8 +52,7 @@ describe 'rs-mysql::dump_import' do
 
     it 'restores from mysql dump file' do
       expect(chef_run).to query_mysql_database('app_test.sql.bz2-master').with(
-        connection: { host: 'localhost', username: 'root', password: 'rootpass' },
-        sql: "CREATE DATABASE IF NOT EXISTS app_test;"
+        connection: { host: 'localhost', username: 'root', password: 'rootpass' }
       )
     end
 
@@ -64,10 +63,6 @@ describe 'rs-mysql::dump_import' do
       )
     end
 
-    it 'creates touch file' do
-      expect(chef_run).to touch_file('/var/lib/rightscale/rs-mysql-import-app_test.sql.bz2-master.touch')
-    end
-
     it 'deletes destination directory' do
       expect(chef_run).to delete_directory('/tmp/git_download').with(recursive: true)
     end
@@ -76,6 +71,7 @@ describe 'rs-mysql::dump_import' do
   context 'rs-mysql/import/private_key is set' do
     let(:chef_run) do
       ChefSpec::Runner.new do |node|
+        node.set['rs-mysql']['application_database_name'] = 'apptest'
         node.set['rs-mysql']['server_root_password'] = 'rootpass'
         node.set['rs-mysql']['import']['repository'] = 'git@github.com:rightscale/examples.git'
         node.set['rs-mysql']['import']['revision'] = 'unified_php'
@@ -119,8 +115,7 @@ describe 'rs-mysql::dump_import' do
 
     it 'restores from mysql dump file' do
       expect(chef_run).to query_mysql_database('app_test.sql.bz2-unified_php').with(
-        connection: { host: 'localhost', username: 'root', password: 'rootpass' },
-        sql: "CREATE DATABASE IF NOT EXISTS app_test;"
+        connection: { host: 'localhost', username: 'root', password: 'rootpass' }
       )
     end
 
@@ -129,10 +124,6 @@ describe 'rs-mysql::dump_import' do
         mode: 0755,
         recursive: true
       )
-    end
-
-    it 'creates touch file' do
-      expect(chef_run).to touch_file('/var/lib/rightscale/rs-mysql-import-app_test.sql.bz2-unified_php.touch')
     end
 
     it 'deletes destination directory' do
