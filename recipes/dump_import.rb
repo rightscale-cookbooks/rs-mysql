@@ -122,7 +122,7 @@ else
     end
     action :query
     not_if { node['rs-mysql']['application_database_name'].to_s.empty? }
-    notifies :create, "file[#{touch_file}]", :immediately
+    notifies :touch, "file[#{touch_file}]", :immediately
   end
 
 end
