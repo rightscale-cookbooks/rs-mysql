@@ -61,5 +61,5 @@ default['rs-mysql']['import']['repository'] = nil
 # Git revision or branch to import.
 default['rs-mysql']['import']['revision'] = nil
 
-# Dump file to import.
+# Dump file location in repository to import.
 default['rs-mysql']['import']['dump_file'] = nil
