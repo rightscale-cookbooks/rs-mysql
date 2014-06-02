@@ -177,6 +177,10 @@ the volume.
 - `node['rs-mysql']['application_password']` - The database password to be used for the application user.
 - `node['rs-mysql']['application_user_privileges']` - The application user's privileges.
 - `node['rs-mysql']['application_database_name']` - The name of the application database.
+- `node['rs-mysql']['import']['repository']` - Repository location containing the database dump file to import.
+- `node['rs-mysql']['import']['private_key']` - The private key to access the repository via SSH.
+- `node['rs-mysql']['import']['revision']` - The revision of the database dump file to import.
+- `node['rs-mysql']['import']['dump_file']` - Filename of the database dump file to import.
 - `node['rs-mysql']['dns']['master_fqdn']` - The fully qualified domain name of the master database.
 - `node['rs-mysql']['dns']['user_key']` - The user key for the DNS provider to access/modify DNS
 records.
@@ -278,6 +282,14 @@ If the `node['rs-mysql']['device']['destroy_on_decommission']` attribute is set 
 database back to the root volume, drops the database specified by `node['rs-mysql']['application_database_name']` if it
 is specified, and detaches and deletes the volumes attached to the server. This operation will be skipped if the server
 is entering the stop state or rebooting.
+
+## `rs-mysql::dump_import`
+
+Retrieves a dump file from a github repository and imports it to the database server. The github repository is
+specified by `node['rs-mysql']['import']['repository']` with revision/branch specified by
+`node['rs-mysql']['import']['revision']`. The dump file in the repository is specified by
+`node['rs-mysql']['import']['dump_file']`. The private key attribute, `node['rs-mysql']['import']['private_key']`,
+must be set if retrieving from a private repository.
 
 [rightscale_tag]: https://github.com/rightscale-cookbooks/rightscale_tag/blob/master/README.md
 [`find_database_servers`]: https://github.com/rightscale-cookbooks/rightscale_tag#find_database_servers

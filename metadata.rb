@@ -249,7 +249,7 @@ attribute 'rs-mysql/import/private_key',
 
 attribute 'rs-mysql/import/repository',
   :display_name => 'Import Repository URL',
-  :description => 'The repository location to download database dump file to import.' +
+  :description => 'The repository location containing the database dump file to import.' +
     ' Example: git://github.com/rightscale/database_dumpfiles.git',
   :required => 'optional',
   :recipes => ['rs-mysql::dump_import']
