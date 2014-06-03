@@ -34,7 +34,8 @@ module RsMysql
     def self.get_server_ip(node)
       begin
         IPAddr.new(node['cloud']['public_ips'].first)
-      rescue ArgumentError
+      rescue ArgumentError, NoMethodError => e
+        Chef::Log.info "Issue using public ip: '#{e.message}'. Using private ip."
         IPAddr.new(node['cloud']['private_ips'].first)
       end
     end
