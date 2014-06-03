@@ -1,13 +1,6 @@
 require_relative 'spec_helper'
 
 describe 'rs-mysql::dump_import' do
-  before do
-    uncompress = double
-    Mixlib::ShellOut.stub(:new).with("bunzip2 --stdout '/tmp/git_download/app_test.sql.bz2'").and_return(uncompress)
-    allow(uncompress).to receive(:run_command).and_return(uncompress)
-    allow(uncompress).to receive(:error!)
-    allow(uncompress).to receive(:stdout).and_return('CREATE DATABASE IF NOT EXISTS app_test;')
-  end
 
   context 'rs-mysql/import/private_key is NOT set' do
     let(:chef_run) do
