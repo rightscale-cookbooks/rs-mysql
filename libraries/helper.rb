@@ -32,12 +32,21 @@ module RsMysql
     # @return [IPAddr] the IP address of the server
     #
     def self.get_server_ip(node)
-      if node['cloud']['public_ips'] && !node['cloud']['public_ips'].first.nil? && !node['cloud']['public_ips'].first.empty?
-        IPAddr.new(node['cloud']['public_ips'].first)
-      else
-        Chef::Log.info "Issue using public IP. Using private IP."
-        IPAddr.new(node['cloud']['private_ips'].first)
+      instance_ips = Array.new
+
+      if node['cloud']['public_ips']
+        instance_ips +=  node['cloud']['public_ips']
       end
+
+      if node['cloud']['private_ips']
+        instance_ips += node['cloud']['private_ips']
+      end
+
+      server_ip = instance_ips.detect { |ip| !ip.nil? && !ip.empty? }
+
+      Chef::Log.info "Server IP: #{server_ip}"
+      IPAddr.new(server_ip)
+
     end
 
     # Gets the IP address that the MySQL server will bind to. If `node['rs-mysql']['bind_address']` is set to an IP
