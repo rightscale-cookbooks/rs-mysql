@@ -35,7 +35,7 @@ module RsMysql
       instance_ips = Array.new
 
       if node['cloud']['public_ips']
-        instance_ips +=  node['cloud']['public_ips']
+        instance_ips += node['cloud']['public_ips']
       end
 
       if node['cloud']['private_ips']
