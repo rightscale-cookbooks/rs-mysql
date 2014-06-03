@@ -14,4 +14,5 @@ group :integration do
   gem 'chefspec', '~> 3.4.0'
   gem 'travis-lint'
   gem 'mysql'
+  gem 'rspec-expectations', '~> 2.14.0'
 end
