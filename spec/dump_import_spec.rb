@@ -82,7 +82,7 @@ describe 'rs-mysql::dump_import' do
         owner: 'root',
         group: 'root',
         mode: '0700'
-      )
+      ).with_content('private_key_data')
     end
 
     it 'creates git_ssh wrapper' do
@@ -90,7 +90,7 @@ describe 'rs-mysql::dump_import' do
         owner: 'root',
         group: 'root',
         mode: '0700'
-      )
+      ).with_content('exec ssh -o StrictHostKeyChecking=no -i /tmp/git_key "$@"')
     end
 
     it 'downloads git repository with ssh_wrapper' do

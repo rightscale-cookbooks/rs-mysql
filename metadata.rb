@@ -264,6 +264,6 @@ attribute 'rs-mysql/import/revision',
 attribute 'rs-mysql/import/dump_file',
   :display_name => 'Import Filename',
   :description => 'Filename of the database dump file to import.' +
-    ' Example: dumpfile_20140102.tgz',
+    ' Example: dumpfile_20140102.gz',
   :required => 'optional',
   :recipes => ['rs-mysql::dump_import']
