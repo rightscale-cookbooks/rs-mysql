@@ -7,7 +7,6 @@ describe 'rs-mysql::dump_import' do
       ChefSpec::Runner.new do |node|
         node.set['cloud']['private_ips'] = ['10.0.2.15']
         node.set['memory']['total'] = '1011228kB'
-        node.set['rs-mysql']['application_database_name'] = 'apptest'
         node.set['rs-mysql']['backup']['lineage'] = 'testing'
         node.set['rs-mysql']['server_repl_password'] = 'replpass'
         node.set['rs-mysql']['server_root_password'] = 'rootpass'
@@ -64,7 +63,6 @@ describe 'rs-mysql::dump_import' do
   context 'rs-mysql/import/private_key is set' do
     let(:chef_run) do
       ChefSpec::Runner.new do |node|
-        node.set['rs-mysql']['application_database_name'] = 'apptest'
         node.set['rs-mysql']['server_root_password'] = 'rootpass'
         node.set['rs-mysql']['import']['repository'] = 'git@github.com:rightscale/examples.git'
         node.set['rs-mysql']['import']['revision'] = 'unified_php'
