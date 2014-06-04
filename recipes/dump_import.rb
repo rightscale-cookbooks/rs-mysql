@@ -74,6 +74,8 @@ touch_file = "/var/lib/rightscale/rs-mysql-import-#{resource_name}.touch"
 # Check if touch_file exists, signifying that an import with this dump file already occurred.
 if ::File.exists?(touch_file)
   log "The dump file was already imported at #{::File.ctime(touch_file)}. Therefore, no data will be imported."
+elsif node['rs-mysql']['application_database_name'].to_s.empty?
+  log "rs-mysql/application_database_name is required but not set.  Therefore, no data will be imported."
 else
   # Make sure directory /var/lib/rightscale exists which will contain the touch file
   directory '/var/lib/rightscale' do
@@ -121,7 +123,6 @@ else
       streaming_file.stdout
     end
     action :query
-    not_if { node['rs-mysql']['application_database_name'].to_s.empty? }
     notifies :touch, "file[#{touch_file}]", :immediately
   end
 

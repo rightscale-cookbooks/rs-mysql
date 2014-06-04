@@ -285,7 +285,7 @@ is entering the stop state or rebooting.
 
 ## `rs-mysql::dump_import`
 
-Retrieves a dump file from a github repository and imports it to the database server. The github repository is
+Retrieves a dump file from a Git repository and imports it to the database server. The Git repository is
 specified by `node['rs-mysql']['import']['repository']` with revision/branch specified by
 `node['rs-mysql']['import']['revision']`. The dump file in the repository is specified by
 `node['rs-mysql']['import']['dump_file']`. The private key attribute, `node['rs-mysql']['import']['private_key']`,
