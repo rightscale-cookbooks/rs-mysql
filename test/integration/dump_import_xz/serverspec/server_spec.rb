@@ -1,4 +1,4 @@
-# dump_import_plain
+# dump_import_xz
 
 require 'spec_helper'
 require 'socket'

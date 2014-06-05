@@ -97,6 +97,10 @@ else
     when /\.bz2$/
       "bunzip2 --stdout '#{dump_file}'"
     when /\.xz$/
+      # 'xz' does not appear to be part of the standard CentOS 6.5 install.
+      package 'xz' do
+        only_if { node['platform_family'] == 'rhel' }
+      end
       "xz --decompress --stdout '#{dump_file}'"
     else
       "cat '#{dump_file}'"
