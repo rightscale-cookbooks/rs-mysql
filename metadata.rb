@@ -17,6 +17,7 @@ depends 'lvm', '~> 1.1.0'
 depends 'rightscale_volume', '~> 1.1.0'
 depends 'rightscale_backup', '~> 1.1.1'
 depends 'dns', '~> 0.1.3'
+depends 'git', '~> 2.8.4'
 
 recipe 'rs-mysql::default', 'Sets up a standalone MySQL server'
 recipe 'rs-mysql::collectd', 'Sets up collectd monitoring for MySQL server'
@@ -29,6 +30,7 @@ recipe 'rs-mysql::backup', :description => 'Creates a backup', :thread => 'stora
 recipe 'rs-mysql::decommission', 'Destroys LVM conditionally, detaches and destroys volumes. This recipe should' +
   ' be used as a decommission recipe in a RightScale ServerTemplate.'
 recipe 'rs-mysql::schedule', 'Enable/disable periodic backups based on rs-mysql/schedule/enable'
+recipe 'rs-mysql::dump_import', 'Download and import mysql dump file.'
 
 
 attribute 'rs-mysql/server_usage',
@@ -238,3 +240,30 @@ attribute 'rs-mysql/dns/secret_key',
   :description => 'The secret key to access/modify the DNS records.',
   :required => 'optional',
   :recipes => ['rs-mysql::master']
+
+attribute 'rs-mysql/import/private_key',
+  :display_name => 'Import Secret Key',
+  :description => 'The private key to access the repository via SSH. Example: Cred:DB_IMPORT_KEY',
+  :required => 'optional',
+  :recipes => ['rs-mysql::dump_import']
+
+attribute 'rs-mysql/import/repository',
+  :display_name => 'Import Repository URL',
+  :description => 'The repository location containing the database dump file to import.' +
+    ' Example: git://github.com/rightscale/database_dumpfiles.git',
+  :required => 'optional',
+  :recipes => ['rs-mysql::dump_import']
+
+attribute 'rs-mysql/import/revision',
+  :display_name => 'Import Repository Revision',
+  :description => 'The revision of the database dump file to import.' +
+    ' Example: master',
+  :required => 'optional',
+  :recipes => ['rs-mysql::dump_import']
+
+attribute 'rs-mysql/import/dump_file',
+  :display_name => 'Import Filename',
+  :description => 'Filename of the database dump file to import.' +
+    ' Example: dumpfile_20140102.gz',
+  :required => 'optional',
+  :recipes => ['rs-mysql::dump_import']

@@ -54,3 +54,15 @@ default['rs-mysql']['dns']['user_key'] = nil
 
 # The DNS secret key to create/update DNS records
 default['rs-mysql']['dns']['secret_key'] = nil
+
+# Authentication key used for fetching from private repositories.
+default['rs-mysql']['import']['private_key'] = nil
+
+# Git repository where dump file to import is located.
+default['rs-mysql']['import']['repository'] = nil
+
+# Git revision or branch to import.
+default['rs-mysql']['import']['revision'] = nil
+
+# Dump file location in repository to import.
+default['rs-mysql']['import']['dump_file'] = nil
