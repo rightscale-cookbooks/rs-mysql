@@ -42,6 +42,10 @@ describe 'rs-mysql::dump_import' do
       expect(chef_run).to delete_file('/tmp/git_ssh.sh')
     end
 
+    it 'installs bzip2' do
+      expect(chef_run).to install_package('bzip2')
+    end
+
     it 'restores from mysql dump file' do
       expect(chef_run).to query_mysql_database('app_test.sql.bz2-master').with(
         connection: { host: 'localhost', username: 'root', password: 'rootpass' }
@@ -102,6 +106,10 @@ describe 'rs-mysql::dump_import' do
     it 'deletes key_file and git_ssh wrapper file' do
       expect(chef_run).to delete_file('/tmp/git_key')
       expect(chef_run).to delete_file('/tmp/git_ssh.sh')
+    end
+
+    it 'installs bzip2' do
+      expect(chef_run).to install_package('bzip2')
     end
 
     it 'restores from mysql dump file' do
