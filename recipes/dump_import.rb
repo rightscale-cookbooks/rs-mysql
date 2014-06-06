@@ -89,19 +89,19 @@ else
     action :nothing
   end
 
+  # Install supported file-compression packages
+  ['gzip', 'bzip2', platform_family?("debian") ? 'xz-utils' : 'xz'].each do |package_name|
+    package package_name
+  end
+
   # Determine by filename extension the command to read in the dump file
   read_command =
     case dump_file
     when /\.gz$/
-      package 'gzip'
       "gunzip --stdout '#{dump_file}'"
     when /\.bz2$/
-      package 'bzip2'
       "bunzip2 --stdout '#{dump_file}'"
     when /\.xz$/
-      package 'install xz package' do
-        package_name platform_family?("debian") ? 'xz-utils' : 'xz'
-      end
       "xz --decompress --stdout '#{dump_file}'"
     else
       "cat '#{dump_file}'"

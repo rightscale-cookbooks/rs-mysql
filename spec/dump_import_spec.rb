@@ -42,8 +42,10 @@ describe 'rs-mysql::dump_import' do
       expect(chef_run).to delete_file('/tmp/git_ssh.sh')
     end
 
-    it 'installs bzip2' do
+    it 'installs supported compression packages' do
+      expect(chef_run).to install_package('gzip')
       expect(chef_run).to install_package('bzip2')
+      expect(chef_run).to install_package('xz-utils')
     end
 
     it 'restores from mysql dump file' do
