@@ -77,7 +77,7 @@ a nickname of `"#{nickname}_#{device_number}"`. The size for each volume is calc
 # => 4.0
 ```
 
-This will create a volume group with the name `"#{nickname}-vg"` and logical volume in it with the name
+This will create a volume group with the name `"#{nickname}-vg"` and a logical volume in it with the name
 `"#{nickname}-lv"`, format it with the filesystem specified, mount it on the location specified, and move the MySQL
 database to it.
 
