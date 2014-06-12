@@ -223,8 +223,7 @@ Installs the MySQL server and tunes the attributes used in the `my.cnf` based on
 and the server usage type. If the server usage type is `'dedicated'`, all resources in the system are dedicated
 to the MySQL server and if the usage type is `'shared'`, only half of the resources are used for the MySQL server.
 This `'shared'` usage will be used in building a LAMP stack where the same system is used to run both the MySQL
-server and the PHP application server. This recipe also installs the collectd plugins for MySQL. It also tags
-the server as a standalone MySQL server.
+server and the PHP application server. This recipe also tags the server as a standalone MySQL server.
 
 ## `rs-mysql::volume`
 
@@ -290,6 +289,10 @@ specified by `node['rs-mysql']['import']['repository']` with revision/branch spe
 `node['rs-mysql']['import']['revision']`. The dump file in the repository is specified by
 `node['rs-mysql']['import']['dump_file']`. The private key attribute, `node['rs-mysql']['import']['private_key']`,
 must be set if retrieving from a private repository.
+
+## `rs-mysql::collectd`
+
+Installs the collectd plugins for MySQL.
 
 [rightscale_tag]: https://github.com/rightscale-cookbooks/rightscale_tag/blob/master/README.md
 [`find_database_servers`]: https://github.com/rightscale-cookbooks/rightscale_tag#find_database_servers
