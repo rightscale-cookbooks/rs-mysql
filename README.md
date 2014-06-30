@@ -164,7 +164,7 @@ the server are detached and deleted from the cloud but this can also be used as 
 do nothing in the following conditions:
 
 - when the server enters a stop state
-- when server reboots
+- when the server reboots
 
 This recipe also has a safety attribute `node['rs-mysql']['device']['destroy_on_decommission']`. This attribute will be
 set to `false` by default and should be overridden and set to `true` in order for the devices to be detached and
