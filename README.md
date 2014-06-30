@@ -193,8 +193,8 @@ records.
 - `node['rs-mysql']['device']['nickname']` - The nickname of the device or the logical volume comprising multiple
   devices. Default is `'data_storage'`.
 - `node['rs-mysql']['device']['mount_point']` - The mount point for the device. Default is `'/mnt/storage'`.
-- `node['rs-mysql']['device']['volume_size']` - The size (in gigabytes) of the volume to be created. If stripe of devices
-  is used, this will be the total size of the logical volume. Default is `10`.
+- `node['rs-mysql']['device']['volume_size']` - The size (in gigabytes) of the volume to be created. If multiple
+  devices are used, this will be the total size of the logical volume. Default is `10`.
 - `node['rs-mysql']['device']['count']` - The number of devices to be created for the logical volume. Default is `2`.
 - `node['rs-mysql']['device']['iops']` - The IOPS value to be used for EC2 Provisioned IOPS. This attribute should only
   be used with Amazon EC2. Default is `nil`.
