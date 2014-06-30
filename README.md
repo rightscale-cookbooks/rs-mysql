@@ -133,7 +133,7 @@ timestamp will be restored. To restore backup from a specific timestamp, set the
 
 ## Restoring a logical volume composed of multiple volumes from a backup
 
-To restore a logical volume composed of multiple volumes from the backup, run the `rs-mysql::stripe` recipe with the
+To restore a logical volume composed of multiple volumes from a backup, run the `rs-mysql::stripe` recipe with the
 same set of attributes mentioned in the [previous section](#creating-stripe-of-volumes) along with the following
 attribute:
 
