@@ -1,6 +1,10 @@
 # rs-mysql cookbook
 
-[![Build Status](https://travis-ci.org/rightscale-cookbooks/rs-mysql.png?branch=master)](https://travis-ci.org/rightscale-cookbooks/rs-mysql)
+[![Release](https://img.shields.io/github/release/rightscale-cookbooks/rs-mysql.svg?style=flat)][release]
+[![Build Status](https://img.shields.io/travis/rightscale-cookbooks/rs-mysql.svg?style=flat)][travis]
+
+[release]: https://github.com/rightscale-cookbooks/rs-mysql/releases/latest
+[travis]: https://travis-ci.org/rightscale-cookbooks/rs-mysql
 
 Provides recipes for managing a MySQL server with RightScale, including:
 
