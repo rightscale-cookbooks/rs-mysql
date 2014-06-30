@@ -140,7 +140,7 @@ attribute:
 - `node['rs-mysql']['restore']['lineage']` - the lineage to restore the backup from
 
 This will restore multiple volumes from the backup matching the lineage. By default, the backup with the latest
-timestamp will be restored. To restore backup from a specific timestamp, set the following attribute:
+timestamp will be restored. To restore a backup from a specific timestamp, set the following attribute:
 
 - `node['rs-mysql']['restore']['timestamp']` - the timestamp of the backup to restore from (in seconds since UNIX epoch)
 
