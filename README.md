@@ -231,7 +231,7 @@ server and the PHP application server. This recipe also tags the server as a sta
 
 ## `rs-mysql::volume`
 
-Creates a new volume from scratch or from an existing backup based on the value provided in
+Creates a new volume from scratch or from an existing backup based on the value provided in the
 `node['rs-mysql']['restore']['lineage']` attribute. If this attribute is set, the volume will be restored from a
 backup matching this lineage otherwise a new volume will be created from scratch. This recipe will also format the
 volume using the filesystem specified in `node['rs-mysql']['device']['filesystem']`, mount the volume on the location
@@ -239,10 +239,10 @@ specified in `node['rs-mysql']['device']['mount_point']`, and move the MySQL dat
 
 ## `rs-mysql::stripe`
 
-Creates a logical volume composed of volumes that are created from scratch or from an existing backup based on the
-value provided in `node['rs-mysql']['restore']['lineage']` attribute. If this attribute is set, the volumes will be
-restored from a backup matching this lineage otherwise otherwise volumes comprising the logical volume will be created
-from scratch. This recipe will create a striped logical volume using LVM on the volumes and format the logical volume
+Creates a new logical volume composed of volumes from scratch or from an existing backup based on the
+value provided in the `node['rs-mysql']['restore']['lineage']` attribute. If this attribute is set, the volumes will be
+restored from a backup matching this lineage otherwise a new logical volume composed of volumes will be created from
+scratch. This recipe will create a striped logical volume using LVM on the volumes and format the logical volume
 using the filesystem specified in `node['rs-mysql']['device']['filesystem']`. This will also mount the volume on the
 location specified in `node['rs-mysql']['device']['mount_point']` and move the MySQL database directory to the logical
 volume.
@@ -268,16 +268,17 @@ assist with catching up with the master MySQL database.
 
 ## `rs-mysql::backup`
 
-Takes a backup of all volumes attached to the server (except boot disks if there were any) with the lineage specified
+Takes a backup of all volumes attached to the server (except boot disks if there are any) with the lineage specified
 in the `node['rs-mysql']['backup']['lineage']` attribute. During the backup process, the MySQL database will be
 read-only and the filesystem will be frozen. The filesystem will be unfrozen and the MySQL database will no longer be
 read-only after the backup even if the backup process fails with the help of a chef exception handler. This recipe will
-also cleanup the volume snapshots based on the criteria specified in the `rs-mysql/backup/keep/*` attributes.
+also clean up the volume snapshots based on the criteria specified in the `rs-mysql/backup/keep/*` attributes.
 
 ## `rs-mysql::schedule`
 
-Adds/removes the crontab entry for taking backups periodically at the minute and hour provided via
-`node['rs-mysql']['schedule']['minute']` and `node['rs-mysql']['schedule']['hour']` attributes.
+Adds or removes the crontab entry for taking backups periodically at the minute and hour provided via
+`node['rs-mysql']['schedule']['minute']` and `node['rs-mysql']['schedule']['hour']` attributes. The recipe uses the
+`node['rs-mysql']['schedule']['enable']` attribute to determine whether to add or remove the crontab entry.
 
 ## `rs-mysql::decommission`
 
