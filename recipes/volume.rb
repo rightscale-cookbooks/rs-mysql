@@ -37,7 +37,6 @@ volume_options[:iops] = node['rs-mysql']['device']['iops'] if node['rs-mysql']['
 volume_options[:volume_type] = node['rs-mysql']['device']['volume_type'] if node['rs-mysql']['device']['volume_type']
 volume_options[:controller_type] = node['rs-mysql']['device']['controller_type'] if node['rs-mysql']['device']['controller_type']
 
-
 new_mysql_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
 
 # rs-mysql/restore/lineage is empty, creating new volume
