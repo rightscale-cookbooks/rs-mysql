@@ -127,6 +127,13 @@ attribute 'rs-mysql/device/iops',
   :recipes => ['rs-mysql::volume', 'rs-mysql::stripe'],
   :required => 'optional'
 
+attribute 'rs-mysql/device/volume_type',
+  :display_name => 'Volume Type',
+  :description => 'Volume Type to use for creating volumes. Currently this value is only used on vSphere.' +
+    ' Example: Platinum-Volume-Type',
+  :recipes => ['rs-mysql::volume', 'rs-mysql::stripe'],
+  :required => 'optional'
+
 attribute 'rs-mysql/device/filesystem',
   :display_name => 'Device Filesystem',
   :description => 'The filesystem to be used on the device. Example: ext4',

@@ -45,6 +45,8 @@ device_nicknames = []
 # Cloud-specific volume options
 volume_options = {}
 volume_options[:iops] = node['rs-mysql']['device']['iops'] if node['rs-mysql']['device']['iops']
+volume_options[:volume_type] = node['rs-mysql']['device']['volume_type'] if node['rs-mysql']['device']['volume_type']
+volume_options[:controller_type] = node['rs-mysql']['device']['controller_type'] if node['rs-mysql']['device']['controller_type']
 
 # Install packages required for setting up LVM
 include_recipe 'lvm::default'

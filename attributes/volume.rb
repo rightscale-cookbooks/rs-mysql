@@ -41,6 +41,12 @@ default['rs-mysql']['device']['count'] = 2
 # I/O Operations Per Second value
 default['rs-mysql']['device']['iops'] = nil
 
+# Volume type
+default['rs-mysql']['device']['volume_type'] = nil
+
+# Controller type
+default['rs-mysql']['device']['controller_type'] = nil
+
 # The filesystem to be used on the device
 default['rs-mysql']['device']['filesystem'] = 'ext4'
 
