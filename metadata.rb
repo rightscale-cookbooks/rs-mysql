@@ -4,7 +4,7 @@ maintainer_email 'cookbooks@rightscale.com'
 license          'Apache 2.0'
 description      'Installs and configures a MySQL server'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '1.1.0'
+version          '1.1.1'
 
 depends 'chef_handler', '~> 1.1.6'
 depends 'marker', '~> 1.0.0'
@@ -14,8 +14,8 @@ depends 'collectd', '~> 1.1.0'
 depends 'rightscale_tag', '~> 1.0.2'
 depends 'filesystem', '~> 0.9.0'
 depends 'lvm', '~> 1.1.0'
-depends 'rightscale_volume', '~> 1.1.0'
-depends 'rightscale_backup', '~> 1.1.1'
+depends 'rightscale_volume', '~> 1.2.1'
+depends 'rightscale_backup', '~> 1.1.3'
 depends 'dns', '~> 0.1.3'
 depends 'git', '~> 2.7.0'
 
@@ -124,6 +124,13 @@ attribute 'rs-mysql/device/iops',
   :display_name => 'Device IOPS',
   :description => 'IO Operations Per Second to use for the device. Currently this value is only used on AWS clouds.' +
     ' Example: 100',
+  :recipes => ['rs-mysql::volume', 'rs-mysql::stripe'],
+  :required => 'optional'
+
+attribute 'rs-mysql/device/volume_type',
+  :display_name => 'Volume Type',
+  :description => 'Volume Type to use for creating volumes. Currently this value is only used on vSphere.' +
+    ' Example: Platinum-Volume-Type',
   :recipes => ['rs-mysql::volume', 'rs-mysql::stripe'],
   :required => 'optional'
 

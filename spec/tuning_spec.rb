@@ -132,7 +132,7 @@ describe RsMysql::Tuning do
           let(:tune_attributes) do
             described_class.tune_attributes(
               node.override['mysql']['tunable'],
-              node['memory']['total'],
+              category[:memory],
               usage
             )
           end
