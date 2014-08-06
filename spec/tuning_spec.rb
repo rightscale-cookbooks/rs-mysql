@@ -1,6 +1,14 @@
 require_relative 'spec_helper'
 require 'tuning'
 
+def tune_attributes(memory, usage)
+  described_class.tune_attributes(
+    node.override['mysql']['tunable'],
+    memory,
+    usage
+  )
+end
+
 describe RsMysql::Tuning do
   {
     dedicated: 1,
@@ -129,14 +137,6 @@ describe RsMysql::Tuning do
             chef_run.node
           end
 
-          let(:tune_attributes) do
-            described_class.tune_attributes(
-              node.override['mysql']['tunable'],
-              node['memory']['total'],
-              usage
-            )
-          end
-
           {
             thread_cache_size: (50 * factor).to_i,
             max_connections: (800 * factor).to_i,
@@ -150,14 +150,14 @@ describe RsMysql::Tuning do
             long_query_time: 5,
           }.each do |name, value|
             it "sets #{name} to #{value}" do
-              tune_attributes
+              tune_attributes(category[:memory], usage)
               node['mysql']['tunable'][name].should eq(value)
             end
           end
 
           category[:assertions].each do |name, value|
             it "sets #{name} to #{value}" do
-              tune_attributes
+              tune_attributes(category[:memory], usage)
               node['mysql']['tunable'][name].should eq(value)
             end
           end
