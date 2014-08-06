@@ -124,7 +124,7 @@ describe RsMysql::Tuning do
         context "with #{category[:name]} of memory" do
           let(:node) do
             chef_run = ChefSpec::Runner.new do |node|
-              node.set['memory']['total'] = category[:memory]
+              node.automatic['memory']['total'] = category[:memory]
             end
             chef_run.node
           end
@@ -132,7 +132,7 @@ describe RsMysql::Tuning do
           let(:tune_attributes) do
             described_class.tune_attributes(
               node.override['mysql']['tunable'],
-              category[:memory],
+              node[:memory]['total'],
               usage
             )
           end
