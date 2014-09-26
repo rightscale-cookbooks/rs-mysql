@@ -27,15 +27,6 @@ platforms:
     customize:
       cpus: 2
       memory: 512
-- name: rhel-7.0
-  run_list: ['recipe[apt]']
-  attributes:
-  driver_config:
-    box: local-rhel-7.0
-    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-7.0_chef-provisionerless.box
-    customize:
-      cpus: 2
-      memory: 512
 - name: ubuntu-12.04
   run_list: ['recipe[apt]']
   driver_config:
