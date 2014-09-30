@@ -14,5 +14,6 @@ group :integration do
   cookbook 'yum', '~> 2.4.2'
   cookbook 'yum-epel', '~> 0.4.0'
   cookbook 'curl', '~> 1.1.0'
-  cookbook 'rhsm', github: 'rightscale-cookbooks/rhsm', branch: 'st_14_13_acu173881_compile_time_execute_and_enable_repos'
+  cookbook 'fake', path: './test/cookbooks/fake'
+  cookbook 'rhsm', github: 'rightscale-cookbooks/rhsm'
 end

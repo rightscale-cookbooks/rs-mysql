@@ -11,13 +11,6 @@ platforms:
     customize:
       cpus: 2
       memory: 512
-- name: centos-7.0
-  run_list: ['recipe[yum-epel]']
-  driver_config:
-    box: opscode-centos-7.0
-    customize:
-      cpus: 2
-      memory: 512
 - name: rhel-6.5
   run_list: ['recipe[apt]']
   attributes:
