@@ -12,8 +12,13 @@ platforms:
       cpus: 2
       memory: 512
 - name: rhel-6.5
-  run_list: ['recipe[apt]']
+  run_list: ['recipe[yum-epel]', 'recipe[rhsm]']
   attributes:
+    rhsm:
+      username: <%= ENV['RHSM_USERNAME'] %>
+      password: <%= ENV['RHSM_PASSWORD'] %>
+      compile_time: true
+      additional_repos: ['rhel-6-server-optional-rpms']
   driver_config:
     box: local-rhel-6.5
     box_url: file://<%= File.expand_path('~') %>/opscode_rhel-6.5_chef-provisionerless.box
