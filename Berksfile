@@ -15,5 +15,5 @@ group :integration do
   cookbook 'yum-epel', '~> 0.4.0'
   cookbook 'curl', '~> 1.1.0'
   cookbook 'fake', path: './test/cookbooks/fake'
-  cookbook 'rhsm', github: 'rightscale-cookbooks/rhsm'
+  cookbook 'rhsm', '~> 1.0.0'
 end
