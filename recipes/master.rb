@@ -118,7 +118,7 @@ if missing_dns_creds.empty?
   log "Setting DNS entry for the master database server FQDN #{node['rs-mysql']['dns']['master_fqdn']}..."
   dns dns_name do
     provider node['rs-mysql']['dns']['provider']
-    dns_provider node['rs-mysql']['dns']['fog']['provider'] unless node['rs-mysql']['dns']['fog']['provider'].nil?
+    dns_provider node['rs-mysql']['dns']['dns_provider'] unless node['rs-mysql']['dns']['dns_provider'].nil?
     domain domain_name
     credentials(node['rs-mysql']['dns']['credentials'])
     entry_value node['mysql']['bind_address']
