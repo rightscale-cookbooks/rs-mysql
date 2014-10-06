@@ -107,7 +107,7 @@ end
 missing_dns_creds = RsMysql::Helper.find_missing_dns_credentials(node)
 if missing_dns_creds.empty?
   if node['rs-mysql']['dns']['credentials'].empty?
-    node['rs-mysql']['dns']['credentials'] = {
+    node.default['rs-mysql']['dns']['credentials'] = {
       'dnsmadeeasy_api_key' => node['rs-mysql']['dns']['user_key'],
       'dnsmadeeasy_secret_key' => node['rs-mysql']['dns']['secret_key']
     }
