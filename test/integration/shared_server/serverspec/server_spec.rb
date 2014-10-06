@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-case backend.check_os[:family]
-when 'Ubuntu'
+case os[:family]
+when 'ubuntu'
   mysql_config_file = '/etc/mysql/my.cnf'
-when 'RedHat'
+when 'redhat'
   mysql_config_file = '/etc/my.cnf'
 end
 
@@ -33,7 +33,7 @@ describe "verify the tuning attributes set in #{mysql_config_file}" do
     myisam_sort_buffer_size: "32M"
   }.each do |attribute, value|
     describe command("grep -E \"^#{attribute}\\s+\" #{mysql_config_file}") do
-      it { should return_stdout /#{value}/ }
+      its(:stdout) { should match /#{value}/ }
     end
   end
 end

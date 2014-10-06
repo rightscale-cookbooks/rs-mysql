@@ -42,7 +42,7 @@ describe "Check slave status" do
     describe command(
       "echo \"SHOW SLAVE STATUS \\G \" | mysql --user=root --password=rootpass"
     ) do
-      it { should return_stdout /Master_Host: 10\.10\.3\.2/ }
+      its(:stdout) { should match /Master_Host: 10\.10\.3\.2/ }
     end
   end
 
@@ -50,7 +50,7 @@ describe "Check slave status" do
     describe command(
       "echo \"SHOW SLAVE STATUS \\G \" | mysql --user=root --password=rootpass"
     ) do
-      it { should return_stdout /Master_Port: 3306/ }
+      its(:stdout) { should match /Master_Port: 3306/ }
     end
   end
 

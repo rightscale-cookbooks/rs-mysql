@@ -4,13 +4,13 @@ require 'spec_helper'
 require 'socket'
 
 mysql_name = ''
-case backend.check_os[:family]
-when 'Ubuntu'
+case os[:family]
+when 'ubuntu'
   mysql_name = 'mysql'
   mysql_config_file = '/etc/mysql/my.cnf'
   mysql_server_packages = %w{mysql-server apparmor-utils}
   collectd_plugin_dir = '/etc/collectd/plugins'
-when 'RedHat'
+when 'redhat'
   mysql_name = 'mysqld'
   mysql_config_file = '/etc/my.cnf'
   mysql_server_packages = %w{mysql-server}
@@ -62,7 +62,7 @@ describe "verify the tuning attributes set in #{mysql_config_file}" do
     myisam_sort_buffer_size: "64M"
   }.each do |attribute, value|
     describe command("grep -E \"^#{attribute}\\s+\" #{mysql_config_file}") do
-      it { should return_stdout /#{value}/ }
+      its(:stdout) { should match /#{value}/ }
     end
   end
 end
@@ -76,8 +76,8 @@ describe "can run MySQL queries on the server" do
     describe command(
       "echo \"SELECT User, Host FROM mysql.user\" | mysql --user=root --password=rootpass"
     ) do
-      it { should return_stdout /appuser\tlocalhost/ }
-      it { should return_stdout /appuser\t%/ }
+      its(:stdout) { should match /appuser\tlocalhost/ }
+      its(:stdout) { should match /appuser\t%/ }
     end
   end
 
@@ -85,7 +85,7 @@ describe "can run MySQL queries on the server" do
     describe command(
       "echo \"SHOW DATABASES LIKE 'app_test'\" | mysql --user=appuser --password=apppass"
     ) do
-      it { should return_stdout /app_test/ }
+      its(:stdout) { should match /app_test/ }
     end
   end
 
@@ -93,7 +93,7 @@ describe "can run MySQL queries on the server" do
     describe command(
       "echo \"USE app_test; SELECT * FROM app_test\" | mysql --user=appuser --password=apppass"
     ) do
-      it { should return_stdout /I am in the db/ }
+      its(:stdout) { should match /I am in the db/ }
     end
   end
 
@@ -101,7 +101,7 @@ describe "can run MySQL queries on the server" do
     describe command(
       "echo \"DROP DATABASE IF EXISTS blah; CREATE DATABASE blah; SHOW DATABASES LIKE 'blah'\" | mysql --user=root --password=rootpass"
     ) do
-      it { should return_stdout /blah/ }
+      its(:stdout) { should match /blah/ }
     end
   end
 end
@@ -113,19 +113,19 @@ describe "mysql collectd plugin" do
 
   describe "contents of #{collectd_plugin_dir}/mysql.conf" do
     describe command("grep LoadPlugin #{collectd_plugin_dir}/mysql.conf") do
-      it { should return_stdout /mysql/ }
+      its(:stdout) { should match /mysql/ }
     end
 
     describe command("grep \"^<Plugin\" #{collectd_plugin_dir}/mysql.conf") do
-      it { should return_stdout /mysql/ }
+      its(:stdout) { should match /mysql/ }
     end
 
     describe command("grep Host #{collectd_plugin_dir}/mysql.conf") do
-      it { should return_stdout /localhost/ }
+      its(:stdout) { should match /localhost/ }
     end
 
     describe command("grep User #{collectd_plugin_dir}/mysql.conf") do
-      it { should return_stdout /root/ }
+      its(:stdout) { should match /root/ }
     end
   end
 end
