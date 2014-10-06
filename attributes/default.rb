@@ -58,6 +58,9 @@ default['rs-mysql']['dns']['user_key'] = nil
 # The DNS secret key to create/update DNS records
 default['rs-mysql']['dns']['secret_key'] = nil
 
+# The DNS Credential Hash
+default['rs-mysql']['dns']['credentials'] = Hash.new
+
 # Authentication key used for fetching from private repositories.
 default['rs-mysql']['import']['private_key'] = nil
 

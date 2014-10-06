@@ -106,6 +106,12 @@ end
 # Create/update DNS records only if all these rs-mysql/dns/* attributes are set
 missing_dns_creds = RsMysql::Helper.find_missing_dns_credentials(node)
 if missing_dns_creds.empty?
+  if node['rs-mysql']['dns']['credentials'].length == 0
+    node['rs-mysql']['dns']['credentials'] = {
+                                                'dnsmadeeasy_api_key' => node['rs-mysql']['dns']['user_key'],
+                                                'dnsmadeeasy_secret_key' => node['rs-mysql']['dns']['secret_key']
+                                              }
+  end
   # Get the dns name and domain name from the FQDN. Split the FQDN into 2 parts
   dns_name, domain_name = node['rs-mysql']['dns']['master_fqdn'].split('.', 2)
 
@@ -113,10 +119,7 @@ if missing_dns_creds.empty?
   dns dns_name do
     provider node['rs-mysql']['dns']['provider']
     domain domain_name
-    credentials(
-      'dnsmadeeasy_api_key' => node['rs-mysql']['dns']['user_key'],
-      'dnsmadeeasy_secret_key' => node['rs-mysql']['dns']['secret_key'],
-    )
+    credentials(node['rs-mysql']['dns']['credentials'])
     entry_value node['mysql']['bind_address']
     type node['dns']['entry']['type']
     ttl 60
