@@ -62,7 +62,7 @@ default['rs-mysql']['dns']['user_key'] = nil
 default['rs-mysql']['dns']['secret_key'] = nil
 
 # The DNS Credential Hash
-default['rs-mysql']['dns']['credentials'] = []
+default['rs-mysql']['dns']['credentials'] = {}
 
 # Authentication key used for fetching from private repositories.
 default['rs-mysql']['import']['private_key'] = nil
