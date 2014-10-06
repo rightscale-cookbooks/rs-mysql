@@ -106,7 +106,7 @@ end
 # Create/update DNS records only if all these rs-mysql/dns/* attributes are set
 missing_dns_creds = RsMysql::Helper.find_missing_dns_credentials(node)
 if missing_dns_creds.empty?
-  if node['rs-mysql']['dns']['credentials'].length == 0
+  if node['rs-mysql']['dns']['credentials'].empty?
     node['rs-mysql']['dns']['credentials'] = {
                                                 'dnsmadeeasy_api_key' => node['rs-mysql']['dns']['user_key'],
                                                 'dnsmadeeasy_secret_key' => node['rs-mysql']['dns']['secret_key']
