@@ -46,6 +46,9 @@ default['rs-mysql']['bind_network_interface'] = 'private'
 # MySQL bind IP address
 default['rs-mysql']['bind_address'] = nil
 
+# MySQL DNS Provider
+default['rs-mysql']['dns']['provider'] = 'dns_dnsmadeeasy_api20'
+
 # The fully-qualified domain name of the master database server
 default['rs-mysql']['dns']['master_fqdn'] = nil
 

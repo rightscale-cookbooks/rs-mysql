@@ -111,7 +111,7 @@ if missing_dns_creds.empty?
 
   log "Setting DNS entry for the master database server FQDN #{node['rs-mysql']['dns']['master_fqdn']}..."
   dns dns_name do
-    provider 'dns_dnsmadeeasy_api20'
+    provider node['rs-mysql']['dns']['provider']
     domain domain_name
     credentials(
       'dnsmadeeasy_api_key' => node['rs-mysql']['dns']['user_key'],
