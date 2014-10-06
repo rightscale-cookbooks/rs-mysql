@@ -49,6 +49,9 @@ default['rs-mysql']['bind_address'] = nil
 # MySQL DNS Provider
 default['rs-mysql']['dns']['provider'] = 'dns_dnsmadeeasy_api20'
 
+# MySQL DNS Fog Provider
+default['rs-mysql']['dns']['fog']['provider'] = nil
+
 # The fully-qualified domain name of the master database server
 default['rs-mysql']['dns']['master_fqdn'] = nil
 
