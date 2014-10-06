@@ -46,10 +46,10 @@ default['rs-mysql']['bind_network_interface'] = 'private'
 # MySQL bind IP address
 default['rs-mysql']['bind_address'] = nil
 
-# MySQL DNS Provider
+# MySQL LWRP
 default['rs-mysql']['dns']['provider'] = 'dns_dnsmadeeasy_api20'
 
-# MySQL DNS Fog Provider
+# MySQL DNS Service Provider
 default['rs-mysql']['dns']['dns_provider'] = nil
 
 # The fully-qualified domain name of the master database server
