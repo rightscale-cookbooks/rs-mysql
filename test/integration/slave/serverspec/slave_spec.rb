@@ -86,7 +86,7 @@ describe "Slave database tags" do
   end
 
   it "should be active" do
-    slave_tags['database:active'].first.value.should be_true
+    slave_tags['database:active'].first.value.should be_truthy
   end
 
   it "should have a lineage of lineage" do

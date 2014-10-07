@@ -41,7 +41,7 @@ end
 describe "verify the tuning attributes set in #{mysql_config_file}" do
   {
     query_cache_size: "4M",
-    innodb_buffer_pool_size: "392M",
+    innodb_buffer_pool_size: "391M",
     thread_cache_size: 50,
     max_connections: 800,
     wait_timeout: 28800,
@@ -160,7 +160,7 @@ describe "Default database tags" do
   end
 
   it "should be active" do
-    default_tags['database:active'].first.value.should be_true
+    default_tags['database:active'].first.value.should be_truthy
   end
 
   it "should have a lineage of lineage" do
