@@ -140,30 +140,30 @@ describe "Default database tags" do
   end
 
   it "should have a UUID of 1111111" do
-    default_tags['server:uuid'].first.value.should eq('1111111')
+    expect(default_tags['server:uuid'].first.value).to eq('1111111')
   end
 
   it "should have a public of 10.10.1.1" do
-    default_tags['server:public_ip_0'].first.value.should eq('10.10.1.1')
+    expect(default_tags['server:public_ip_0'].first.value).to eq('10.10.1.1')
   end
 
   it "should have a bind port of 3306" do
-    default_tags['database:bind_port'].first.value.should eq('3306')
+    expect(default_tags['database:bind_port'].first.value).to eq('3306')
   end
 
   it "should have a bind IP address of 10.0.2.15" do
-    default_tags['database:bind_ip_address'].first.value.should eq('10.0.2.15')
+    expect(default_tags['database:bind_ip_address'].first.value).to eq('10.0.2.15')
   end
 
   it "should have 4 database specific entries" do
-    default_tags['database'].length.should eq(4)
+    expect(default_tags['database'].length).to eq(4)
   end
 
   it "should be active" do
-    default_tags['database:active'].first.value.should be_truthy
+    expect(default_tags['database:active'].first.value).to be_truthy
   end
 
   it "should have a lineage of lineage" do
-    default_tags['database:lineage'].first.value.should eq('lineage')
+    expect(default_tags['database:lineage'].first.value).to eq('lineage')
   end
 end
