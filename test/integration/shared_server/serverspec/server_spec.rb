@@ -12,7 +12,7 @@ end
 describe "verify the tuning attributes set in #{mysql_config_file}" do
   {
     query_cache_size:"2M",
-    innodb_buffer_pool_size: "196M",
+    innodb_buffer_pool_size: "195M",
     thread_cache_size: 25,
     max_connections: 400,
     wait_timeout: 14400,
