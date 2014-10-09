@@ -24,15 +24,15 @@ Github Repository: [https://github.com/rightscale-cookbooks/rs-mysql](https://gi
 * Cookbooks
   * [marker](http://community.opscode.com/cookbooks/marker)
   * [mysql](http://community.opscode.com/cookbooks/mysql)
-  * [collectd](https://github.com/EfrainOlivares/chef-collectd)
-  * [database](http://community.opscode.com/cookbooks/database)
+  * [collectd](https://github.com/rightscale-cookbooks-contrib/chef-collectd)
+  * [database](https://github.com/rightscale-cookbooks-contrib/database)
   * [rightscale_tag](http://community.opscode.com/cookbooks/rightscale_tag)
   * [filesystem](http://community.opscode.com/cookbooks/filesystem)
   * [lvm](http://community.opscode.com/cookbooks/lvm)
   * [rightscale_volume](http://community.opscode.com/cookbooks/rightscale_volume)
   * [rightscale_backup](http://community.opscode.com/cookbooks/rightscale_backup)
   * [chef_handler](http://community.opscode.com/cookbooks/chef_handler)
-  * [dns](http://community.opscode.com/cookbooks/dns)
+  * [dns](https://github.com/rightscale-cookbooks-contrib/dns)
 
 See the `Berksfile` and `metadata.rb` for up to date dependency information.
 
