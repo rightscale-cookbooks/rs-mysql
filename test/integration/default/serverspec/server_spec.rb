@@ -4,13 +4,13 @@ require 'spec_helper'
 require 'socket'
 
 mysql_name = ''
-case backend.check_os[:family]
-when 'Ubuntu'
+case os[:family]
+when 'ubuntu'
   mysql_name = 'mysql'
   mysql_config_file = '/etc/mysql/my.cnf'
   mysql_server_packages = %w{mysql-server apparmor-utils}
   collectd_plugin_dir = '/etc/collectd/plugins'
-when 'RedHat'
+when 'redhat'
   mysql_name = 'mysqld'
   mysql_config_file = '/etc/my.cnf'
   mysql_server_packages = %w{mysql-server}
@@ -41,7 +41,7 @@ end
 describe "verify the tuning attributes set in #{mysql_config_file}" do
   {
     query_cache_size: "4M",
-    innodb_buffer_pool_size: "392M",
+    innodb_buffer_pool_size: "39[12]M",
     thread_cache_size: 50,
     max_connections: 800,
     wait_timeout: 28800,
@@ -62,7 +62,7 @@ describe "verify the tuning attributes set in #{mysql_config_file}" do
     myisam_sort_buffer_size: "64M"
   }.each do |attribute, value|
     describe command("grep -E \"^#{attribute}\\s+\" #{mysql_config_file}") do
-      it { should return_stdout /#{value}/ }
+      its(:stdout) { should match /#{value}/ }
     end
   end
 end
@@ -76,8 +76,8 @@ describe "can run MySQL queries on the server" do
     describe command(
       "echo \"SELECT User, Host FROM mysql.user\" | mysql --user=root --password=rootpass"
     ) do
-      it { should return_stdout /appuser\tlocalhost/ }
-      it { should return_stdout /appuser\t%/ }
+      its(:stdout) { should match /appuser\tlocalhost/ }
+      its(:stdout) { should match /appuser\t%/ }
     end
   end
 
@@ -85,7 +85,7 @@ describe "can run MySQL queries on the server" do
     describe command(
       "echo \"SHOW DATABASES LIKE 'app_test'\" | mysql --user=appuser --password=apppass"
     ) do
-      it { should return_stdout /app_test/ }
+      its(:stdout) { should match /app_test/ }
     end
   end
 
@@ -93,7 +93,7 @@ describe "can run MySQL queries on the server" do
     describe command(
       "echo \"USE app_test; SELECT * FROM app_test\" | mysql --user=appuser --password=apppass"
     ) do
-      it { should return_stdout /I am in the db/ }
+      its(:stdout) { should match /I am in the db/ }
     end
   end
 
@@ -101,7 +101,7 @@ describe "can run MySQL queries on the server" do
     describe command(
       "echo \"DROP DATABASE IF EXISTS blah; CREATE DATABASE blah; SHOW DATABASES LIKE 'blah'\" | mysql --user=root --password=rootpass"
     ) do
-      it { should return_stdout /blah/ }
+      its(:stdout) { should match /blah/ }
     end
   end
 end
@@ -113,19 +113,19 @@ describe "mysql collectd plugin" do
 
   describe "contents of #{collectd_plugin_dir}/mysql.conf" do
     describe command("grep LoadPlugin #{collectd_plugin_dir}/mysql.conf") do
-      it { should return_stdout /mysql/ }
+      its(:stdout) { should match /mysql/ }
     end
 
     describe command("grep \"^<Plugin\" #{collectd_plugin_dir}/mysql.conf") do
-      it { should return_stdout /mysql/ }
+      its(:stdout) { should match /mysql/ }
     end
 
     describe command("grep Host #{collectd_plugin_dir}/mysql.conf") do
-      it { should return_stdout /localhost/ }
+      its(:stdout) { should match /localhost/ }
     end
 
     describe command("grep User #{collectd_plugin_dir}/mysql.conf") do
-      it { should return_stdout /root/ }
+      its(:stdout) { should match /root/ }
     end
   end
 end
@@ -140,30 +140,30 @@ describe "Default database tags" do
   end
 
   it "should have a UUID of 1111111" do
-    default_tags['server:uuid'].first.value.should eq('1111111')
+    expect(default_tags['server:uuid'].first.value).to eq('1111111')
   end
 
   it "should have a public of 10.10.1.1" do
-    default_tags['server:public_ip_0'].first.value.should eq('10.10.1.1')
+    expect(default_tags['server:public_ip_0'].first.value).to eq('10.10.1.1')
   end
 
   it "should have a bind port of 3306" do
-    default_tags['database:bind_port'].first.value.should eq('3306')
+    expect(default_tags['database:bind_port'].first.value).to eq('3306')
   end
 
   it "should have a bind IP address of 10.0.2.15" do
-    default_tags['database:bind_ip_address'].first.value.should eq('10.0.2.15')
+    expect(default_tags['database:bind_ip_address'].first.value).to eq('10.0.2.15')
   end
 
   it "should have 4 database specific entries" do
-    default_tags['database'].length.should eq(4)
+    expect(default_tags['database'].length).to eq(4)
   end
 
   it "should be active" do
-    default_tags['database:active'].first.value.should be_true
+    expect(default_tags['database:active'].first.value).to be_truthy
   end
 
   it "should have a lineage of lineage" do
-    default_tags['database:lineage'].first.value.should eq('lineage')
+    expect(default_tags['database:lineage'].first.value).to eq('lineage')
   end
 end

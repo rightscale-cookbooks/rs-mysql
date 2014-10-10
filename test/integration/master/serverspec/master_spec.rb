@@ -76,7 +76,7 @@ describe "Master database tags" do
   end
 
   it "should be active" do
-    master_tags['database:active'].first.value.should be_true
+    master_tags['database:active'].first.value.should be_truthy
   end
 
   it "should have a lineage of lineage" do
