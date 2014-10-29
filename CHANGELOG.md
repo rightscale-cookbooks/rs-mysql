@@ -3,6 +3,11 @@ rs-mysql Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-mysql cookbook.
 
+v1.1.3
+------
+
+- Fix volume type input description since it is not just for vSphere.
+
 v1.1.2
 ------
 
