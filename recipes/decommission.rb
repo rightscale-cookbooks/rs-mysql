@@ -41,6 +41,7 @@ else
   mysql_service_name = node['mysql']['server']['service_name'] || 'mysql'
 
   service mysql_service_name do
+    provider Chef::Provider::Service::Upstart if node['platform'] == 'ubuntu'
     action :stop
   end
 
