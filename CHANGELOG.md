@@ -3,6 +3,11 @@ rs-mysql Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-mysql cookbook.
 
+v1.1.4
+------
+
+- Use Upstart for the mysql service in decommission on Ubuntu 14.04.
+
 v1.1.3
 ------
 
