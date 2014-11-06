@@ -3,6 +3,11 @@ rs-mysql Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-mysql cookbook.
 
+v1.1.5
+------
+
+- Ignore cloud/public_ips for server-id on cloudstack.
+
 v1.1.4
 ------
 
