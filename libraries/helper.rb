@@ -34,7 +34,8 @@ module RsMysql
     def self.get_server_ip(node)
       instance_ips = Array.new
 
-      if node['cloud']['public_ips']
+      # For cloudstack, ignore 'cloud/public_ips'
+      if node['cloud']['public_ips'] && node['cloud']['provider'] != 'cloudstack'
         instance_ips += node['cloud']['public_ips']
       end
 
@@ -46,7 +47,6 @@ module RsMysql
 
       Chef::Log.info "Server IP: #{server_ip}"
       IPAddr.new(server_ip)
-
     end
 
     # Gets the IP address that the MySQL server will bind to. If `node['rs-mysql']['bind_address']` is set to an IP
