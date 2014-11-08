@@ -46,6 +46,12 @@ default['rs-mysql']['bind_network_interface'] = 'private'
 # MySQL bind IP address
 default['rs-mysql']['bind_address'] = nil
 
+# MySQL LWRP
+default['rs-mysql']['dns']['provider'] = 'dns_dnsmadeeasy_api20'
+
+# MySQL DNS Service Provider
+default['rs-mysql']['dns']['dns_provider'] = nil
+
 # The fully-qualified domain name of the master database server
 default['rs-mysql']['dns']['master_fqdn'] = nil
 
@@ -54,6 +60,9 @@ default['rs-mysql']['dns']['user_key'] = nil
 
 # The DNS secret key to create/update DNS records
 default['rs-mysql']['dns']['secret_key'] = nil
+
+# The DNS Credential Hash
+default['rs-mysql']['dns']['credentials'] = {}
 
 # Authentication key used for fetching from private repositories.
 default['rs-mysql']['import']['private_key'] = nil
