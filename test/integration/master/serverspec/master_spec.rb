@@ -41,8 +41,8 @@ end
 # The kitchen.yml file is set up to provide a public ip in the master suite. This is what this is testing.
 # The slave setup will provide a null public, and a private ip.
 describe "Verify valid server-id entry" do
-  it "should correspond to the result of IPAddr converting 10.10.1.1 to an integer" do
-    db.query("SHOW VARIABLES LIKE 'server_id'").entries.first['Value'].to_i.should == 168427777
+  it "should correspond to the result of IPAddr converting 100.64.1.1 to an integer" do
+    db.query("SHOW VARIABLES LIKE 'server_id'").entries.first['Value'].to_i.should == 1681916161
   end
 end
 
@@ -59,8 +59,8 @@ describe "Master database tags" do
     master_tags['server:uuid'].first.value.should eq('1111111')
   end
 
-  it "should have a public IP of 10.10.1.1" do
-    master_tags['server:public_ip_0'].first.value.should eq('10.10.1.1')
+  it "should have a public IP of 100.64.1.1" do
+    master_tags['server:public_ip_0'].first.value.should eq('100.64.1.1')
   end
 
   it "should have a bind ip address of 10.0.2.15" do

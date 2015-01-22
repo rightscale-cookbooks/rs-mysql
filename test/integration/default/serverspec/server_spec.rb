@@ -143,8 +143,8 @@ describe "Default database tags" do
     expect(default_tags['server:uuid'].first.value).to eq('1111111')
   end
 
-  it "should have a public of 10.10.1.1" do
-    expect(default_tags['server:public_ip_0'].first.value).to eq('10.10.1.1')
+  it "should have a public of 100.64.1.1" do
+    expect(default_tags['server:public_ip_0'].first.value).to eq('100.64.1.1')
   end
 
   it "should have a bind port of 3306" do

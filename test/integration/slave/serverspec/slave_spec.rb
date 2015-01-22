@@ -69,8 +69,8 @@ describe "Slave database tags" do
     slave_tags['server:uuid'].first.value.should eq('2222222')
   end
 
-  it "should have a public of 10.10.2.2" do
-    slave_tags['server:public_ip_0'].first.value.should eq('10.10.2.2')
+  it "should have a public of 100.64.2.2" do
+    slave_tags['server:public_ip_0'].first.value.should eq('100.64.2.2')
   end
 
   it "should have a private ip address of 10.0.2.15" do
