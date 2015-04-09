@@ -94,11 +94,18 @@ else
   end
 end
 
+  directory new_mysql_dir do
+    owner 'mysql'
+    group 'mysql'
+    action :create
+  end
+
+
 # Make sure that there is a 'mysql' directory on the mount point of the volume
-execute "change permissions #{new_mysql_dir} owner" do
-  command "chown -Rf mysql:mysql #{new_mysql_dir}"
-  only_if { Etc.getpwuid(File.stat(new_mysql_dir).uid).name != "mysql" }
-end
+  execute "change permissions #{new_mysql_dir} owner" do
+    command "chown -Rf mysql:mysql #{new_mysql_dir}"
+    only_if { Etc.getpwuid(File.stat(new_mysql_dir).uid).name != "mysql" }
+  end
 
 
 # Override the mysql data_dir. This will do the following:
