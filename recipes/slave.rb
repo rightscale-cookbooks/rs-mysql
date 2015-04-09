@@ -111,6 +111,11 @@ if mysql_master_info && mysql_master_info.has_key?(:file) && mysql_master_info.h
   change_master << ", MASTER_LOG_FILE='#{mysql_master_info[:file]}', MASTER_LOG_POS=#{mysql_master_info[:position]}"
 end
 
+#remove auto.conf if exists in backup. causes isssues with same UUIDs
+file "#{node['rs-mysql']['device']['mount_point']}/auto.conf" do
+  action :delete
+end
+
 mysql_database 'change master host' do
   database_name 'mysql'
   connection mysql_connection_info
