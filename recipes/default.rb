@@ -119,9 +119,7 @@ mysql_database 'application database' do
   connection mysql_connection_info
   database_name node['rs-mysql']['application_database_name']
   action :create
-  not_if do
-    Dir.exists?("#{node['mysql']['data_dir']}/#{node['rs-mysql']['application_database_name']}") 
-  end
+  not_if { node['rs-mysql']['application_database_name'].to_s.empty? }
 end
 
 if !node['rs-mysql']['application_username'].to_s.empty? && !node['rs-mysql']['application_password'].to_s.empty?
