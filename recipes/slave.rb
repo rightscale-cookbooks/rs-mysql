@@ -114,7 +114,9 @@ end
 #remove auto.conf if exists in backup. causes isssues with same UUIDs
 file "#{node['rs-mysql']['device']['mount_point']}/auto.conf" do
   action :delete
+  only_if do ::File.exists?("#{node['rs-mysql']['device']['mount_point']}/auto.conf") end
 end
+
 
 mysql_database 'change master host' do
   database_name 'mysql'
