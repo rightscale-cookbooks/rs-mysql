@@ -101,7 +101,8 @@ end
   end
 
 
-# Make sure that there is a 'mysql' directory on the mount point of the volume
+  # Make sure that the permissions for the  'mysql' directory are set correctly.
+  # When recovering from a backup uids could have changed.
   execute "change permissions #{new_mysql_dir} owner" do
     command "chown -Rf mysql:mysql #{new_mysql_dir}"
     only_if { Etc.getpwuid(File.stat(new_mysql_dir).uid).name != "mysql" }

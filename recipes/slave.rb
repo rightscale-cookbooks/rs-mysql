@@ -112,9 +112,9 @@ if mysql_master_info && mysql_master_info.has_key?(:file) && mysql_master_info.h
 end
 
 #remove auto.conf if exists in backup. causes isssues with same UUIDs
-file "#{node['rs-mysql']['device']['mount_point']}/auto.conf" do
+file "#{node['rs-mysql']['device']['mount_point']}/mysql/auto.cnf" do
   action :delete
-  only_if do ::File.exists?("#{node['rs-mysql']['device']['mount_point']}/auto.conf") end
+  only_if do ::File.exists?("#{node['rs-mysql']['device']['mount_point']}/mysql/auto.cnf") end
 end
 
 

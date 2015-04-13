@@ -117,6 +117,15 @@ directory new_mysql_dir do
   action :create
 end
 
+
+# Make sure that the permissions for the  'mysql' directory are set correctly.
+# When recovering from a backup uids could have changed.
+execute "change permissions #{new_mysql_dir} owner" do
+  command "chown -Rf mysql:mysql #{new_mysql_dir}"
+  only_if { Etc.getpwuid(File.stat(new_mysql_dir).uid).name != "mysql" }
+end
+
+
 # Override the mysql data_dir. This will do the following:
 #   - Change the data_dir setting in the my.cnf to the new location.
 #   - Move the data from the /var/lib/mysql to this new location. This will be done only if the new location is
