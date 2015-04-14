@@ -111,12 +111,11 @@ if mysql_master_info && mysql_master_info.has_key?(:file) && mysql_master_info.h
   change_master << ", MASTER_LOG_FILE='#{mysql_master_info[:file]}', MASTER_LOG_POS=#{mysql_master_info[:position]}"
 end
 
-#remove auto.cnf if exists in backup. causes isssues with same UUIDs
+# Remove auto.cnf if it exists, included in version 5.6+.  A restored auto.cnf file contains the UUID of the DB that
+# its backup came from, resulting in replication issues.
 file "#{node['rs-mysql']['device']['mount_point']}/mysql/auto.cnf" do
   action :delete
-  only_if do ::File.exists?("#{node['rs-mysql']['device']['mount_point']}/mysql/auto.cnf") end
 end
-
 
 mysql_database 'change master host' do
   database_name 'mysql'
