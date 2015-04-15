@@ -135,8 +135,8 @@ attribute 'rs-mysql/device/volume_type',
 
 attribute 'rs-mysql/device/filesystem',
   :display_name => 'Device Filesystem',
-  :description => 'The filesystem to be used on the device. Example: ext4',
-  :default => 'ext4',
+  :description => 'The filesystem to be used on the device. Defaults are based on OS and determined in' +
+    ' attributes/volume.rb. Example: ext4',
   :recipes => ['rs-mysql::volume', 'rs-mysql::stripe'],
   :required => 'optional'
 

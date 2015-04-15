@@ -48,7 +48,9 @@ default['rs-mysql']['device']['volume_type'] = nil
 default['rs-mysql']['device']['controller_type'] = nil
 
 # The filesystem to be used on the device
-default['rs-mysql']['device']['filesystem'] = 'ext4'
+# RHEL 7 and CentOS 7 uses XFS as their default file system.
+default['rs-mysql']['device']['filesystem'] =
+  node['platform_family'] == 'rhel' && node['platform_version'] =~ /^7\./ ? 'xfs' : 'ext4'
 
 # Amount of time (in seconds) to wait for a volume to detach at decommission
 default['rs-mysql']['device']['detach_timeout'] = 300
