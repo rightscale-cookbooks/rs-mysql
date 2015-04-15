@@ -108,7 +108,9 @@ attribute 'rs-mysql/device/mount_point',
 
 attribute 'rs-mysql/device/nickname',
   :display_name => 'Device Nickname',
-  :description => 'Nickname for the device. Example: data_storage',
+  :description => 'Nickname for the device. rs-mysql::volume uses this for the filesystem label, which is' +
+    ' restricted to 12 characters.  If longer than 12 characters, the filesystem label will be set to the' +
+    ' first 12 characters. Example: data_storage',
   :default => 'data_storage',
   :recipes => ['rs-mysql::volume', 'rs-mysql::stripe', 'rs-mysql::decommission'],
   :required => 'recommended'
