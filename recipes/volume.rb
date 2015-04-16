@@ -104,7 +104,6 @@ end
 # When recovering from a backup uids could have changed.
 execute "change permissions #{new_mysql_dir} owner" do
   command "chown --recursive --silent mysql:mysql #{new_mysql_dir}"
-  only_if { Etc.getpwuid(File.stat(new_mysql_dir).uid).name != "mysql" }
 end
 
 # Override the mysql data_dir. This will do the following:

@@ -13,6 +13,7 @@ describe 'rs-mysql::volume' do
     end
   end
   let(:nickname) { chef_run.node['rs-mysql']['device']['nickname'] }
+  let(:new_mysql_dir) {"/mnt/storage/mysql"}
   let(:detach_timeout) do
     chef_runner.converge(described_recipe).node['rs-mysql']['device']['detach_timeout'].to_i
   end
@@ -20,6 +21,7 @@ describe 'rs-mysql::volume' do
   before do
     stub_command('[ `rs_config --get decommission_timeout` -eq 300 ]').and_return(false)
     stub_command("/usr/bin/mysql -u root -e 'show databases;'").and_return(true)
+    stub_command("chown --recursive --silent mysql:mysql #{new_mysql_dir}").and_return(true)
   end
 
   context 'rs-mysql/restore/lineage is not set' do
@@ -53,6 +55,12 @@ describe 'rs-mysql::volume' do
       expect(chef_run).to create_directory('/mnt/storage/mysql').with(
         owner: 'mysql',
         group: 'mysql',
+      )
+    end
+
+    it 'recursively changes ownership of the mysql directory' do
+      expect(chef_run).to run_execute("change permissions #{new_mysql_dir} owner").with(
+        command: "chown --recursive --silent mysql:mysql #{new_mysql_dir}"
       )
     end
 
