@@ -21,6 +21,33 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
+# RHEL on some clouds take some time to add RHEL repos.
+# Check and wait a few seconds if RHEL repos are not yet installed.
+if node['platform'] == 'redhat'
+  if !node.attribute?('cloud') || !node['cloud'].attribute?('provider') || !node.attribute?(node['cloud']['provider'])
+    log "Not running on a known cloud - skipping check for RHEL repo"
+  else
+    # Depending on cloud, add string returned by 'yum --cacheonly repolist' to determine if RHEL repo has been added.
+    case node['cloud']['provider']
+    when 'rackspace'
+      repo_id_partial = 'rhel-x86_64-server'
+    else
+      # Check to be skipped since cloud not in list.
+      repo_id_partial = nil
+    end
+
+    unless repo_id_partial.nil?
+      Timeout.timeout(300) do
+        loop do
+          check_rhel_repo = Mixlib::ShellOut.new("yum --cacheonly repolist | grep #{repo_id_partial}").run_command
+          check_rhel_repo.exitstatus == 0 ? break : sleep(1)
+        end
+      end
+    end
+
+  end
+end
+
 # Override the mysql/bind_address attribute with the server IP since
 # node['cloud']['local_ipv4'] returns an inconsistent type on AWS (String) and Google (Array) clouds
 bind_ip_address = RsMysql::Helper.get_bind_ip_address(node)
