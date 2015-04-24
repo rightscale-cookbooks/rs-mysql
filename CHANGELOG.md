@@ -6,7 +6,7 @@ This file is used to list changes made in each version of the rs-mysql cookbook.
 v1.1.7
 ------
 
-- On RHEL, check and wait for RHEL repos to be installed.
+- On RHEL, depending on cloud, check and wait for RHEL repos to be installed.
 
 v1.1.6
 ------
