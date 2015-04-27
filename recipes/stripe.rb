@@ -48,19 +48,6 @@ volume_options[:iops] = node['rs-mysql']['device']['iops'] if node['rs-mysql']['
 volume_options[:volume_type] = node['rs-mysql']['device']['volume_type'] if node['rs-mysql']['device']['volume_type']
 volume_options[:controller_type] = node['rs-mysql']['device']['controller_type'] if node['rs-mysql']['device']['controller_type']
 
-# Due to issue https://github.com/gregsymons/di-ruby-lvm-attrib/issues/22
-# an update for LVM 2.0.2.115 was needed to work on RHEL/CentOS 7.1.
-# Once pull request is merged, issue closed, and rubygems updated,
-# this section and the source file can be removed.
-cookbook_file '/tmp/di-ruby-lvm-attrib-0.0.17.gem' do
-  source "di-ruby-lvm-attrib-0.0.17.gem"
-  action :nothing
-end.run_action(:create)
-chef_gem 'di-ruby-lvm-attrib' do
-  source '/tmp/di-ruby-lvm-attrib-0.0.17.gem'
-  action :install
-end
-
 # Install packages required for setting up LVM
 include_recipe 'lvm::default'
 
