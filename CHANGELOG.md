@@ -5,7 +5,9 @@ This file is used to list changes made in each version of the rs-mysql cookbook.
 
 v1.1.8
 ------
+
 - Updated lvm cookbook dependency version to 1.3.6.
+- Set default filesystem on RHEL 7 platform_family to xfs.
 
 v1.1.7
 ------
