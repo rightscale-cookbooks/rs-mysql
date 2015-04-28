@@ -31,7 +31,7 @@ detach_timeout = node['rs-mysql']['device']['detach_timeout'].to_i * device_coun
 
 execute "set decommission timeout to #{detach_timeout}" do
   command "rs_config --set decommission_timeout #{detach_timeout}"
-  #not_if "[ `rs_config --get decommission_timeout` -eq #{detach_timeout} ]"
+  not_if "[ `rs_config --get decommission_timeout` -eq #{detach_timeout} ]"
 end
 
 each_device_size = (size.to_f / device_count.to_f).ceil
@@ -117,10 +117,11 @@ directory new_mysql_dir do
   action :create
 end
 
-# Make sure that the permissions for the  'mysql' directory are set correctly.
+# Make sure that the permissions for the 'mysql' directory are set correctly.
 # When recovering from a backup uids could have changed.
 execute "change permissions #{new_mysql_dir} owner" do
   command "chown --recursive --silent mysql:mysql #{new_mysql_dir}"
+  not_if "stat -c %U #{new_mysql_dir}/mysql |grep mysql"
 end
 
 # Override the mysql data_dir. This will do the following:

@@ -34,7 +34,7 @@ describe 'rs-mysql::stripe' do
 
     it 'sets the decommission timeout' do
       expect(chef_run).to run_execute("set decommission timeout to #{detach_timeout * 2}").with(
-        command: "rs_config --set decommission_timeout #{detach_timeout * 2}"
+        command: "rs_config --set decommission_timeout #{detach_timeout * 2}",
       )
     end
 

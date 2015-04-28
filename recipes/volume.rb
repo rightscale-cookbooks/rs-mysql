@@ -94,6 +94,7 @@ else
   end
 end
 
+# Make sure that there is a 'mysql' directory on the mount point of the volume
 directory new_mysql_dir do
   owner 'mysql'
   group 'mysql'
@@ -104,6 +105,7 @@ end
 # When recovering from a backup uids could have changed.
 execute "change permissions #{new_mysql_dir} owner" do
   command "chown --recursive --silent mysql:mysql #{new_mysql_dir}"
+  not_if "stat -c %U #{new_mysql_dir} |grep mysql"
 end
 
 # Override the mysql data_dir. This will do the following:
