@@ -122,6 +122,7 @@ end
 execute "change permissions #{new_mysql_dir} owner" do
   command "chown --recursive --silent mysql:mysql #{new_mysql_dir}"
   not_if "stat -c %U #{new_mysql_dir}/mysql |grep mysql"
+  action :run
 end
 
 # Override the mysql data_dir. This will do the following:

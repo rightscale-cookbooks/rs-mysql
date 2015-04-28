@@ -27,6 +27,7 @@ describe 'rs-mysql::stripe' do
     stub_command('[ `rs_config --get decommission_timeout` -eq 600 ]').and_return(false)
     stub_command("/usr/bin/mysql -u root -e 'show databases;'").and_return(true)
     stub_command("chown --recursive --silent mysql:mysql #{new_mysql_dir}").and_return(true)
+    stub_command("stat -c %U #{new_mysql_dir}/mysql |grep mysql").and_return(false)
   end
 
   context 'rs-mysql/restore/lineage is not set' do

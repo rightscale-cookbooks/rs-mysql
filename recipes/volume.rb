@@ -101,11 +101,12 @@ directory new_mysql_dir do
   action :create
 end
 
-# Make sure that the permissions for the  'mysql' directory are set correctly.
+# Make sure that the permissions for the 'mysql' directory are set correctly.
 # When recovering from a backup uids could have changed.
 execute "change permissions #{new_mysql_dir} owner" do
   command "chown --recursive --silent mysql:mysql #{new_mysql_dir}"
-  not_if "stat -c %U #{new_mysql_dir} |grep mysql"
+  not_if "stat -c %U #{new_mysql_dir}/mysql |grep mysql"
+  action :run
 end
 
 # Override the mysql data_dir. This will do the following:
