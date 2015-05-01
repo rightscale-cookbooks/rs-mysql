@@ -48,7 +48,9 @@ default['rs-mysql']['device']['volume_type'] = nil
 default['rs-mysql']['device']['controller_type'] = nil
 
 # The filesystem to be used on the device
-default['rs-mysql']['device']['filesystem'] = 'ext4'
+# RHEL 7 and CentOS 7 uses XFS as their default file system.
+default['rs-mysql']['device']['filesystem'] =
+  node['platform_family'] == 'rhel' && node['platform_version'] =~ /^7\./ ? 'xfs' : 'ext4'
 
 # Amount of time (in seconds) to wait for a volume to detach at decommission
 default['rs-mysql']['device']['detach_timeout'] = 300
@@ -56,9 +58,10 @@ default['rs-mysql']['device']['detach_timeout'] = 300
 # Whether to destroy volume(s) on decommission
 default['rs-mysql']['device']['destroy_on_decommission'] = false
 
-# The additional options/flags to use for the `mkfs` command. If the whole device is formatted, the force (-F) flag
-# can be used (on ext4 filesystem) to force the operation. This flag may vary based on the filesystem type.
-default['rs-mysql']['device']['mkfs_options'] = '-F'
+# The additional options/flags to use for the `mkfs` command. If the whole device is formatted, the force flag
+# can be used to force the operation. This flag varies based on the filesystem type.
+default['rs-mysql']['device']['mkfs_options'] =
+  node['rs-mysql']['device']['filesystem'] == 'xfs' ? '-f' : '-F'
 
 # The stripe size to use while creating LVM
 default['rs-mysql']['device']['stripe_size'] = 512

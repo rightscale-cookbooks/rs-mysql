@@ -4,7 +4,7 @@ maintainer_email 'cookbooks@rightscale.com'
 license          'Apache 2.0'
 description      'Installs and configures a MySQL server'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '1.1.7'
+version          '1.1.8'
 
 depends 'chef_handler', '~> 1.1.6'
 depends 'marker', '~> 1.0.1'
@@ -12,10 +12,10 @@ depends 'database', '~> 1.5.2'
 depends 'mysql', '~> 4.0.18'
 depends 'collectd', '~> 1.1.0'
 depends 'rightscale_tag', '~> 1.0.2'
-depends 'filesystem', '~> 0.9.0'
-depends 'lvm', '~> 1.1.0'
-depends 'rightscale_volume', '~> 1.2.4'
-depends 'rightscale_backup', '~> 1.1.5'
+depends 'filesystem', '~> 0.10.0'
+depends 'lvm', '~> 1.3.6'
+depends 'rightscale_volume', '~> 1.2.7'
+depends 'rightscale_backup', '~> 1.1.8'
 depends 'dns', '~> 0.1.3'
 depends 'git', '~> 4.0.2'
 
@@ -108,7 +108,9 @@ attribute 'rs-mysql/device/mount_point',
 
 attribute 'rs-mysql/device/nickname',
   :display_name => 'Device Nickname',
-  :description => 'Nickname for the device. Example: data_storage',
+  :description => 'Nickname for the device. rs-mysql::volume uses this for the filesystem label, which is' +
+    ' restricted to 12 characters.  If longer than 12 characters, the filesystem label will be set to the' +
+    ' first 12 characters. Example: data_storage',
   :default => 'data_storage',
   :recipes => ['rs-mysql::volume', 'rs-mysql::stripe', 'rs-mysql::decommission'],
   :required => 'recommended'
@@ -135,8 +137,8 @@ attribute 'rs-mysql/device/volume_type',
 
 attribute 'rs-mysql/device/filesystem',
   :display_name => 'Device Filesystem',
-  :description => 'The filesystem to be used on the device. Example: ext4',
-  :default => 'ext4',
+  :description => 'The filesystem to be used on the device. Defaults are based on OS and determined in' +
+    ' attributes/volume.rb. Example: ext4',
   :recipes => ['rs-mysql::volume', 'rs-mysql::stripe'],
   :required => 'optional'
 

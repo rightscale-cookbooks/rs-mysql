@@ -48,7 +48,9 @@ if node['rs-mysql']['restore']['lineage'].to_s.empty?
     action [:create, :attach]
   end
 
+  # Filesystem label must be <= 12 chars
   filesystem device_nickname do
+    label device_nickname[0,12]
     fstype node['rs-mysql']['device']['filesystem']
     device lazy { node['rightscale_volume'][device_nickname]['device'] }
     mkfs_options node['rs-mysql']['device']['mkfs_options']
