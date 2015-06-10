@@ -84,8 +84,10 @@ node.override['mysql']['tunable']['log_bin'] = "#{node['mysql']['data_dir']}/mys
 Chef::Log.info "Overriding mysql/tunable/binlog_format to 'MIXED'"
 node.override['mysql']['tunable']['binlog_format'] = 'MIXED'
 
-# Convert the server IP to an integer and use it for the server-id attribute in my.cnf
-server_id = RsMysql::Helper.get_server_ip(node).to_i
+# Convert MAC address to an integer and use it for the server-id attribute in my.cnf.
+# This is used since MAC addresses within the same network must be different to correctly talk to each other.
+server_id = node['macaddress'].gsub(/\W/,'').to_i(16)
+
 Chef::Log.info "Overriding mysql/tunable/server_id to '#{server_id}'"
 node.override['mysql']['tunable']['server_id'] = server_id
 
