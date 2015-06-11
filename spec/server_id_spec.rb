@@ -17,8 +17,10 @@ describe 'rs-mysql::default' do
       node.set['rs-mysql']['server_root_password'] = 'rootpass'
     end.converge(described_recipe)
 
+    # Chefspec by default sets node['macaddress'] to '11:11:11:11:11:11'
+    # In generating the server_id, we remove the first 2 octets - we do the same here to verify
     it 'sets server_id based on macaddress' do
-      expect(chef_run.node['mysql']['tunable']['server_id']).to eq('111111111111'.to_i(16))
+      expect(chef_run.node['mysql']['tunable']['server_id']).to eq(0x11111111)
     end
   end
 end
