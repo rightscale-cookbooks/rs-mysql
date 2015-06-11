@@ -87,7 +87,7 @@ node.override['mysql']['tunable']['binlog_format'] = 'MIXED'
 # Drop first 2 hex numbers from MAC address to have a 32-bit integer and use it for the server-id attribute in my.cnf.
 # This is used since MAC addresses within the same network must be different to correctly talk to each other.
 # Some clouds use the same public IP with different ports for multiple instances, so IP is not unique.
-server_id = node['macaddress'].split(/\W/)[2..-1].map {|item| item.hex.to_s(2)}.join.to_i(2)
+server_id = node['macaddress'].split(/\W/)[2..-1].join.to_i(16)
 
 Chef::Log.info "Overriding mysql/tunable/server_id to '#{server_id}'"
 node.override['mysql']['tunable']['server_id'] = server_id
