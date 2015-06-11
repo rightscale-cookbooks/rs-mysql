@@ -24,30 +24,6 @@ module RsMysql
   module Helper
     extend Chef::Mixin::ShellOut
 
-    # Gets the first public IP address of the server if present, or else
-    # returns its first private IP address.
-    #
-    # @param node [Chef::Node] the chef node
-    #
-    # @return [IPAddr] the IP address of the server
-    #
-    def self.get_server_ip(node)
-      instance_ips = Array.new
-
-      if node['cloud']['public_ips']
-        instance_ips += node['cloud']['public_ips']
-      end
-
-      if node['cloud']['private_ips']
-        instance_ips += node['cloud']['private_ips']
-      end
-
-      server_ip = instance_ips.detect { |ip| !ip.nil? && !ip.empty? }
-
-      Chef::Log.info "Server IP: #{server_ip}"
-      IPAddr.new(server_ip)
-    end
-
     # Gets the IP address that the MySQL server will bind to. If `node['rs-mysql']['bind_address']` is set to an IP
     # address or host name, the IP address value of the attribute will be used instead.
     #
