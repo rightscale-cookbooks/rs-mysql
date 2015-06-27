@@ -3,6 +3,12 @@ rs-mysql Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-mysql cookbook.
 
+v1.1.10
+-------
+
+- Run pvscan after volumes attached for stripe.  Behavior seen in CentOS 6.6 where volumes attached are not
+  immediately seen as part of a Logical Volume.
+
 v1.1.9
 ------
 
