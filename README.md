@@ -218,6 +218,8 @@ records.
 - `node['rs-mysql']['schedule']['enable']` - Enable/disable automated backups. Default is `false`.
 - `node['rs-mysql']['schedule']['hour']` - The backup schedule hour. Default is `nil`.
 - `node['rs-mysql']['schedule']['minute']` - The backup schedule minute. Default is `nil`.
+- `node['rightscale']['decom_reason']` - Set from RL10 Shutdown Reason Rightscript to determine how to handle 
+   rs-mysql::decommission behavior   
 
 # Recipes
 
