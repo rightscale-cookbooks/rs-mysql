@@ -23,18 +23,12 @@ describe 'rs-mysql::stripe' do
   end
 
   before do
-    stub_command('[ `rs_config --get decommission_timeout` -eq 600 ]').and_return(false)
     stub_command("/usr/bin/mysql -u root -e 'show databases;'").and_return(true)
   end
 
   context 'rs-mysql/restore/lineage is not set' do
     let(:chef_run) { chef_runner.converge(described_recipe) }
 
-    it 'sets the decommission timeout' do
-      expect(chef_run).to run_execute("set decommission timeout to #{detach_timeout * 2}").with(
-        command: "rs_config --set decommission_timeout #{detach_timeout * 2}",
-      )
-    end
 
     it 'creates two new volumes and attaches them' do
       expect(chef_run).to create_rightscale_volume(nickname_1).with(

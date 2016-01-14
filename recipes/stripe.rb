@@ -29,10 +29,6 @@ raise 'rs-mysql/device/count should be at least 2 for setting up stripe' if devi
 
 detach_timeout = node['rs-mysql']['device']['detach_timeout'].to_i * device_count
 
-execute "set decommission timeout to #{detach_timeout}" do
-  command "rs_config --set decommission_timeout #{detach_timeout}"
-  not_if "[ `rs_config --get decommission_timeout` -eq #{detach_timeout} ]"
-end
 
 each_device_size = (size.to_f / device_count.to_f).ceil
 
