@@ -8,11 +8,11 @@ cookbook 'dns', github: 'rightscale-cookbooks-contrib/dns', branch: 'rightscale_
 cookbook 'build-essential', '~> 2.2.4'
 cookbook 'database', github: 'rightscale-cookbooks-contrib/database', branch: 'rs-fixes'
 
-cookbook 'rightscale_backup',github: 'cdwilhelm/rightscale_backup'
-cookbook 'rightscale_volume',github: 'cdwilhelm/rightscale_volume'
-cookbook 'rightscale_tag',github: 'cdwilhelm/rightscale_tag'
-cookbook 'machine_tag',github: 'cdwilhelm/machine_tag'
-cookbook 'ephemeral_lvm',github:'cdwilhelm/ephemeral_lvm'
+cookbook 'rightscale_backup',github: 'cdwilhelm/rightscale_backup', branch: 'curt-dev'
+cookbook 'rightscale_volume',github: 'cdwilhelm/rightscale_volume', branch: 'curt-dev'
+cookbook 'rightscale_tag',github: 'cdwilhelm/rightscale_tag', branch: 'curt-dev'
+cookbook 'machine_tag',github: 'cdwilhelm/machine_tag', branch: 'curt-dev'
+cookbook 'ephemeral_lvm',github:'cdwilhelm/ephemeral_lvm', branch: 'curt-dev'
 
 group :integration do
   cookbook 'runit', '1.6.0'
