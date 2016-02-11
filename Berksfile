@@ -5,14 +5,14 @@ metadata
 cookbook 'collectd', github: 'rightscale-cookbooks-contrib/chef-collectd', branch: 'generalize_install_for_both_centos_and_ubuntu'
 cookbook 'mysql', github: 'rightscale-cookbooks-contrib/mysql', branch: 'rs-fixes'
 cookbook 'dns', github: 'rightscale-cookbooks-contrib/dns', branch: 'rightscale_development_v2'
-cookbook 'build-essential', '~> 2.2.4'
+#cookbook 'build-essential', '~> 2.2.4'
 cookbook 'database', github: 'rightscale-cookbooks-contrib/database', branch: 'rs-fixes'
 
-cookbook 'rightscale_backup',github: 'cdwilhelm/rightscale_backup', branch: 'curt-dev'
-cookbook 'rightscale_volume',github: 'cdwilhelm/rightscale_volume', branch: 'curt-dev'
-cookbook 'rightscale_tag',github: 'cdwilhelm/rightscale_tag', branch: 'curt-dev'
-cookbook 'machine_tag',github: 'cdwilhelm/machine_tag', branch: 'curt-dev'
-cookbook 'ephemeral_lvm',github:'cdwilhelm/ephemeral_lvm', branch: 'curt-dev'
+cookbook 'rightscale_backup',github: 'rightscale-cookbooks/rightscale_backup'
+cookbook 'rightscale_volume',github: 'rightscale-cookbooks/rightscale_volume'
+cookbook 'rightscale_tag',github: 'rightscale-cookbooks/rightscale_tag'
+cookbook 'machine_tag',github: 'rightscale-cookbooks/machine_tag'
+cookbook 'ephemeral_lvm',github:'rightscale-cookbooks/ephemeral_lvm'
 
 group :integration do
   cookbook 'runit', '1.6.0'
