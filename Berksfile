@@ -10,9 +10,9 @@ cookbook 'database', github: 'rightscale-cookbooks-contrib/database', branch: 'r
 
 cookbook 'rightscale_backup',github: 'rightscale-cookbooks/rightscale_backup'
 cookbook 'rightscale_volume',github: 'rightscale-cookbooks/rightscale_volume'
-cookbook 'rightscale_tag',github: 'rightscale-cookbooks/rightscale_tag'
-cookbook 'machine_tag',github: 'rightscale-cookbooks/machine_tag'
-cookbook 'ephemeral_lvm',github:'rightscale-cookbooks/ephemeral_lvm'
+cookbook 'rightscale_tag',github: 'rightscale-cookbooks/rightscale_tag', branch: 'PSASSET-480'
+cookbook 'machine_tag',github: 'rightscale-cookbooks/machine_tag', branch: 'v1.2.0'
+cookbook 'ephemeral_lvm',github:'rightscale-cookbooks/ephemeral_lvm', branch: 'v1.0.12'
 
 group :integration do
   cookbook 'runit', '1.6.0'
