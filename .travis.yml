@@ -2,7 +2,7 @@ language: ruby
 rvm:
 - 2.0.0
 - 1.9.3
-before_script: bundle exec berks install; cat Berkfile.lock
+before_script: bundle exec berks install -d; bundle exec berks list -d
 script: bundle exec strainer test --except kitchen
 notifications:
   slack:
