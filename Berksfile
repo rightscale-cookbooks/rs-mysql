@@ -5,7 +5,7 @@ metadata
 cookbook 'collectd', github: 'rightscale-cookbooks-contrib/chef-collectd', branch: 'generalize_install_for_both_centos_and_ubuntu'
 cookbook 'mysql', github: 'rightscale-cookbooks-contrib/mysql', branch: 'rs-fixes'
 cookbook 'dns', github: 'rightscale-cookbooks-contrib/dns', branch: 'rightscale_development_v2'
-cookbook 'build-essential', '~> 2.4.0'
+cookbook 'build-essential', '~> 1.4'
 cookbook 'database', github: 'rightscale-cookbooks-contrib/database', branch: 'rs-fixes'
 
 cookbook 'rightscale_backup',github: 'rightscale-cookbooks/rightscale_backup', branch: 'v1.2.0'
