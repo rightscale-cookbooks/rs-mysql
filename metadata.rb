@@ -20,6 +20,7 @@ depends 'dns', '~> 0.1.3'
 depends 'git', '~> 4.0.2'
 depends 'aws', '~> 2.9.3'
 depends 'ohai', '~> 2.1.0'
+depends 'build-essential', '= 2.4.0'
 
 recipe 'rs-mysql::default', 'Sets up a standalone MySQL server'
 recipe 'rs-mysql::collectd', 'Sets up collectd monitoring for MySQL server'
