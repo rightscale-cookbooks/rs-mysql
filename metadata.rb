@@ -18,6 +18,7 @@ depends 'rightscale_volume', '~> 1.3.0'
 depends 'rightscale_backup', '~> 1.2.0'
 depends 'dns', '~> 0.1.3'
 depends 'git', '~> 4.0.2'
+depends 'ohai', '~> 3.0.1'
 
 recipe 'rs-mysql::default', 'Sets up a standalone MySQL server'
 recipe 'rs-mysql::collectd', 'Sets up collectd monitoring for MySQL server'
