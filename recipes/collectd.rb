@@ -52,11 +52,11 @@ rewind 'ruby_block[delete_old_plugins]' do
 end
 
 collectd_plugin 'processes' do
- options :process => 'collectd', :process => 'mysqld'
+ options :process => [ 'collectd', 'mysqld' ]
 end
 
 collectd_plugin 'mysql' do
   cookbook 'rs-mysql'
   template 'plugin.conf.erb'
-  options( 'database' => 'mysql', 'dbopts' => node['rs-mysql']['collectd']['mysql'] )
+  options( node['rs-mysql']['collectd']['mysql'] )
 end
