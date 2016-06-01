@@ -51,10 +51,10 @@ rewind 'ruby_block[delete_old_plugins]' do
   action :nothing
 end
 
+collectd_plugin 'processes' do
+ options :process => 'collectd', :process => 'mysqld'
+end
+
 collectd_plugin 'mysql' do
-  options({
-    'Host' => 'localhost',
-    'User' => 'root',
-    'Password' => node['rs-mysql']['server_root_password']
-  })
+  options( :database => node['rs-mysql']['collectd'] )
 end

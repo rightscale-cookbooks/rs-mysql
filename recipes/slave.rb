@@ -136,3 +136,7 @@ file mysql_master_info_file do
   backup false
   action :delete
 end
+
+node.default['rs-mysql']['collectd']['mysql']['SlaveStats'] = 'true'
+node.default['rs-mysql']['collectd']['mysql']['SlaveNotifications'] = 'true'
+include_recipe 'rs-mysql::collectd'
