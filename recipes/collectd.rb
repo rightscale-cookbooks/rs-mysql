@@ -56,5 +56,7 @@ collectd_plugin 'processes' do
 end
 
 collectd_plugin 'mysql' do
-  options( :database => node['rs-mysql']['collectd'] )
+  cookbook 'rs-mysql'
+  template 'plugin.conf.erb'
+  options( 'database' => 'mysql', 'dbopts' => node['rs-mysql']['collectd']['mysql'] )
 end
