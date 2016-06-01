@@ -18,18 +18,12 @@ describe 'rs-mysql::volume' do
   end
 
   before do
-    stub_command('[ `rs_config --get decommission_timeout` -eq 300 ]').and_return(false)
     stub_command("/usr/bin/mysql -u root -e 'show databases;'").and_return(true)
   end
 
   context 'rs-mysql/restore/lineage is not set' do
     let(:chef_run) { chef_runner.converge(described_recipe) }
 
-    it 'sets the decommission timeout' do
-      expect(chef_run).to run_execute("set decommission timeout to #{detach_timeout}").with(
-        command: "rs_config --set decommission_timeout #{detach_timeout}",
-      )
-    end
 
     it 'creates a new volume and attaches it' do
       expect(chef_run).to create_rightscale_volume(nickname).with(

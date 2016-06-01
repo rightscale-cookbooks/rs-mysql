@@ -23,13 +23,14 @@ end
 
 # Check for the safety attribute first
 if node['rs-mysql']['device']['destroy_on_decommission'] != true &&
-  node['rs-mysql']['device']['destroy_on_decommission'] != 'true'
+    node['rs-mysql']['device']['destroy_on_decommission'] != 'true'
   log "rs-mysql/device/destroy_on_decommission is set to '#{node['rs-mysql']['device']['destroy_on_decommission']}'" +
     " skipping..."
-# Check 'rs_run_state' and skip if the instance is rebooting or entering the stop state
-elsif ['shutting-down:reboot', 'shutting-down:stop', 'shutting-down:unknown'].include?(get_rs_run_state)
+  # Check 'DECOM_REASON' from Shutdown Reason script and skip if the instance
+  # is rebooting or entering the stop state
+elsif ['reboot', 'stop',].include?(node['rightscale']['decom_reason'])
   log 'Skipping deletion of volumes as the instance is either rebooting or entering the stop state...'
-# Detach and delete the volumes if the above safety conditions are satisfied
+  # Detach and delete the volumes if the above safety conditions are satisfied
 else
   # Delete the link created as /var/lib/mysql
   link '/var/lib/mysql' do
@@ -89,7 +90,7 @@ else
         action [:detach, :delete]
       end
     end
-  # If LVM is not used, we only have a single device. In this case, unmount, detach and delete the volume.
+    # If LVM is not used, we only have a single device. In this case, unmount, detach and delete the volume.
   else
     # Unmount the volume
     log "Unmounting #{node['rs-mysql']['device']['mount_point']}"

@@ -18,6 +18,7 @@ Github Repository: [https://github.com/rightscale-cookbooks/rs-mysql](https://gi
 
 * Requires Chef 11 or higher
 * Requires Ruby 1.9 of higher
+* [RightLink 10](http://docs.rightscale.com/rl10/) See cookbook version 1.1.9 for RightLink 6 support
 * Platform
   * Ubuntu 12.04
   * CentOS 6
@@ -218,6 +219,8 @@ records.
 - `node['rs-mysql']['schedule']['enable']` - Enable/disable automated backups. Default is `false`.
 - `node['rs-mysql']['schedule']['hour']` - The backup schedule hour. Default is `nil`.
 - `node['rs-mysql']['schedule']['minute']` - The backup schedule minute. Default is `nil`.
+- `node['rightscale']['decom_reason']` - Set from RL10 Shutdown Reason Rightscript to determine how to handle
+   rs-mysql::decommission behavior
 
 # Recipes
 

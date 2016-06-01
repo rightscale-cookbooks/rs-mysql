@@ -37,6 +37,6 @@ end
 cron "backup_schedule_#{lineage}" do
   minute schedule_minute
   hour schedule_hour
-  command "rs_run_recipe --policy 'rs-mysql::backup' --name 'rs-mysql::backup'"
+  command "sudo rsc rl10 run_right_script /rll/run/right_script 'right_script=Mysql Server Backup - chef'"
   action schedule_enable ? :create : :delete
 end

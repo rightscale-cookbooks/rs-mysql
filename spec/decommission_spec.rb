@@ -25,22 +25,17 @@ describe 'rs-mysql::decommission' do
   context 'rs-mysql/device/destroy_on_decommission is set to true' do
     let(:chef_runner_decommission) do
       chef_runner.node.set['rs-mysql']['device']['destroy_on_decommission'] = true
+      chef_runner.node.set["rightscale"]["decom_reason"] = 'terminate'
       chef_runner
     end
     let(:nickname) { chef_runner.converge(described_recipe).node['rs-mysql']['device']['nickname'] }
 
-    context 'RightScale run state is shutting-down:terminate' do
+    context 'RightScale run state is terminate' do
       before do
         stub_command('test -L /var/lib/mysql').and_return(true)
         stub_command('[ `stat -c %h /var/lib/mysql/` -eq 2 ]').and_return(true)
         stub_command('test -d /mnt/storage/mysql').and_return(true)
         stub_command('test -f /var/lib/mysql/ib_logfile0').and_return(true)
-        rs_state = double
-        Mixlib::ShellOut.stub(:new).with('rs_state --type=run').and_return(rs_state)
-        allow(rs_state).to receive(:run_command)
-        allow(rs_state).to receive(:error!)
-        allow(rs_state).to receive(:live_stream=)
-        allow(rs_state).to receive(:stdout).and_return('shutting-down:terminate')
       end
 
       context 'LVM is not used' do
@@ -161,18 +156,10 @@ describe 'rs-mysql::decommission' do
       end
     end
 
-    ['shutting-down:reboot', 'shutting-down:stop'].each do |state|
+    ['reboot', 'stop'].each do |state|
       context "RightScale run state is #{state}" do
-        before do
-          rs_state = double
-          Mixlib::ShellOut.stub(:new).with('rs_state --type=run').and_return(rs_state)
-          allow(rs_state).to receive(:run_command)
-          allow(rs_state).to receive(:error!)
-          allow(rs_state).to receive(:live_stream=)
-          allow(rs_state).to receive(:stdout).and_return(state)
-        end
-
         let(:chef_run) do
+          chef_runner_decommission.node.set["rightscale"]["decom_reason"] = state
           chef_runner_decommission.converge(described_recipe)
         end
 
