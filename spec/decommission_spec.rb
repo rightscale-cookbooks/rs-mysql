@@ -9,7 +9,6 @@ describe 'rs-mysql::decommission' do
       node.set['rs-mysql']['backup']['lineage'] = 'testing'
       node.set['rs-mysql']['server_repl_password'] = 'replpass'
       node.set['rs-mysql']['server_root_password'] = 'rootpass'
-      
     end
   end
 

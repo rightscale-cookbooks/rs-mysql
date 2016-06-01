@@ -69,6 +69,10 @@ else
     action :restore
   end
 
+  execute 'run pvscan to scan recently attached volumes' do
+    command 'pvscan'
+  end
+
   directory '/var/lib/mysql' do
     recursive true
     action :delete
