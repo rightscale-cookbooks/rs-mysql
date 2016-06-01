@@ -3,6 +3,22 @@ rs-mysql Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-mysql cookbook.
 
+v1.2.2
+-------
+
+- Run pvscan after volumes attached for stripe.  Behavior seen in CentOS 6.6 where volumes attached are not
+  immediately seen as part of a Logical Volume.
+
+v1.2.1
+------
+
+- Hard Setting versions in metadata and berksfile
+- Locking down aws, ohai, and build-essential so it doesn't pull in chef12 libs
+
+v1.2.0
+------
+- add support for RightLink 10
+
 v1.1.9
 ------
 

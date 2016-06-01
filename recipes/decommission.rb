@@ -26,7 +26,7 @@ if node['rs-mysql']['device']['destroy_on_decommission'] != true &&
     node['rs-mysql']['device']['destroy_on_decommission'] != 'true'
   log "rs-mysql/device/destroy_on_decommission is set to '#{node['rs-mysql']['device']['destroy_on_decommission']}'" +
     " skipping..."
-  # Check 'DECOM_REASON' from Shutdown Reason script and skip if the instance 
+  # Check 'DECOM_REASON' from Shutdown Reason script and skip if the instance
   # is rebooting or entering the stop state
 elsif ['reboot', 'stop',].include?(node['rightscale']['decom_reason'])
   log 'Skipping deletion of volumes as the instance is either rebooting or entering the stop state...'
