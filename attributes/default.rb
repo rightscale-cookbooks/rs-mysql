@@ -66,3 +66,8 @@ default['rs-mysql']['import']['revision'] = nil
 
 # Dump file location in repository to import.
 default['rs-mysql']['import']['dump_file'] = nil
+
+# Sets up empty collectd options for v5
+default['rs-mysql']['collectd']['mysql']['User'] = 'root'
+default['rs-mysql']['collectd']['mysql']['Socket'] = '/var/run/mysqld/mysqld.sock'
+default['rs-mysql']['collectd']['mysql']['Password'] = node['rs-mysql']['server_root_password']
