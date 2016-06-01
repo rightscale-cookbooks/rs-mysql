@@ -34,6 +34,7 @@ recipe 'rs-mysql::decommission', 'Destroys LVM conditionally, detaches and destr
   ' be used as a decommission recipe in a RightScale ServerTemplate.'
 recipe 'rs-mysql::schedule', 'Enable/disable periodic backups based on rs-mysql/schedule/enable'
 recipe 'rs-mysql::dump_import', 'Download and import mysql dump file.'
+recipe 'rs-mysql::slave_monitors', 'enables slave scripts'
 
 
 attribute 'rs-mysql/server_usage',

@@ -2,6 +2,18 @@ user 'mysql_monitor' do
   action :create
 end
 
+service 'collectd' do
+  action :stop
+end
+
+bash 'clean up extra collectd processes' do
+  flags "-ex"
+  code <<-EOH
+     while [ `pkill -c collectd` -gt 0 ]; do pkill -9 collectd; done
+  EOH
+  action :run
+end
+
 template '/usr/local/bin/mysql_seconds_behind_master.rb' do
   source 'mysql_seconds_behind_master.rb.erb'
   owner 'root'
@@ -31,5 +43,5 @@ template ::File.join('/etc/collectd/plugins', 'exec.conf') do
 end
 
 service 'collectd' do
-  action :restart
+  action :start
 end
