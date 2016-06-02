@@ -2,7 +2,7 @@ LoadPlugin exec
 <Plugin exec>
   # userid plugin executable plugin args
   #   Exec "my_user" "/usr/lib/collectd/plugins/mycpuload.rb"
-  <% node['kabam-rs-mysql']['exec'].each do |exec| %>
+  <% node['rs-mysql']['exec'].each do |exec| %>
   <%= exec %>
   <% end %>
 </Plugin>

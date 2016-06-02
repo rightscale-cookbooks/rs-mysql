@@ -22,7 +22,7 @@ template '/usr/local/bin/mysql_seconds_behind_master.rb' do
   action :create
 end
 
-node.set['kabam-rs-mysql']['exec'] = ['Exec "mysql_monitor" "/opt/chef/embedded/bin/ruby" "/usr/local/bin/mysql_seconds_behind_master.rb"']
+node.set['rs-mysql']['exec'] = ['Exec "mysql_monitor" "/opt/chef/embedded/bin/ruby" "/usr/local/bin/mysql_seconds_behind_master.rb"']
 
 template '/usr/local/bin/mysql_slave_running.rb' do
   source 'mysql_slave_running.rb.erb'
@@ -32,7 +32,7 @@ template '/usr/local/bin/mysql_slave_running.rb' do
   action :create
 end
 
-node.set['kabam-rs-mysql']['exec'] << 'Exec "mysql_monitor" "/opt/chef/embedded/bin/ruby" "/usr/local/bin/mysql_slave_running.rb"'
+node.set['rs-mysql']['exec'] << 'Exec "mysql_monitor" "/opt/chef/embedded/bin/ruby" "/usr/local/bin/mysql_slave_running.rb"'
 
 template ::File.join('/etc/collectd/plugins', 'exec.conf') do
   source 'exec.conf.erb'
