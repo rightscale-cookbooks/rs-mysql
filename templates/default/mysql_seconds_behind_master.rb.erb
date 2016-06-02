@@ -1,0 +1,24 @@
+require 'mysql'
+PLUGIN_NAME='mysql_seconds_behind_master'
+@con=Mysql.new('localhost', 'debian-sys-maint', '<%= node['rs-mysql']['server_root_password'] %>')
+interval = 20
+hostname = '<%= node["rightscale"]["instance_uuid"] %>'
+begin
+  # Sync stdout so that it will flush to collectd properly.
+  $stdout.sync = true
+
+  # Collection loop
+  while true do
+    start_run = Time.now.to_i
+    next_run = start_run + interval
+
+    rs = @con.query('SHOW SLAVE STATUS')
+    rs.each_hash{ |row| @data=row["Seconds_Behind_Master"] }
+    puts("PUTVAL #{hostname}/#{PLUGIN_NAME}/gauge-seconds #{start_run}:#{@data}")
+
+    # sleep to make the interval
+    while((time_left = (next_run - Time.now.to_i)) > 0) do
+      sleep(time_left)
+    end
+  end
+end

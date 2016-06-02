@@ -1,0 +1,34 @@
+require 'mysql'
+PLUGIN_NAME='mysql_slave_running'
+@con=Mysql.new('localhost', 'debian-sys-maint', '<%= node['rs-mysql']['server_root_password'] %>')
+interval = 20
+hostname = '<%= node['rightscale']['instance_uuid'] %>'
+begin
+  # Sync stdout so that it will flush to collectd properly.
+  $stdout.sync = true
+
+  # Collection loop
+  while true do
+    start_run = Time.now.to_i
+    next_run = start_run + interval
+
+    rs = @con.query('SHOW SLAVE STATUS')
+    rs.each_hash do |row|
+      @io_running=row["Slave_IO_Running"]
+      @slave_running=row["Slave_SQL_Running"]
+    end
+    @counter = 0
+    if @io_running == "Yes"
+      @counter += 1
+    end
+    if @slave_running == "Yes"
+      @counter += 1
+    end
+    puts("PUTVAL #{hostname}/#{PLUGIN_NAME}/gauge-operations #{start_run}:#{@counter}")
+
+    # sleep to make the interval
+    while((time_left = (next_run - Time.now.to_i)) > 0) do
+      sleep(time_left)
+    end
+  end
+end
