@@ -137,7 +137,7 @@ file mysql_master_info_file do
   action :delete
 end
 
-node.default['rs-mysql']['collectd']['mysql']['SlaveStats'] = 'true'
-node.default['rs-mysql']['collectd']['mysql']['SlaveNotifications'] = 'true'
+node.default['rs-mysql']['collectd']['mysql']['SlaveStats'] = true
+node.default['rs-mysql']['collectd']['mysql']['SlaveNotifications'] = true
 include_recipe 'rs-mysql::collectd'
 include_recipe 'rs-mysql::slave_monitors'
