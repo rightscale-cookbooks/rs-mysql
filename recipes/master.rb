@@ -126,5 +126,5 @@ else
   log "Following DNS credentials are missing #{missing_dns_creds.join(', ')}! Skipping DNS setting..."
 end
 
-node.default['rs-mysql']['collectd']['mysql']['MasterStats']='true'
+node.default['rs-mysql']['collectd']['mysql']['MasterStats']=true
 include_recipe 'rs-mysql::collectd'
