@@ -128,6 +128,17 @@ include_recipe 'rightscale_tag::default'
 include_recipe 'rightscale_volume::default'
 include_recipe 'rightscale_backup::default'
 
+ruby_block 'wait for listening' do
+  block do
+    mysql_connection_info = {
+      :host => 'localhost',
+      :username => 'root',
+      :password => node['rs-mysql']['server_root_password']
+    }
+    RsMysql::Helper.verify_mysqld_is_up(mysql_connection_info, node['rs-mysql']['startup-timeout'])
+  end
+end
+
 # Setup database tags on the server.
 # See https://github.com/rightscale-cookbooks/rightscale_tag#database-servers for more information about the
 # `rightscale_tag_database` resource.

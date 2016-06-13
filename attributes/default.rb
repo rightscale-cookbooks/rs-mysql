@@ -71,3 +71,5 @@ default['rs-mysql']['import']['dump_file'] = nil
 default['rs-mysql']['collectd']['mysql']['User'] = 'root'
 default['rs-mysql']['collectd']['mysql']['Socket'] = '/var/run/mysqld/mysqld.sock'
 default['rs-mysql']['collectd']['mysql']['Password'] = node['rs-mysql']['server_root_password']
+default['rs-mysql']['startup-timeout'] = 300
+default['mysql']['tunable']['log_error'] = ::File.join(node['mysql']['server']['directories']['slow_log_dir'], 'error.log')
