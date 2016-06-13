@@ -19,6 +19,7 @@
 
 require 'ipaddr'
 require 'socket'
+require 'mixlib/shellout'
 
 module RsMysql
   module Helper
@@ -76,6 +77,24 @@ module RsMysql
       missing_creds
     end
 
+    # Verifies that the server has come operational after start/restart
+    def self.verify_mysqld_is_up(connection_info, timeout=300)
+      Chef::Log.info "Timeout is set to: #{timeout.inspect}"
+      # Verify slave functional only if timeout is a positive value
+      if timeout && timeout > 0
+        Timeout.timeout(timeout) do
+          @ping_result=""
+          while @ping_result != "mysqld is alive" do
+            ping=Mixlib::ShellOut.new("mysqladmin ping -h #{connection_info[:host]} -u #{connection_info[:username]} -p#{connection_info[:password]}").run_command
+            @ping_result = ping.stdout.strip
+            Chef::Log.info "Result STDOUT: #{ping.stdout}, STDERR: #{ping.stderr}"
+            sleep 10
+          end
+        end
+      else
+        Chef::Log.info 'Skipping mysql check as timeout is too low'
+      end
+    end
     # Verifies if the slave server is functional by checking the 'Slave_IO_Running' and 'Slave_SQL_Running' in the
     # output of SHOW SLAVE STATUS query. This verification is done with a sleep of 2 seconds and a configurable
     # timeout.

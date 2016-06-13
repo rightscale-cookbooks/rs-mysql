@@ -4,7 +4,7 @@ maintainer_email 'cookbooks@rightscale.com'
 license          'Apache 2.0'
 description      'Installs and configures a MySQL server'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '1.2.4'
+version          '1.2.5'
 
 depends 'chef_handler', '~> 1.1.6'
 depends 'marker', '~> 1.0.1'
@@ -21,6 +21,7 @@ depends 'git', '~> 4.0.2'
 depends 'aws', '~> 2.9.3'
 depends 'ohai', '~> 2.1.0'
 depends 'build-essential', '~> 1.4'
+depends 'postgresql', '= 3.4.16'
 
 recipe 'rs-mysql::default', 'Sets up a standalone MySQL server'
 recipe 'rs-mysql::collectd', 'Sets up collectd monitoring for MySQL server'
@@ -279,3 +280,10 @@ attribute 'rs-mysql/import/dump_file',
     ' Example: dumpfile_20140102.gz',
   :required => 'optional',
   :recipes => ['rs-mysql::dump_import']
+
+attribute 'rs-mysql/startup-timeout',
+  :display_name => 'MySQL Server Startup Timeout',
+  :description => 'MySQL Server Startup Timeout',
+  :required => 'optional',
+  :default => 300,
+  :recipes => [ 'rs-mysql::default' ]
