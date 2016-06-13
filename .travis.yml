@@ -2,7 +2,7 @@ language: ruby
 rvm:
 - 2.0.0
 - 1.9.3
-before_script: bundle exec berks vendor; bundle exec berks list -d
+before_script: bundle exec berks vendor
 script: bundle exec strainer test --except kitchen -p berks-cookbooks/
 notifications:
   slack:
