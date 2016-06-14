@@ -19,16 +19,25 @@ end
 
 desc "runs knife cookbook test"
 task :knife => [ :setup_test_environment ] do
-  cmd = "chef exec bundle exec knife cookbook test #{cookbook} -c knife.rb"
+  cmd = "bundle exec knife cookbook test #{cookbook} -c knife.rb"
   puts cmd
   system(cmd)
 end
 
 desc "runs foodcritic"
 task :foodcritic do
-  cmd = "chef exec bundle exec foodcritic --epic-fail any --tags ~FC009 --tags ~FC064 --tags ~FC065 #{directory}"
+  cmd = "bundle exec foodcritic --epic-fail any --tags ~FC009 --tags ~FC064 --tags ~FC065 #{directory}"
   puts cmd
   system(cmd)
+end
+
+desc "runs foodcritic linttask"
+task :fc_new do
+FoodCritic::Rake::LintTask.new(:chef) do |t|
+  t.options = {
+    fail_tags: ['any']
+  }
+end
 end
 
 desc "runs rspec"
