@@ -22,3 +22,4 @@ doc/
 .yardoc/
 berks-cookbooks/
 knife.rb
+syntaxcache/
