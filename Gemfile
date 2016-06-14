@@ -14,7 +14,7 @@ group :integration do
   gem 'psych', '~> 2.0.5'
   gem 'test-kitchen', '~> 1.2.1'
   gem 'kitchen-vagrant'
-  gem 'strainer', '~> 3.4.0'
+#  gem 'strainer', '~> 3.4.0'
   gem 'chefspec', '~> 3.4.0'
   gem 'travis-lint'
   gem 'mysql'
