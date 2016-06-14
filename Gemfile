@@ -6,6 +6,7 @@ gem 'varia_model', '~> 0.4.1'
 gem 'thor-foodcritic'
 gem 'rake'
 gem 'mixlib-shellout'
+gem 'chef', '~> 11'
 
 group :integration do
   # Prior to 0.1.6, libyaml is vulnerable to a heap overflow exploit from malicious YAML payloads.
