@@ -1,4 +1,3 @@
-require 'mixlib/shellout'
 require 'rspec/core/rake_task'
 require 'foodcritic'
 require 'kitchen'
@@ -22,27 +21,20 @@ desc "runs knife cookbook test"
 task :knife => [ :setup_test_environment ] do
   cmd = "chef exec bundle exec knife cookbook test #{cookbook} -c knife.rb"
   puts cmd
-  knife = Mixlib::ShellOut.new(cmd).run_command
-  puts knife.stdout
-  puts knife.stderr
+  system(cmd)
 end
 
 desc "runs foodcritic"
 task :foodcritic do
   cmd = "chef exec bundle exec foodcritic --epic-fail any --tags ~FC009 --tags ~FC064 --tags ~FC065 #{directory}"
   puts cmd
-  foodcritic = Mixlib::ShellOut.new(cmd).run_command
-  puts foodcritic.stdout
-  puts foodcritic.stderr
+  system(cmd)
 end
 
 desc "runs rspec"
 task :rspec do
   cmd = "bundle exec rspec --color --format documentation"
   puts cmd
-  #rspec = Mixlib::ShellOut.new(cmd).run_command
-  #puts rspec.stdout
-  #puts rspec.stderr
   system(cmd)
 end
 
@@ -50,9 +42,7 @@ desc "runs testkitchen"
 task :kitchen do
   cmd = "chef exec kitchen test --concurrency=2"
   puts cmd
-  kitchen = Mixlib::ShellOut.new(cmd).run_command
-  puts kitchen.stdout
-  puts kitchen.stderr
+  system(cmd)
 end
 
 desc "runs all tests except kitchen"
