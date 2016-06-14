@@ -20,7 +20,7 @@ end
 
 desc "runs knife cookbook test"
 task :knife => [ :setup_test_environment ] do
-  cmd = "chef exec knife cookbook test #{cookbook} -c knife.rb"
+  cmd = "chef exec bundle exec knife cookbook test #{cookbook} -c knife.rb"
   puts cmd
   knife = Mixlib::ShellOut.new(cmd).run_command
   puts knife.stdout
@@ -29,7 +29,7 @@ end
 
 desc "runs foodcritic"
 task :foodcritic do
-  cmd = "chef exec foodcritic -P --epic-fail any --tags ~FC009 --tags ~FC064 --tags ~FC065 #{directory}"
+  cmd = "chef exec bundle exec foodcritic --epic-fail any --tags ~FC009 --tags ~FC064 --tags ~FC065 #{directory}"
   puts cmd
   foodcritic = Mixlib::ShellOut.new(cmd).run_command
   puts foodcritic.stdout
