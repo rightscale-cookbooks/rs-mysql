@@ -1,9 +1,11 @@
 source 'https://rubygems.org'
 
-gem 'berkshelf', '~> 3'
+gem 'berkshelf', '~> 4'
 gem 'faraday', '= 0.9.1'
 gem 'varia_model', '~> 0.4.1'
 gem 'thor-foodcritic'
+gem 'rake'
+gem 'mixlib-shellout'
 
 group :integration do
   # Prior to 0.1.6, libyaml is vulnerable to a heap overflow exploit from malicious YAML payloads.

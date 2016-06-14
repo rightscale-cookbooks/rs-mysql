@@ -2,9 +2,13 @@ language: ruby
 rvm:
 - 2.0.0
 - 1.9.3
-before_install: gem install bundler -v 1.11.2
-before_script: bundle exec berks vendor -d
-script: bundle exec strainer test --except kitchen -p $PWD/berks-cookbooks/ -d
+before_install:
+- curl -L https://www.getchef.com/chef/install.sh | sudo bash -s -- -P chefdk -v 0.14.25
+- gem install bundler -v 1.11.2
+install:
+  - chef exec bundle install --jobs=3 --retry=3
+before_script: chef exec bundle exec berks vendor -d
+script: chef exec bundle exec rake except_kitchen
 notifications:
   slack:
     secure: il5rpAZCNPhfsXVijr7kcg42cA0hH7P6zXvfuXaCSbSbme1fmz5Vh/INmir8nrnTyxEELZ2+M8qJJuH/qIjTeM02n/q9pkklOHnmyN2D5jhTc9ZtRjZPy4YMmYo/uYXsx8QzcD8YWvI/WO8+Xec9OixY43ct0aAUCRqX4IX67hQ=
