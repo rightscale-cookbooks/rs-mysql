@@ -1,7 +1,11 @@
 source 'https://rubygems.org'
 
-gem 'berkshelf'
+gem 'berkshelf', '~> 4'
+gem 'faraday', '= 0.9.1'
+gem 'varia_model', '~> 0.4.1'
 gem 'thor-foodcritic'
+gem 'rake'
+gem 'chef', '~> 11'
 
 group :integration do
   # Prior to 0.1.6, libyaml is vulnerable to a heap overflow exploit from malicious YAML payloads.
@@ -10,7 +14,6 @@ group :integration do
   gem 'psych', '~> 2.0.5'
   gem 'test-kitchen', '~> 1.2.1'
   gem 'kitchen-vagrant'
-  gem 'strainer', '~> 3.3.0'
   gem 'chefspec', '~> 3.4.0'
   gem 'travis-lint'
   gem 'mysql'
