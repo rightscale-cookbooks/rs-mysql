@@ -13,7 +13,7 @@ cookbook 'rightscale_backup',github: 'rightscale-cookbooks/rightscale_backup', b
 cookbook 'rightscale_volume',github: 'rightscale-cookbooks/rightscale_volume', branch: 'v1.3.0'
 cookbook 'rightscale_tag',github: 'rightscale-cookbooks/rightscale_tag', branch: 'v1.1.0'
 cookbook 'machine_tag',github: 'rightscale-cookbooks/machine_tag', branch: 'v1.1.0'
-cookbook 'ephemeral_lvm',github:'rightscale-cookbooks/ephemeral_lvm', branch: 'v1.0.12'
+cookbook 'ephemeral_lvm',github:'rightscale-cookbooks/ephemeral_lvm', branch: 'v1.0.15'
 cookbook 'ohai', '= 2.1.0'
 
 group :integration do
