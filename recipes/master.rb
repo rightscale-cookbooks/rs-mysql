@@ -107,7 +107,9 @@ end
 missing_dns_creds = RsMysql::Helper.find_missing_dns_credentials(node)
 if missing_dns_creds.empty?
   # Get the dns name and domain name from the FQDN. Split the FQDN into 2 parts
-  dns_name, domain_name = node['rs-mysql']['dns']['master_fqdn'].split('.', 2)
+  fqdn_array = node['rs-mysql']['dns']['master_fqdn'].split('.')
+  dns_name = fqdn_array.first(fqdn_array.length - 2).join('.')
+  domain_name = fqdn_array.last(2).join('.')
 
   log "Setting DNS entry for the master database server FQDN #{node['rs-mysql']['dns']['master_fqdn']}..."
   dns dns_name do
