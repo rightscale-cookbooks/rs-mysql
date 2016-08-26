@@ -4,7 +4,7 @@ maintainer_email 'cookbooks@rightscale.com'
 license          'Apache 2.0'
 description      'Installs and configures a MySQL server'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '1.2.6'
+version          '1.2.7'
 
 depends 'chef_handler', '~> 1.1.6'
 depends 'marker', '~> 1.0.1'
@@ -21,7 +21,7 @@ depends 'git', '~> 4.0.2'
 depends 'aws', '~> 2.9.3'
 depends 'ohai', '~> 2.1.0'
 depends 'build-essential', '~> 2.1'
-depends 'postgresql', '~> 3.4.0'
+depends 'postgresql', '= 3.4.16' # > than this causes a dependence on openssl >= 4.0.0
 
 recipe 'rs-mysql::default', 'Sets up a standalone MySQL server'
 recipe 'rs-mysql::collectd', 'Sets up collectd monitoring for MySQL server'
