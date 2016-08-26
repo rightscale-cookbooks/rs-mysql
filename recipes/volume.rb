@@ -98,6 +98,7 @@ end
 
 # Make sure that there is a 'mysql' directory on the mount point of the volume
 directory new_mysql_dir do
+  recursive true
   owner 'mysql'
   group 'mysql'
   action :create

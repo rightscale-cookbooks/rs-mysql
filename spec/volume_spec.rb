@@ -47,6 +47,7 @@ describe 'rs-mysql::volume' do
       expect(chef_run).to create_directory('/mnt/storage/mysql').with(
         owner: 'mysql',
         group: 'mysql',
+        recursive: true
       )
     end
 
