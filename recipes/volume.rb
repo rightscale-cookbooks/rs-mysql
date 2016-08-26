@@ -98,10 +98,16 @@ end
 
 # Make sure that there is a 'mysql' directory on the mount point of the volume
 directory new_mysql_dir do
-  recursive true
   owner 'mysql'
   group 'mysql'
   action :create
+end
+
+# We may inherit the volume from another machine's backup
+# The userids may differ so we must set them explicitly to mysql
+execute 'explicitly set mysql data directory recursive file ownership' do
+  command "chown -R mysql:mysql #{new_mysql_dir}"
+  user 'root'
 end
 
 # Override the mysql data_dir. This will do the following:
