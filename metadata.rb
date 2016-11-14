@@ -285,5 +285,5 @@ attribute 'rs-mysql/startup-timeout',
   :display_name => 'MySQL Server Startup Timeout',
   :description => 'MySQL Server Startup Timeout',
   :required => 'optional',
-  :default => 300,
+  :default => '300',
   :recipes => [ 'rs-mysql::default' ]

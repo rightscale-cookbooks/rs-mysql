@@ -122,6 +122,15 @@ execute 'update mysql binlog index with new data_dir' do
   only_if { ::File.exists?("#{data_dir}/mysql_binlogs/mysql-bin.index") }
 end
 
+group 'mysql' do
+end
+
+user 'mysql' do
+  group 'mysql'
+  home '/nonexistent'
+  shell '/bin/false'
+end
+
 include_recipe 'mysql::server'
 include_recipe 'database::mysql'
 include_recipe 'rightscale_tag::default'
