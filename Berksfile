@@ -9,11 +9,11 @@ cookbook 'dns', github: 'rightscale-cookbooks-contrib/dns', branch: 'rightscale_
 cookbook 'build-essential', '~> 1.4'
 cookbook 'database', github: 'rightscale-cookbooks-contrib/database', branch: 'rs-fixes'
 
-cookbook 'rightscale_backup',github: 'rightscale-cookbooks/rightscale_backup', branch: 'v1.2.0'
-cookbook 'rightscale_volume',github: 'rightscale-cookbooks/rightscale_volume', branch: 'v1.3.0'
-cookbook 'rightscale_tag',github: 'rightscale-cookbooks/rightscale_tag', branch: 'v1.1.0'
-cookbook 'machine_tag',github: 'rightscale-cookbooks/machine_tag', branch: 'v1.1.0'
-cookbook 'ephemeral_lvm',github:'rightscale-cookbooks/ephemeral_lvm', branch: 'v1.0.12'
+cookbook 'rightscale_backup',github: 'rightscale-cookbooks/rightscale_backup'
+cookbook 'rightscale_volume',github: 'rightscale-cookbooks/rightscale_volume'
+cookbook 'rightscale_tag',github: 'rightscale-cookbooks/rightscale_tag'
+cookbook 'machine_tag',github: 'rightscale-cookbooks/machine_tag'
+cookbook 'ephemeral_lvm',github:'rightscale-cookbooks/ephemeral_lvm'
 cookbook 'ohai', '= 2.1.0'
 
 group :integration do
