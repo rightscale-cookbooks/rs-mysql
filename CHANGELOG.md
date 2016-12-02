@@ -6,7 +6,7 @@ This file is used to list changes made in each version of the rs-mysql cookbook.
 v1.2.6
 ------
 - fixing selinux permission error when moving directories on centos.
-- updating rake task to check for changelog version
+- updating rake task to check for changelog, and metadata version
 
 v1.2.5
 ------
