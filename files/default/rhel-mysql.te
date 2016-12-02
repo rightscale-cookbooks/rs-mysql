@@ -15,12 +15,10 @@ require {
 
 #============= groupadd_t ==============
 
-#!!!! This avc is allowed in the current policy
 allow groupadd_t var_lib_t:file read;
 
 #============= mysqld_safe_t ==============
 
-#!!!! This avc is allowed in the current policy
 allow mysqld_safe_t var_lib_t:lnk_file { read getattr };
 
 #============= mysqld_t ==============
@@ -36,5 +34,4 @@ allow mysqld_t file_t:sock_file { create read write open getattr link unlink};
 
 #============= postfix_pickup_t ==============
 
-#!!!! This avc is allowed in the current policy
 allow postfix_pickup_t var_lib_t:file { read open };
