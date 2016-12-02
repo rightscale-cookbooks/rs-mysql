@@ -19,42 +19,42 @@ end
 
 desc "verifies version and changelog"
 task :verify_version do
-def get_old_version
-  f=`git show master:metadata.rb`
+  def get_old_version
+    f=`git show master:metadata.rb`
+    f.each_line do |line|
+      if line.match(/version/)
+        k,v=line.strip.split
+        @old_version=v
+      end
+    end
+    return @old_version
+  end
+
+  def get_new_version
+    f=File.read('metadata.rb')
+    f.each_line do |line|
+      if line.match(/version/)
+        k,v=line.strip.split
+        @new_version = v
+      end
+    end
+    return @new_version
+  end
+
+  if get_old_version == get_new_version
+    raise "You need to increment version before test will pass"
+  end
+
+  counter=0
+  f=File.read('CHANGELOG.md')
   f.each_line do |line|
-    if line.match(/version/)
-      k,v=line.strip.split
-      @old_version=v
+    if line.match get_new_version.tr('\'','')
+      counter+=1
     end
   end
-  return @old_version
-end
-
-def get_new_version
-  f=File.read('metadata.rb')
-  f.each_line do |line|
-    if line.match(/version/)
-      k,v=line.strip.split
-      @new_version = v
-    end
+  if counter == 0
+    raise "CHANGELOG update needed"
   end
-  return @new_version
-end
-
-if get_old_version == get_new_version
-  raise "You need to increment version before test will pass"
-end
-
-counter=0
-f=File.read('CHANGELOG.md')
-f.each_line do |line|
-  if line.match get_new_version.tr('\'','')
-    counter+=1
-  end
-end
-if counter == 0
-  raise "CHANGELOG update needed"
-end
 end
 
 desc "runs knife cookbook test"
