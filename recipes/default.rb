@@ -45,7 +45,9 @@ if node['platform'] == 'redhat'
       end
     end
   end
+  #verify getenforce exists on the install
   if ::File.exist?('/usr/sbin/getenforce')
+    #if selinux is set to enforcing instead of permissive, update mysqld access
     if  `/usr/sbin/getenforce`.strip.downcase == 'enforcing'
       cookbook_file ::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te') do
         source 'rhel-mysql.te'
