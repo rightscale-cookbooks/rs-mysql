@@ -44,7 +44,33 @@ if node['platform'] == 'redhat'
         end
       end
     end
+  end
+  if ::File.exist?('/usr/sbin/getenforce')
+    if  `/usr/sbin/getenforce`.strip.downcase == 'enforcing'
+      cookbook_file ::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te') do
+        source 'rhel-mysql.te'
+        owner 'root'
+        group 'root'
+        mode '0644'
+        action :create
+      end
 
+      execute 'mysql:compile selinux te to module' do
+        command "checkmodule -M -m -o #{::File.join(Chef::Config[:file_cache_path],'rhel-mysql.mod')} #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te')}"
+        action :run
+      end
+
+      execute 'mysql:package selinux module' do
+        command "semodule_package -m #{::File.join(Chef::Config[:file_cache_path],'rhel-mysql.mod')} -o #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
+        action :run
+      end
+
+      execute 'fix selinux' do
+        command "semodule -i #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
+        action :run
+      end
+      node.default['mysql']['tunable']['log-error'] = '/var/log/mysql/error.log'
+    end
   end
 end
 

@@ -1,0 +1,40 @@
+module rhel-mysql 1.0;
+
+require {
+        type mysqld_safe_t;
+        type postfix_pickup_t;
+        type groupadd_t;
+        type mysqld_t;
+        type file_t;
+        type var_lib_t;
+        class lnk_file { read getattr };
+        class dir { create read  write open getattr search remove_name add_name rmdir };
+        class file { create read  write open getattr unlink lock rename };
+        class sock_file { create read write open getattr link unlink };
+}
+
+#============= groupadd_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow groupadd_t var_lib_t:file read;
+
+#============= mysqld_safe_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow mysqld_safe_t var_lib_t:lnk_file { read getattr };
+
+#============= mysqld_t ==============
+#!!!! The source type 'mysqld_t' can write to a 'dir' of the following types:
+# mysqld_log_t, mysqld_tmp_t, var_log_t, var_lib_t, var_run_t, mysqld_var_run_t, pcscd_var_run_t, mysqld_db_t, tmp_t, cluster_var_lib_t, cluster_var_run_t, root_t, cluster_conf_t, krb5_host_rcache_t, tmp_t
+
+allow mysqld_t var_lib_t:file { read getattr open };
+allow mysqld_t var_lib_t:lnk_file read;
+
+allow mysqld_t file_t:dir { create getattr search read remove_name add_name write open rmdir };
+allow mysqld_t file_t:file { create read getattr open write unlink lock rename };
+allow mysqld_t file_t:sock_file { create read write open getattr link unlink};
+
+#============= postfix_pickup_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow postfix_pickup_t var_lib_t:file { read open };
