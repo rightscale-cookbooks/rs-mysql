@@ -16,6 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'mixlib/shellout'
 
 marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
@@ -48,7 +49,7 @@ if node['platform'] == 'redhat'
   #verify getenforce exists on the install
   if ::File.exist?('/usr/sbin/getenforce')
     #if selinux is set to enforcing instead of permissive, update mysqld access
-    if  `/usr/sbin/getenforce`.strip.downcase == 'enforcing'
+    if Mixlib::ShellOut.new("/usr/sbin/getenforce").run_command.stdout.strip.downcase == 'enforcing'
       cookbook_file ::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te') do
         source 'rhel-mysql.te'
         owner 'root'
