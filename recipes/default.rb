@@ -46,6 +46,9 @@ if node['platform'] == 'redhat'
       end
     end
   end
+end
+
+if node['platform_family'] == 'rhel'
   #verify getenforce exists on the install
   if ::File.exist?('/usr/sbin/getenforce')
     #if selinux is set to enforcing instead of permissive, update mysqld access
