@@ -23,7 +23,7 @@ depends 'ohai', '~> 2.1.0'
 depends 'dmg', '~> 2.4.0'
 depends 'build-essential', '~> 1.4' # pinned for compatiblity with mysql
 depends 'postgresql', '= 3.4.16'
-depends 'windows', '= 1.44.3'
+depends 'windows', '= 1.44.0'
 
 recipe 'rs-mysql::default', 'Sets up a standalone MySQL server'
 recipe 'rs-mysql::collectd', 'Sets up collectd monitoring for MySQL server'

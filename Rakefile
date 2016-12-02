@@ -41,19 +41,23 @@ task :verify_version do
     return @new_version
   end
 
-  if get_old_version == get_new_version
-    raise "You need to increment version before test will pass"
-  end
-
-  counter=0
-  f=File.read('CHANGELOG.md')
-  f.each_line do |line|
-    if line.match get_new_version.tr('\'','')
-      counter+=1
+  if `git rev-parse --abbrev-ref HEAD`.strip != 'master'
+    puts "Verifying Metdata Version"
+    if get_old_version == get_new_version
+      raise "You need to increment version before test will pass"
     end
-  end
-  if counter == 0
-    raise "CHANGELOG update needed"
+
+    puts "Verifying Changelog"
+    counter=0
+    f=File.read('CHANGELOG.md')
+    f.each_line do |line|
+      if line.match get_new_version.tr('\'','')
+        counter+=1
+      end
+    end
+    if counter == 0
+      raise "CHANGELOG update needed"
+    end
   end
 end
 
