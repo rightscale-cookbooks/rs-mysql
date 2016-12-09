@@ -17,7 +17,9 @@
 # limitations under the License.
 #
 
-include_recipe 'database::mysql'
+mysql2_chef_gem 'default' do
+  action :install
+end
 
 # Obtain the mysql dump file
 cookbook_file '/tmp/mysql.dump' do

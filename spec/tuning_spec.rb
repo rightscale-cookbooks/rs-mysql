@@ -123,7 +123,7 @@ describe RsMysql::Tuning do
       ].each do |category|
         context "with #{category[:name]} of memory" do
           let(:node) do
-            chef_run = ChefSpec::Runner.new do |node|
+            chef_run = ChefSpec::SoloRunner.new do |node|
               node.automatic['memory']['total'] = category[:memory]
             end
             chef_run.node

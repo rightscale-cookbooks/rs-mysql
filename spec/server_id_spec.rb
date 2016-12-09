@@ -7,7 +7,7 @@ describe 'rs-mysql::default' do
   end
 
   let(:chef_run) do
-    ChefSpec::Runner.new do |node|
+    ChefSpec::SoloRunner.new do |node|
       node.set['cloud']['public_ips'] = ['', '10.1.1.1']
       node.set['cloud']['private_ips'] = ['10.0.2.15', '10.0.2.16']
       node.set['memory']['total'] = '1011228kB'

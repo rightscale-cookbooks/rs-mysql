@@ -1,13 +1,13 @@
 ---
 driver_plugin: vagrant
 driver_config:
-  require_chef_omnibus: '11.18'
+  require_chef_omnibus: '12.16'
 
 platforms:
-- name: centos-6.5
+- name: centos-6.8
   run_list: ['recipe[yum-epel]']
   driver_config:
-    box: opscode-centos-6.5
+    box: opscode-centos-6.8
     customize:
       cpus: 2
       memory: 512
@@ -85,107 +85,6 @@ suites:
       import:
         repository: https://github.com/rightscale/examples.git
         revision: unified_php
-        dump_file: app_test.sql.bz2
-    rightscale:
-      instance_uuid: '1111111'
-
-- name: dump_import_plain
-  run_list:
-  - recipe[rs-mysql::default]
-  - recipe[rs-mysql::dump_import]
-  attributes:
-    cloud:
-      provider: 'vagrant'
-      public_ips: ['100.64.1.1']
-      private_ips: ['10.0.2.15']
-    rs-mysql:
-      backup:
-        lineage: 'lineage'
-      server_root_password: rootpass
-      server_repl_password: realpass
-      server_usage: dedicated
-      application_username: appuser
-      application_password: apppass
-      application_database_name: app_test
-      import:
-        repository: https://github.com/rightscale/examples.git
-        revision: unified_php
-        dump_file: app_test.sql
-    rightscale:
-      instance_uuid: '1111111'
-
-- name: dump_import_gz
-  run_list:
-  - recipe[rs-mysql::default]
-  - recipe[rs-mysql::dump_import]
-  attributes:
-    cloud:
-      provider: 'vagrant'
-      public_ips: ['100.64.1.1']
-      private_ips: ['10.0.2.15']
-    rs-mysql:
-      backup:
-        lineage: 'lineage'
-      server_root_password: rootpass
-      server_repl_password: realpass
-      server_usage: dedicated
-      application_username: appuser
-      application_password: apppass
-      application_database_name: app_test
-      import:
-        repository: https://github.com/rightscale/examples.git
-        revision: unified_php
-        dump_file: app_test.sql.gz
-    rightscale:
-      instance_uuid: '1111111'
-
-- name: dump_import_bz2
-  run_list:
-  - recipe[rs-mysql::default]
-  - recipe[rs-mysql::dump_import]
-  attributes:
-    cloud:
-      provider: 'vagrant'
-      public_ips: ['100.64.1.1']
-      private_ips: ['10.0.2.15']
-    rs-mysql:
-      backup:
-        lineage: 'lineage'
-      server_root_password: rootpass
-      server_repl_password: realpass
-      server_usage: dedicated
-      application_username: appuser
-      application_password: apppass
-      application_database_name: app_test
-      import:
-        repository: https://github.com/rightscale/examples.git
-        revision: unified_php
-        dump_file: app_test.sql.bz2
-    rightscale:
-      instance_uuid: '1111111'
-
-- name: dump_import_xz
-  run_list:
-  - recipe[rs-mysql::default]
-  - recipe[rs-mysql::dump_import]
-  attributes:
-    cloud:
-      provider: 'vagrant'
-      public_ips: ['100.64.1.1']
-      private_ips: ['10.0.2.15']
-    rs-mysql:
-      backup:
-        lineage: 'lineage'
-      server_root_password: rootpass
-      server_repl_password: realpass
-      server_usage: dedicated
-      application_username: appuser
-      application_password: apppass
-      application_database_name: app_test
-      import:
-        repository: https://github.com/rightscale/examples.git
-        revision: unified_php
-        dump_file: app_test.sql.xz
     rightscale:
       instance_uuid: '1111111'
 

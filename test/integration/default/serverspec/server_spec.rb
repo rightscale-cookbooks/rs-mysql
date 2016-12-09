@@ -6,14 +6,14 @@ require 'socket'
 mysql_name = ''
 case os[:family]
 when 'ubuntu'
-  mysql_name = 'mysql'
-  mysql_config_file = '/etc/mysql/my.cnf'
-  mysql_server_packages = %w{mysql-server apparmor-utils}
-  collectd_plugin_dir = '/etc/collectd/plugins'
+  mysql_name = 'mysql-default'
+  mysql_config_file = '/etc/mysql-default/my.cnf'
+  mysql_server_packages = %w{mysql-server-5.5 mysql-client-5.5}
+  collectd_plugin_dir = '/etc/collectd.d'
 when 'redhat'
-  mysql_name = 'mysqld'
-  mysql_config_file = '/etc/my.cnf'
-  mysql_server_packages = %w{mysql-server}
+  mysql_name = 'mysql-default'
+  mysql_config_file = '/etc/mysql-default/my.cnf'
+  mysql_server_packages = %w{mysql-community-devel mysql mysql-devel}
   collectd_plugin_dir = '/etc/collectd.d'
 end
 

@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 
 describe 'rs-mysql::decommission' do
   let(:chef_runner) do
-    ChefSpec::Runner.new do |node|
+    ChefSpec::SoloRunner.new do |node|
       node.set['cloud']['private_ips'] = ['10.0.2.15']
       node.set['memory']['total'] = '1011228kB'
       node.set['rs-mysql']['application_database_name'] = 'apptest'
@@ -32,20 +32,17 @@ describe 'rs-mysql::decommission' do
 
     context 'RightScale run state is terminate' do
       before do
-        stub_command('test -L /var/lib/mysql').and_return(true)
-        stub_command('[ `stat -c %h /var/lib/mysql/` -eq 2 ]').and_return(true)
+        stub_command('test -L /var/lib/mysql-default').and_return(true)
+        stub_command('[ `stat -c %h /var/lib/mysql-default/` -eq 2 ]').and_return(true)
         stub_command('test -d /mnt/storage/mysql').and_return(true)
         stub_command('test -f /var/lib/mysql/ib_logfile0').and_return(true)
       end
 
       context 'LVM is not used' do
         before do
-          mount = double
-          Mixlib::ShellOut.stub(:new).with('mount').and_return(mount)
-          allow(mount).to receive(:run_command)
-          allow(mount).to receive(:error!)
-          allow(mount).to receive(:live_stream=)
-          allow(mount).to receive(:stdout).and_return('/dev/sda on /mnt/storage type ext4 (auto)')
+          output = "/dev/sda on /mnt/storage type ext4 (auto)"
+          mount = double(run_command: nil, error!: nil, stdout: output, stderr: double(empty?: true), exitstatus: 0, live_stream: nil, "live_stream="=> nil, status: 0)
+          allow(Mixlib::ShellOut).to receive(:new).and_return(mount)
         end
 
         let(:chef_run) do
@@ -53,8 +50,8 @@ describe 'rs-mysql::decommission' do
           chef_runner_decommission.converge(described_recipe)
         end
 
-        it 'removes /var/lib/mysql symlink' do
-          expect(chef_run).to delete_link('/var/lib/mysql')
+        it 'removes /var/lib/mysql-default symlink' do
+          expect(chef_run).to delete_link('/var/lib/mysql-default')
         end
 
         it 'unmounts and disables the volume on the instance' do
@@ -91,18 +88,12 @@ describe 'rs-mysql::decommission' do
 
       context 'LVM is used' do
         before do
-          mount = double
-          Mixlib::ShellOut.stub(:new).with('mount').and_return(mount)
-          allow(mount).to receive(:run_command)
-          allow(mount).to receive(:error!)
-          allow(mount).to receive(:live_stream=)
-          allow(mount).to receive(:stdout).and_return('/dev/mapper/vol-group--logical-volume-1 on /mnt/storage type ext4 (auto)')
+          output = '/dev/mapper/vol-group--logical-volume-1 on /mnt/storage type ext4 (auto)'
+          mount = double(run_command: nil, error!: nil, stdout: output, stderr: double(empty?: true), exitstatus: 0, live_stream: nil, "live_stream="=> nil, status: 0)
+          allow(Mixlib::ShellOut).to receive(:new).and_return(mount)
 
-          lvdisplay = double
-          Mixlib::ShellOut.stub(:new).with("lvdisplay '/dev/mapper/vol-group--logical-volume-1'").and_return(lvdisplay)
-          allow(lvdisplay).to receive(:run_command)
-          allow(lvdisplay).to receive(:live_stream=)
-          allow(lvdisplay).to receive(:status).and_return(0)
+          lvdisplay = double(run_command: nil, error!: nil, stdout: output, stderr: double(empty?: true), exitstatus: 0, live_stream: nil, "live_stream="=> nil, status: 0)
+          allow(Mixlib::ShellOut).to receive(:new).and_return(lvdisplay)
         end
 
         let(:chef_run) do
@@ -113,7 +104,7 @@ describe 'rs-mysql::decommission' do
           "/dev/mapper/#{nickname.gsub('_', '--')}--vg-#{nickname.gsub('_', '--')}--lv"
         end
 
-        it 'removes /var/lib/mysql symlink' do
+        it 'removes /var/lib/mysql-default symlink' do
           expect(chef_run).to delete_link('/var/lib/mysql')
         end
 

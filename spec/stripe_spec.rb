@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 
 describe 'rs-mysql::stripe' do
   let(:chef_runner) do
-    ChefSpec::Runner.new do |node|
+    ChefSpec::SoloRunner.new do |node|
       node.set['cloud']['private_ips'] = ['10.0.2.15']
       node.set['memory']['total'] = '1011228kB'
       node.set['rightscale_volume']['data_storage_1']['device'] = '/dev/sda'

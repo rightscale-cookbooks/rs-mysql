@@ -17,6 +17,9 @@
 # limitations under the License.
 #
 require 'mixlib/shellout'
+class Chef::Recipe
+  include MysqlCookbook::HelpersBase
+end
 
 marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
@@ -75,7 +78,7 @@ if node['platform_family'] == 'rhel'
         command "semodule -i #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
         action :run
       end
-      node.default['mysql']['tunable']['log-error'] = '/var/log/mysql/error.log'
+      node.default['mysql']['tunable']['log-error'] = default_error_log
     end
   end
 end
@@ -105,7 +108,7 @@ node.override['mysql']['tunable']['expire_log_days'] = 2
 # The directory that contains the MySQL binary logs. This directory will only be created as part of the initial MySQL
 # installation and setup. If the data directory is changed, this should not be created again as the data from
 # /var/lib/mysql will be moved to the new location.
-if node['mysql']['data_dir'] == '/var/lib/mysql'
+if node['mysql']['data_dir'] == '/var/lib/mysql-default'
   Chef::Log.info "Overriding mysql/server/directories/bin_log_dir to '#{node['mysql']['data_dir']}/mysql_binlogs'"
   node.override['mysql']['server']['directories']['bin_log_dir'] = "#{node['mysql']['data_dir']}/mysql_binlogs"
 end
@@ -125,7 +128,7 @@ Chef::Log.info "Overriding mysql/tunable/server_id to '#{server_id}'"
 node.override['mysql']['tunable']['server_id'] = server_id
 
 # The version of the mysql cookbook we are using does not consistently set mysql/server/service_name
-mysql_service_name = node['mysql']['server']['service_name'] || 'mysql'
+mysql_service_name = 'mysql-default'
 
 service mysql_service_name do
   action :stop
@@ -154,8 +157,53 @@ execute 'update mysql binlog index with new data_dir' do
   only_if { ::File.exists?("#{data_dir}/mysql_binlogs/mysql-bin.index") }
 end
 
-include_recipe 'mysql::server'
-include_recipe 'database::mysql'
+# TODO ADD TESTS
+if node["platform_family"]=="rhel"
+  case node['rs-mysql']['mysql']['version']
+  when "5.5"
+    include_recipe "yum-mysql-community::mysql55"
+  when "5.6"
+    include_recipe "yum-mysql-community::mysql56"
+  when "5.7"
+    include_recipe "yum-mysql-community::mysql57"
+  end
+end
+
+# TODO ADD TESTS
+case node['platform_family']
+when 'rhel'
+  package "mysql-community-devel"
+when 'debian'
+  package "mysql-server-#{node['rs-mysql']['mysql']['version']}"
+end
+
+# TODO ADD TESTS
+mysql_client 'default' do
+  action :create
+end
+
+# TODO ADD TESTS
+# Configure the MySQL service.
+directory "#{data_dir}/mysql_binlogs" do
+  recursive true
+  action :create
+end
+
+mysql_service 'default' do
+  initial_root_password node['rs-mysql']['server_root_password']
+  action [:create, :start]
+end
+# allow client to make connections using the default location
+# for the system /etc/my.cnf
+link '/etc/my.cnf' do
+  to '/etc/mysql-default/my.cnf'
+end
+
+# TODO ADD TESTS
+mysql2_chef_gem 'default' do
+  action :install
+end
+
 include_recipe 'rightscale_tag::default'
 include_recipe 'rightscale_volume::default'
 include_recipe 'rightscale_backup::default'
@@ -184,7 +232,8 @@ end
 mysql_connection_info = {
   :host => 'localhost',
   :username => 'root',
-  :password => node['rs-mysql']['server_root_password']
+  :password => node['rs-mysql']['server_root_password'],
+  :default_file => "/etc/mysql-default/my.cnf"
 }
 
 # Create the application database

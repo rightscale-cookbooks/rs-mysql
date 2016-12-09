@@ -35,10 +35,10 @@ log 'Installing MySQL collectd plugin...'
 package 'collectd-mysql' do
   only_if { node['platform_family'] == 'rhel' }
 end
-
+#package "collectd"
 include_recipe 'collectd::default'
 
-rewind "package[collectd]" do
+rewind "collectd_service[collectd]" do
   action :nothing
   only_if {::File.exists?("/usr/sbin/collectd")}
 end
@@ -47,16 +47,16 @@ end
 # created during the same runlist as this recipe. Some common plugins are installed
 # as a part of base install which runs in a different runlist. This resource
 # will safeguard the base plugins from being removed.
-rewind 'ruby_block[delete_old_plugins]' do
-  action :nothing
-end
+# rewind 'ruby_block[delete_old_plugins]' do
+#   action :nothing
+# end
 
 collectd_plugin 'processes' do
  options :process => [ 'collectd', 'mysqld' ]
 end
 
 collectd_plugin 'mysql' do
-  cookbook 'rs-mysql'
-  template 'plugin.conf.erb'
+  #cookbook 'rs-mysql'
+  #template 'plugin.conf.erb'
   options( node['rs-mysql']['collectd']['mysql'] )
 end
