@@ -102,8 +102,8 @@ node.override['mysql']['server_root_password'] = node['rs-mysql']['server_root_p
 node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root_password']
 node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password'] || node['rs-mysql']['server_root_password']
 
-Chef::Log.info 'Overriding mysql/tunable/expire_log_days to 2'
-node.override['mysql']['tunable']['expire_log_days'] = 2
+Chef::Log.info 'Overriding mysql/tunable/expire_logs_days to 2'
+node.override['mysql']['tunable']['expire_logs_days'] = 2
 
 # The directory that contains the MySQL binary logs. This directory will only be created as part of the initial MySQL
 # installation and setup. If the data directory is changed, this should not be created again as the data from
@@ -184,15 +184,26 @@ end
 
 # TODO ADD TESTS
 # Configure the MySQL service.
+mysql_service 'default' do
+  initial_root_password node['rs-mysql']['server_root_password']
+  action [:create,:start]
+end
+
 directory "#{data_dir}/mysql_binlogs" do
   recursive true
+  user "mysql"
+  mode "0700"
   action :create
 end
 
-mysql_service 'default' do
-  initial_root_password node['rs-mysql']['server_root_password']
-  action [:create, :start]
+mysql_config "default" do
+  source 'tunable.erb'
+  variables(config: node['mysql']['tunable'] )
+  notifies :restart, 'mysql_service[default]'
+  action :create
 end
+
+
 # allow client to make connections using the default location
 # for the system /etc/my.cnf
 link '/etc/my.cnf' do

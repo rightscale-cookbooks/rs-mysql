@@ -12,7 +12,7 @@ when 'ubuntu'
   collectd_plugin_dir = '/etc/collectd.d'
 when 'redhat'
   mysql_name = 'mysql-default'
-  mysql_config_file = '/etc/mysql-default/my.cnf'
+  mysql_config_file = '/etc/mysql-default/conf.d/default.cnf'
   mysql_server_packages = %w{mysql-community-devel mysql mysql-devel}
   collectd_plugin_dir = '/etc/collectd.d'
 end
@@ -67,7 +67,7 @@ describe "verify the tuning attributes set in #{mysql_config_file}" do
   end
 end
 
-describe file('/var/lib/mysql') do
+describe file('/var/lib/mysql-default') do
   it { should be_directory }
 end
 
