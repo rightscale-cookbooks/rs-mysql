@@ -7,13 +7,13 @@ mysql_name = ''
 case os[:family]
 when 'ubuntu'
   mysql_name = 'mysql-default'
-  mysql_config_file = '/etc/mysql-default/my.cnf'
+  mysql_config_file = '/etc/mysql-default/conf.d/default.cnf'
   mysql_server_packages = %w{mysql-server-5.5 mysql-client-5.5}
   collectd_plugin_dir = '/etc/collectd.d'
 when 'redhat'
   mysql_name = 'mysql-default'
   mysql_config_file = '/etc/mysql-default/conf.d/default.cnf'
-  mysql_server_packages = %w{mysql-community-devel mysql mysql-devel}
+  mysql_server_packages = %w{mysql-community-server mysql-community-client mysql-community-devel}
   collectd_plugin_dir = '/etc/collectd.d'
 end
 
