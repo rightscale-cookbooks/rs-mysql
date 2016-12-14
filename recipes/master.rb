@@ -49,6 +49,7 @@ mysql_connection_info = {
   :host => 'localhost',
   :username => 'root',
   :password => node['rs-mysql']['server_root_password'],
+  :default_file => "/etc/mysql-default/my.cnf"
 }
 
 mysql_database 'stop slave IO thread' do
@@ -79,7 +80,7 @@ mysql_database 'reset slave' do
   # MySQL 5.5 introduced the RESET SLAVE ALL command which does the full cleanup without restarting.
   if node['platform_family'] == 'rhel'
     sql 'RESET SLAVE'
-    notifies :restart, 'service[mysql-start]'
+    notifies :restart, 'mysql_service[default]'
   else
     sql 'RESET SLAVE ALL'
   end

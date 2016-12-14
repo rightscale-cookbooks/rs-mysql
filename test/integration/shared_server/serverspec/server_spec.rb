@@ -4,9 +4,9 @@ require 'spec_helper'
 
 case os[:family]
 when 'ubuntu'
-  mysql_config_file = '/etc/mysql/my.cnf'
+  mysql_config_file = '/etc/mysql-default/conf.d/default.cnf'
 when 'redhat'
-  mysql_config_file = '/etc/my.cnf'
+  mysql_config_file = '/etc/mysql-default/conf.d/default.cnf'
 end
 
 describe "verify the tuning attributes set in #{mysql_config_file}" do
