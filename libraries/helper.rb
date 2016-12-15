@@ -111,9 +111,9 @@ module RsMysql
       if timeout && timeout < 0
         Chef::Log.info 'Skipping slave verification as timeout is set to a negative value'
       else
-        require 'mysql'
+        require 'mysql2'
 
-        with_closing(Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])) do |connection|
+        with_closing(Mysql2::Client.new(connection_info)) do |connection|
           Timeout.timeout(timeout) do
             slave_status = nil
             loop do
@@ -135,10 +135,10 @@ module RsMysql
     def self.wait_for_relay_log_read(connection_info)
       Chef::Log.info 'Waiting for slave to read relay log...'
 
-      require 'mysql'
+      require 'mysql2'
 
-      with_closing(Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])) do |connection|
-        slave_status = connection.query('SHOW SLAVE STATUS').fetch_hash
+      with_closing(Mysql2::Client.new(connection_info)) do |connection|
+        slave_status = connection.query('SHOW SLAVE STATUS').first
 
         Chef::Log.info "Slave IO state: #{(slave_status && slave_status['Slave_IO_State']).inspect}"
 
@@ -170,9 +170,9 @@ module RsMysql
     #   binlog position
     #
     def self.get_master_info(connection_info)
-      require 'mysql'
+      require 'mysql2'
 
-      with_closing(Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])) do |connection|
+      with_closing(Mysql2::Client.new(connection_info)) do |connection|
         master_status = connection.query('SHOW MASTER STATUS').fetch_hash
         slave_status = connection.query('SHOW SLAVE STATUS').fetch_hash
 

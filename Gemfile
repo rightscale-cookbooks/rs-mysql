@@ -12,6 +12,6 @@ group :integration do
   gem 'kitchen-vagrant'
   gem 'chefspec', '~> 5.0'
   gem 'travis-lint'
-  gem 'mysql'
-  gem 'machine_tag'
+  gem 'mysql2'
+  gem "machine_tag"
 end
