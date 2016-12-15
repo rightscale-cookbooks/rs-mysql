@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-marker "recipe_start_rightscale" do
-  template "rightscale_audit_entry.erb"
+marker 'recipe_start_rightscale' do
+  template 'rightscale_audit_entry.erb'
 end
 
 schedule_enable = node['rs-mysql']['schedule']['enable'] == true || node['rs-mysql']['schedule']['enable'] == 'true'

@@ -29,15 +29,12 @@ end
 # Check and wait a few seconds if RHEL repos are not yet installed.
 if node['platform'] == 'redhat'
   if !node.attribute?('cloud') || !node['cloud'].attribute?('provider') || !node.attribute?(node['cloud']['provider'])
-    log "Not running on a known cloud - skipping check for RHEL repo"
+    log 'Not running on a known cloud - skipping check for RHEL repo'
   else
     # Depending on cloud, add string returned by 'yum --cacheonly repolist' to determine if RHEL repo has been added.
-    case node['cloud']['provider']
-    when 'rackspace'
-      repo_id_partial = 'rhel-x86_64-server'
-    else
-      # Check to be skipped since cloud not in list.
-      repo_id_partial = nil
+    repo_id_partial = case node['cloud']['provider']
+                      when 'rackspace'
+                        'rhel-x86_64-server'
     end
 
     unless repo_id_partial.nil?
@@ -52,10 +49,10 @@ if node['platform'] == 'redhat'
 end
 
 if node['platform_family'] == 'rhel'
-  #verify getenforce exists on the install
+  # verify getenforce exists on the install
   if ::File.exist?('/usr/sbin/getenforce')
-    #if selinux is set to enforcing instead of permissive, update mysqld access
-    if Mixlib::ShellOut.new("/usr/sbin/getenforce").run_command.stdout.strip.downcase == 'enforcing'
+    # if selinux is set to enforcing instead of permissive, update mysqld access
+    if Mixlib::ShellOut.new('/usr/sbin/getenforce').run_command.stdout.strip.casecmp('enforcing').zero?
       cookbook_file ::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te') do
         source 'rhel-mysql.te'
         owner 'root'
@@ -65,12 +62,12 @@ if node['platform_family'] == 'rhel'
       end
 
       execute 'mysql:compile selinux te to module' do
-        command "checkmodule -M -m -o #{::File.join(Chef::Config[:file_cache_path],'rhel-mysql.mod')} #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te')}"
+        command "checkmodule -M -m -o #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.mod')} #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te')}"
         action :run
       end
 
       execute 'mysql:package selinux module' do
-        command "semodule_package -m #{::File.join(Chef::Config[:file_cache_path],'rhel-mysql.mod')} -o #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
+        command "semodule_package -m #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.mod')} -o #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
         action :run
       end
 
@@ -133,20 +130,20 @@ mysql_service_name = 'mysql-default'
 service mysql_service_name do
   action :stop
   only_if do
-    ::File.exists?("#{node['mysql']['data_dir']}/ib_logfile0") &&
-    ::File.size("#{node['mysql']['data_dir']}/ib_logfile0") != RsMysql::Tuning.megabytes_to_bytes(
-      node['mysql']['tunable']['innodb_log_file_size']
-    )
+    ::File.exist?("#{node['mysql']['data_dir']}/ib_logfile0") &&
+      ::File.size("#{node['mysql']['data_dir']}/ib_logfile0") != RsMysql::Tuning.megabytes_to_bytes(
+        node['mysql']['tunable']['innodb_log_file_size']
+      )
   end
 end
 
 execute 'delete innodb log files' do
   command "rm -f #{node['mysql']['data_dir']}/ib_logfile*"
   only_if do
-    ::File.exists?("#{node['mysql']['data_dir']}/ib_logfile0") &&
-    ::File.size("#{node['mysql']['data_dir']}/ib_logfile0") != RsMysql::Tuning.megabytes_to_bytes(
-      node['mysql']['tunable']['innodb_log_file_size']
-    )
+    ::File.exist?("#{node['mysql']['data_dir']}/ib_logfile0") &&
+      ::File.size("#{node['mysql']['data_dir']}/ib_logfile0") != RsMysql::Tuning.megabytes_to_bytes(
+        node['mysql']['tunable']['innodb_log_file_size']
+      )
   end
 end
 
@@ -154,55 +151,54 @@ data_dir = node['mysql']['data_dir']
 
 execute 'update mysql binlog index with new data_dir' do
   command "sed -i -r -e 's#^.*/(mysql_binlogs/.*)$##{data_dir}/\\1#' '#{data_dir}/mysql_binlogs/mysql-bin.index'"
-  only_if { ::File.exists?("#{data_dir}/mysql_binlogs/mysql-bin.index") }
+  only_if { ::File.exist?("#{data_dir}/mysql_binlogs/mysql-bin.index") }
 end
 
-# TODO ADD TESTS
-if node["platform_family"]=="rhel"
+# TODO: ADD TESTS
+if node['platform_family'] == 'rhel'
   case node['rs-mysql']['mysql']['version']
-  when "5.5"
-    include_recipe "yum-mysql-community::mysql55"
-  when "5.6"
-    include_recipe "yum-mysql-community::mysql56"
-  when "5.7"
-    include_recipe "yum-mysql-community::mysql57"
+  when '5.5'
+    include_recipe 'yum-mysql-community::mysql55'
+  when '5.6'
+    include_recipe 'yum-mysql-community::mysql56'
+  when '5.7'
+    include_recipe 'yum-mysql-community::mysql57'
   end
 end
 
-# TODO ADD TESTS
+# TODO: ADD TESTS
 case node['platform_family']
 when 'rhel'
-  package "mysql-community-devel"
+  package 'mysql-community-devel'
 when 'debian'
   package "mysql-server-#{node['rs-mysql']['mysql']['version']}"
 end
 
-# TODO ADD TESTS
+# TODO: ADD TESTS
 mysql_client 'default' do
   action :create
 end
 
-# TODO ADD TESTS
+# TODO: ADD TESTS
 # Configure the MySQL service.
 mysql_service 'default' do
   initial_root_password node['rs-mysql']['server_root_password']
-  action [:create,:start]
+  action [:create, :start]
 end
 
 directory "#{data_dir}/mysql_binlogs" do
   recursive true
-  user "mysql"
-  mode "0700"
+  user 'mysql'
+  mode '0700'
   action :create
 end
 
-mysql_config "default" do
+mysql_config 'default' do
   source 'tunable.erb'
-  variables(config: node['mysql']['tunable'] )
+  variables(config: node['mysql']['tunable'])
   notifies :restart, 'mysql_service[default]'
   action :create
 end
-
 
 # allow client to make connections using the default location
 # for the system /etc/my.cnf
@@ -210,7 +206,7 @@ link '/etc/my.cnf' do
   to '/etc/mysql-default/my.cnf'
 end
 
-# TODO ADD TESTS
+# TODO: ADD TESTS
 mysql2_chef_gem 'default' do
   action :install
 end
@@ -222,9 +218,9 @@ include_recipe 'rightscale_backup::default'
 ruby_block 'wait for listening' do
   block do
     mysql_connection_info = {
-      :host => 'localhost',
-      :username => 'root',
-      :password => node['rs-mysql']['server_root_password']
+      host: 'localhost',
+      username: 'root',
+      password: node['rs-mysql']['server_root_password']
     }
     RsMysql::Helper.verify_mysqld_is_up(mysql_connection_info, node['rs-mysql']['startup-timeout'])
   end
@@ -241,10 +237,10 @@ end
 
 # The connection hash to use to connect to MySQL
 mysql_connection_info = {
-  :host => 'localhost',
-  :username => 'root',
-  :password => node['rs-mysql']['server_root_password'],
-  :default_file => "/etc/mysql-default/my.cnf"
+  host: 'localhost',
+  username: 'root',
+  password: node['rs-mysql']['server_root_password'],
+  default_file: '/etc/mysql-default/my.cnf'
 }
 
 # Create the application database

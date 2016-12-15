@@ -1,7 +1,6 @@
 require_relative 'spec_helper'
 
 describe 'rs-mysql::default' do
-
   before do
     stub_command("/usr/bin/mysql -u root -e 'show databases;'").and_return(true)
   end

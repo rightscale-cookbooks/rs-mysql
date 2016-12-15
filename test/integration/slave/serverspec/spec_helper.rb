@@ -17,9 +17,9 @@ require 'mysql2'
 def db
   @db ||= begin
     connection = ::Mysql2::Client.new(
-      :host     => 'localhost',
-      :username => 'root',
-      :password => 'rootpass'
+      host: 'localhost',
+      username: 'root',
+      password: 'rootpass'
     )
     connection
   end

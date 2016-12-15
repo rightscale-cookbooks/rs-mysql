@@ -28,6 +28,6 @@ end
 
 # Import the mysql dump
 execute 'import mysql dump' do
-  command "cat /tmp/mysql.dump | mysql --user=root -b #{node['fake']['database_name']}" +
-    " --password=#{node['rs-mysql']['server_root_password']}"
+  command "cat /tmp/mysql.dump | mysql --user=root -b #{node['fake']['database_name']}" \
+          " --password=#{node['rs-mysql']['server_root_password']}"
 end

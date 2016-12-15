@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-marker "recipe_start_rightscale" do
-  template "rightscale_audit_entry.erb"
+marker 'recipe_start_rightscale' do
+  template 'rightscale_audit_entry.erb'
 end
 
 device_count = node['rs-mysql']['device']['count'].to_i
@@ -28,7 +28,6 @@ size = node['rs-mysql']['device']['volume_size'].to_i
 raise 'rs-mysql/device/count should be at least 2 for setting up stripe' if device_count < 2
 
 detach_timeout = node['rs-mysql']['device']['detach_timeout'].to_i * device_count
-
 
 each_device_size = (size.to_f / device_count.to_f).ceil
 

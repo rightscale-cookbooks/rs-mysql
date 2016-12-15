@@ -46,9 +46,9 @@ end
 
 # The connection hash to use to connect to mysql
 mysql_connection_info = {
-  :host => 'localhost',
-  :username => 'root',
-  :password => node['rs-mysql']['server_root_password'],
+  host: 'localhost',
+  username: 'root',
+  password: node['rs-mysql']['server_root_password']
 }
 
 mysql_database 'stop slave IO thread' do
@@ -115,7 +115,7 @@ if missing_dns_creds.empty?
     domain domain_name
     credentials(
       'dnsmadeeasy_api_key' => node['rs-mysql']['dns']['user_key'],
-      'dnsmadeeasy_secret_key' => node['rs-mysql']['dns']['secret_key'],
+      'dnsmadeeasy_secret_key' => node['rs-mysql']['dns']['secret_key']
     )
     entry_value node['mysql']['bind_address']
     type node['dns']['entry']['type']
@@ -126,5 +126,5 @@ else
   log "Following DNS credentials are missing #{missing_dns_creds.join(', ')}! Skipping DNS setting..."
 end
 
-node.default['rs-mysql']['collectd']['mysql']['MasterStats']=true
+node.default['rs-mysql']['collectd']['mysql']['MasterStats'] = true
 include_recipe 'rs-mysql::collectd'

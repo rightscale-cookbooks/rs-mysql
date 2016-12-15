@@ -73,12 +73,12 @@ default['rs-mysql']['collectd']['mysql']['User'] = 'root'
 default['rs-mysql']['collectd']['mysql']['Socket'] = '/var/run/mysql-default/mysqld.sock'
 default['rs-mysql']['collectd']['mysql']['Password'] = node['rs-mysql']['server_root_password']
 default['rs-mysql']['startup-timeout'] = 300
-default['rs-mysql']['mysql']['version']="5.5"
+default['rs-mysql']['mysql']['version'] = '5.5'
 
 class Chef::Recipe
   include MysqlCookbook::HelpersBase
 end
 # mysql attributes
 default['mysql']['tunable']['log_error'] = '/var/log/mysql-default/error.log'
-default['mysql']['port']=3306
-default['mysql']['data_dir']="/var/lib/mysql-default"
+default['mysql']['port'] = 3306
+default['mysql']['data_dir'] = '/var/lib/mysql-default'

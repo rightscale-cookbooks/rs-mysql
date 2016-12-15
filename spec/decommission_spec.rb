@@ -25,7 +25,7 @@ describe 'rs-mysql::decommission' do
   context 'rs-mysql/device/destroy_on_decommission is set to true' do
     let(:chef_runner_decommission) do
       chef_runner.node.set['rs-mysql']['device']['destroy_on_decommission'] = true
-      chef_runner.node.set["rightscale"]["decom_reason"] = 'terminate'
+      chef_runner.node.set['rightscale']['decom_reason'] = 'terminate'
       chef_runner
     end
     let(:nickname) { chef_runner.converge(described_recipe).node['rs-mysql']['device']['nickname'] }
@@ -40,8 +40,8 @@ describe 'rs-mysql::decommission' do
 
       context 'LVM is not used' do
         before do
-          output = "/dev/sda on /mnt/storage type ext4 (auto)"
-          mount = double(run_command: nil, error!: nil, stdout: output, stderr: double(empty?: true), exitstatus: 0, live_stream: nil, "live_stream="=> nil, status: 0)
+          output = '/dev/sda on /mnt/storage type ext4 (auto)'
+          mount = double(run_command: nil, error!: nil, stdout: output, stderr: double(empty?: true), exitstatus: 0, live_stream: nil, 'live_stream=' => nil, status: 0)
           allow(Mixlib::ShellOut).to receive(:new).and_return(mount)
         end
 
@@ -56,7 +56,7 @@ describe 'rs-mysql::decommission' do
 
         it 'unmounts and disables the volume on the instance' do
           expect(chef_run).to umount_mount('/mnt/storage').with(
-            device: '/dev/sda',
+            device: '/dev/sda'
           )
           expect(chef_run).to disable_mount('/mnt/storage')
         end
@@ -74,25 +74,24 @@ describe 'rs-mysql::decommission' do
             role: 'master',
             lineage: 'testing',
             bind_ip_address: '10.0.2.15',
-            bind_port: 3306,
+            bind_port: 3306
           )
           expect(chef_run).to delete_rightscale_tag_database('slave testing').with(
             role: 'slave',
             lineage: 'testing',
             bind_ip_address: '10.0.2.15',
-            bind_port: 3306,
+            bind_port: 3306
           )
         end
-
       end
 
       context 'LVM is used' do
         before do
           output = '/dev/mapper/vol-group--logical-volume-1 on /mnt/storage type ext4 (auto)'
-          mount = double(run_command: nil, error!: nil, stdout: output, stderr: double(empty?: true), exitstatus: 0, live_stream: nil, "live_stream="=> nil, status: 0)
+          mount = double(run_command: nil, error!: nil, stdout: output, stderr: double(empty?: true), exitstatus: 0, live_stream: nil, 'live_stream=' => nil, status: 0)
           allow(Mixlib::ShellOut).to receive(:new).and_return(mount)
 
-          lvdisplay = double(run_command: nil, error!: nil, stdout: output, stderr: double(empty?: true), exitstatus: 0, live_stream: nil, "live_stream="=> nil, status: 0)
+          lvdisplay = double(run_command: nil, error!: nil, stdout: output, stderr: double(empty?: true), exitstatus: 0, live_stream: nil, 'live_stream=' => nil, status: 0)
           allow(Mixlib::ShellOut).to receive(:new).and_return(lvdisplay)
         end
 
@@ -110,7 +109,7 @@ describe 'rs-mysql::decommission' do
 
         it 'unmounts and disables the volume on the instance' do
           expect(chef_run).to umount_mount('/mnt/storage').with(
-            device: logical_volume_device,
+            device: logical_volume_device
           )
           expect(chef_run).to disable_mount('/mnt/storage')
         end
@@ -134,23 +133,22 @@ describe 'rs-mysql::decommission' do
             role: 'master',
             lineage: 'testing',
             bind_ip_address: '10.0.2.15',
-            bind_port: 3306,
+            bind_port: 3306
           )
           expect(chef_run).to delete_rightscale_tag_database('slave testing').with(
             role: 'slave',
             lineage: 'testing',
             bind_ip_address: '10.0.2.15',
-            bind_port: 3306,
+            bind_port: 3306
           )
         end
-
       end
     end
 
-    ['reboot', 'stop'].each do |state|
+    %w(reboot stop).each do |state|
       context "RightScale run state is #{state}" do
         let(:chef_run) do
-          chef_runner_decommission.node.set["rightscale"]["decom_reason"] = state
+          chef_runner_decommission.node.set['rightscale']['decom_reason'] = state
           chef_runner_decommission.converge(described_recipe)
         end
 

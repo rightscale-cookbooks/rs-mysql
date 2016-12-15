@@ -1,23 +1,23 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-Vagrant.configure("2") do |config|
+Vagrant.configure('2') do |config|
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "opscode-ubuntu-12.04"
+  config.vm.box = 'opscode-ubuntu-12.04'
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
-  config.vm.box_url = "https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box"
+  config.vm.box_url = 'https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box'
 
   # Assign this VM to a host-only network IP, allowing you to access it
   # via the IP. Host-only networks can talk to the host machine as well as
   # any other machines on the same network, but cannot be accessed (through this
   # network interface) by any external networks.
-  #config.vm.network :private_network, ip: "33.33.33.10"
+  # config.vm.network :private_network, ip: "33.33.33.10"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -40,11 +40,11 @@ Vagrant.configure("2") do |config|
   # Example for VirtualBox:
   #
   config.vm.provider :virtualbox do |vb|
-  #   # Don't boot with headless mode
-  #   vb.gui = true
-  #
-  #   # Use VBoxManage to customize the VM. For example to change memory:
-    vb.customize ["modifyvm", :id, "--memory", "1024"]
+    #   # Don't boot with headless mode
+    #   vb.gui = true
+    #
+    #   # Use VBoxManage to customize the VM. For example to change memory:
+    vb.customize ['modifyvm', :id, '--memory', '1024']
   end
   #
   # View the documentation for the provider you're using for more
@@ -75,32 +75,32 @@ Vagrant.configure("2") do |config|
     master.vm.provision :chef_solo do |chef|
       chef.json = {
         :cloud => {
-          :provider => 'vagrant',
-          :private_ips => ['33.33.33.10'],
-          :local_ipv4 => '33.33.33.10'
+          provider: 'vagrant',
+          private_ips: ['33.33.33.10'],
+          local_ipv4: '33.33.33.10'
         },
         :'rs-mysql' => {
-          :lineage => 'lineage',
-          :server_root_password => 'rootpass',
-          :server_repl_password => 'replpass',
-          :application_username => 'appuser',
-          :application_password => 'apppass',
-          :application_database_name => 'app_test'
+          lineage: 'lineage',
+          server_root_password: 'rootpass',
+          server_repl_password: 'replpass',
+          application_username: 'appuser',
+          application_password: 'apppass',
+          application_database_name: 'app_test'
         },
         :rightscale => {
-          :instance_uuid => '1111111'
+          instance_uuid: '1111111'
         }
       }
 
       chef.run_list = [
-        "recipe[apt::default]",
-        #"recipe[yum::epel]",
-        "recipe[rs-mysql::master]",
-        #"recipe[rs-mysql::slave]",
-        "recipe[fake::database_mysql]",
+        'recipe[apt::default]',
+        # "recipe[yum::epel]",
+        'recipe[rs-mysql::master]',
+        # "recipe[rs-mysql::slave]",
+        'recipe[fake::database_mysql]'
       ]
 
-      chef.arguments = "--logfile /var/log/chef-solo.log --log_level debug"
+      chef.arguments = '--logfile /var/log/chef-solo.log --log_level debug'
     end
   end
 
@@ -112,31 +112,31 @@ Vagrant.configure("2") do |config|
     slave.vm.provision :chef_solo do |chef|
       chef.json = {
         :cloud => {
-          :provider => 'vagrant',
-          :private_ips => ['33.33.33.11'],
-          :local_ipv4 => '33.33.33.11'
+          provider: 'vagrant',
+          private_ips: ['33.33.33.11'],
+          local_ipv4: '33.33.33.11'
         },
         :'rs-mysql' => {
-          :lineage => 'lineage',
-          :server_root_password => 'rootpass',
-          :server_repl_password => 'replpass',
-          :application_username => 'appuser',
-          :application_password => 'apppass',
-          :application_database_name => 'app_test'
+          lineage: 'lineage',
+          server_root_password: 'rootpass',
+          server_repl_password: 'replpass',
+          application_username: 'appuser',
+          application_password: 'apppass',
+          application_database_name: 'app_test'
         },
         :rightscale => {
-          :instance_uuid => '2222222'
+          instance_uuid: '2222222'
         }
       }
 
       chef.run_list = [
-        "recipe[apt::default]",
-        #"recipe[yum::epel]",
-        "recipe[rs-mysql::slave]",
-        #"recipe[rs-mysql::master]",
+        'recipe[apt::default]',
+        # "recipe[yum::epel]",
+        'recipe[rs-mysql::slave]',
+        # "recipe[rs-mysql::master]",
       ]
 
-      chef.arguments = "--logfile /var/log/chef-solo.log --log_level debug"
+      chef.arguments = '--logfile /var/log/chef-solo.log --log_level debug'
     end
   end
 
@@ -148,32 +148,32 @@ Vagrant.configure("2") do |config|
     slave.vm.provision :chef_solo do |chef|
       chef.json = {
         :cloud => {
-          :provider => 'vagrant',
-          :private_ips => ['33.33.33.12'],
-          :local_ipv4 => '33.33.33.12'
+          provider: 'vagrant',
+          private_ips: ['33.33.33.12'],
+          local_ipv4: '33.33.33.12'
         },
         :'rs-mysql' => {
-          :backup => {
-            :lineage => 'lineage'
+          backup: {
+            lineage: 'lineage'
           },
-          :server_root_password => 'rootpass',
-          :server_repl_password => 'replpass',
-          :application_username => 'appuser',
-          :application_password => 'apppass',
-          :application_database_name => 'app_test'
+          server_root_password: 'rootpass',
+          server_repl_password: 'replpass',
+          application_username: 'appuser',
+          application_password: 'apppass',
+          application_database_name: 'app_test'
         },
         :rightscale => {
-          :instance_uuid => '3333333'
+          instance_uuid: '3333333'
         }
       }
 
       chef.run_list = [
-        "recipe[apt::default]",
-        #"recipe[yum::epel]",
-        "recipe[rs-mysql::slave]"
+        'recipe[apt::default]',
+        # "recipe[yum::epel]",
+        'recipe[rs-mysql::slave]'
       ]
 
-      chef.arguments = "--logfile /var/log/chef-solo.log --log_level debug"
+      chef.arguments = '--logfile /var/log/chef-solo.log --log_level debug'
     end
   end
 end

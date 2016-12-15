@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'berkshelf','~> 5.0'
+gem 'berkshelf', '~> 5.0'
 gem 'thor-foodcritic'
 
 group :integration do
@@ -13,5 +13,5 @@ group :integration do
   gem 'chefspec', '~> 5.0'
   gem 'travis-lint'
   gem 'mysql'
-  gem "machine_tag"
+  gem 'machine_tag'
 end

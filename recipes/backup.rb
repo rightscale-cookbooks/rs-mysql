@@ -37,9 +37,9 @@ end
 
 # The connection hash to use to connect to mysql
 mysql_connection_info = {
-  :host => 'localhost',
-  :username => 'root',
-  :password => node['rs-mysql']['server_root_password'],
+  host: 'localhost',
+  username: 'root',
+  password: node['rs-mysql']['server_root_password']
 }
 
 mysql_database 'flush tables with read lock' do

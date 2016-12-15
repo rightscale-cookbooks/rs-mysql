@@ -27,69 +27,67 @@ describe 'rs-mysql::backup' do
     allow(connection).to receive(:query).with('SHOW MASTER STATUS').and_return(master_status)
     allow(connection).to receive(:query).with('SHOW SLAVE STATUS').and_return(slave_status)
     allow(connection).to receive(:close)
-    allow(master_status).to receive(:fetch_hash).and_return({
-      'File' => 'mysql-bin.000012',
-      'Position' => '394',
-      'Binlog_Do_DB' => '',
-      'Binlog_Ignore' => '',
-    })
+    allow(master_status).to receive(:fetch_hash).and_return('File' => 'mysql-bin.000012',
+                                                            'Position' => '394',
+                                                            'Binlog_Do_DB' => '',
+                                                            'Binlog_Ignore' => '')
     allow(slave_status).to receive(:fetch_hash).and_return(nil)
   end
 
   it 'sets up chef error handler' do
     expect(chef_run).to include_recipe('chef_handler::default')
     expect(chef_run).to create_cookbook_file('/var/chef/handlers/rs-mysql_backup.rb').with(
-      source: 'backup_error_handler.rb',
+      source: 'backup_error_handler.rb'
     )
     expect(chef_run).to enable_chef_handler('Rightscale::BackupErrorHandler').with(
-      source: '/var/chef/handlers/rs-mysql_backup.rb',
+      source: '/var/chef/handlers/rs-mysql_backup.rb'
     )
   end
 
   it 'locks the database' do
     expect(chef_run).to query_mysql_database('flush tables with read lock').with(
       database_name: 'mysql',
-      sql: 'FLUSH TABLES WITH READ LOCK',
+      sql: 'FLUSH TABLES WITH READ LOCK'
     )
   end
 
   it 'writes the master info JSON file' do
     expect(chef_run).to create_file('generate master info JSON file').with(
       content: mysql_master_info_json,
-      path: '/mnt/storage/mysql_master_info.json',
+      path: '/mnt/storage/mysql_master_info.json'
     )
   end
 
   it 'freezes the filesystem' do
     expect(chef_run).to freeze_filesystem("freeze #{nickname}").with(
       label: nickname,
-      mount: '/mnt/storage',
+      mount: '/mnt/storage'
     )
   end
 
   it 'creates a backup' do
     expect(chef_run).to create_rightscale_backup(nickname).with(
-      lineage: 'testing',
+      lineage: 'testing'
     )
   end
 
   it 'unfreezes the filesystem' do
     expect(chef_run).to unfreeze_filesystem("unfreeze #{nickname}").with(
       label: nickname,
-      mount: '/mnt/storage',
+      mount: '/mnt/storage'
     )
   end
 
   it 'deletes the master info JSON file' do
     expect(chef_run).to delete_file('delete master info JSON file').with(
-      path: '/mnt/storage/mysql_master_info.json',
+      path: '/mnt/storage/mysql_master_info.json'
     )
   end
 
   it 'unlocks the database' do
     expect(chef_run).to query_mysql_database('unlock tables').with(
       database_name: 'mysql',
-      sql: 'UNLOCK TABLES',
+      sql: 'UNLOCK TABLES'
     )
   end
 
@@ -100,7 +98,7 @@ describe 'rs-mysql::backup' do
       dailies: 14,
       weeklies: 6,
       monthlies: 12,
-      yearlies: 2,
+      yearlies: 2
     )
   end
 end

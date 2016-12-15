@@ -19,12 +19,12 @@
 
 # Tags for the fake master database server
 tags = [
-  "server:uuid=1111111111",
-  "database:active=true",
+  'server:uuid=1111111111',
+  'database:active=true',
   "database:master_active=#{Time.now.to_i}",
   "database:lineage=#{node['rs-mysql']['backup']['lineage']}",
-  "database:bind_ip_address=10.10.3.2",
-  "database:bind_port=3306"
+  'database:bind_ip_address=10.10.3.2',
+  'database:bind_port=3306'
 ]
 
 # The file containing the master server tags must be created in this path so that machine tag search work as
@@ -35,7 +35,6 @@ directory tags_path do
   recursive true
   action :nothing
 end.run_action(:create)
-
 
 file ::File.join(tags_path, 'tags.json') do
   content ::JSON.pretty_generate(tags)

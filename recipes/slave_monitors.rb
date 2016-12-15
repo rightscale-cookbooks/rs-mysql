@@ -7,7 +7,7 @@ service 'collectd' do
 end
 
 bash 'clean up extra collectd processes' do
-  flags "-ex"
+  flags '-ex'
   code <<-EOH
      while [ `pkill -c collectd` -gt 0 ]; do pkill -9 collectd; done
   EOH

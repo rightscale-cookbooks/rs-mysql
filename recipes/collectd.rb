@@ -35,12 +35,12 @@ log 'Installing MySQL collectd plugin...'
 package 'collectd-mysql' do
   only_if { node['platform_family'] == 'rhel' }
 end
-#package "collectd"
+# package "collectd"
 include_recipe 'collectd::default'
 
-rewind "collectd_service[collectd]" do
+rewind 'collectd_service[collectd]' do
   action :nothing
-  only_if {::File.exists?("/usr/sbin/collectd")}
+  only_if { ::File.exist?('/usr/sbin/collectd') }
 end
 
 # collectd::default recipe attempts to delete collectd plugins that were not
@@ -52,11 +52,11 @@ end
 # end
 
 collectd_plugin 'processes' do
- options :process => [ 'collectd', 'mysqld' ]
+  options process: %w(collectd mysqld)
 end
 
 collectd_plugin 'mysql' do
-  #cookbook 'rs-mysql'
-  #template 'plugin.conf.erb'
-  options( node['rs-mysql']['collectd']['mysql'] )
+  # cookbook 'rs-mysql'
+  # template 'plugin.conf.erb'
+  options(node['rs-mysql']['collectd']['mysql'])
 end
