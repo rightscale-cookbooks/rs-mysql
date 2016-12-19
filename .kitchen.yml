@@ -1,44 +1,43 @@
 ---
 driver_plugin: vagrant
 driver_config:
-  require_chef_omnibus: '12.16'
+  customize:
+    cpus: 2
+    memory: 512
+  ssh:
+    insert_key: false
+
+provisioner:
+  name: chef_zero
+  always_update_cookbooks: true
+  require_chef_omnibus: 12.16.42
+  log_level: info
+  log_file: /var/log/chef-solo.log
 
 platforms:
 - name: centos-6.8
   run_list: ['recipe[yum-epel]']
   driver_config:
-    box: opscode-centos-6.8
-    customize:
-      cpus: 2
-      memory: 512
-- name: rhel-6.5
-  run_list: ['recipe[yum-epel]', 'recipe[rhsm]']
-  attributes:
-    rhsm:
-      username: <%= ENV['RHSM_USERNAME'] %>
-      password: <%= ENV['RHSM_PASSWORD'] %>
-      compile_time: true
-      additional_repos: ['rhel-6-server-optional-rpms']
-  driver_config:
-    box: local-rhel-6.5
-    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-6.5_chef-provisionerless.box
-    customize:
-      cpus: 2
-      memory: 512
+    box: bento/centos-6.8
+#- name: rhel-6.5
+#  run_list: ['recipe[yum-epel]', 'recipe[rhsm]']
+#  attributes:
+#    rhsm:
+#      username: <%= ENV['RHSM_USERNAME'] %>
+#      password: <%= ENV['RHSM_PASSWORD'] %>
+#      compile_time: true
+#      additional_repos: ['rhel-6-server-optional-rpms']
+#  driver_config:
+#    box: local-rhel-6.5
+#    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-6.5_chef-provisionerless.box
 - name: ubuntu-12.04
   run_list: ['recipe[apt]']
   driver_config:
-    box: opscode-ubuntu-12.04
-    customize:
-      cpus: 2
-      memory: 512
+    box: bento/ubuntu-12.04
 - name: ubuntu-14.04
   run_list: ['recipe[apt]']
   driver_config:
-    box: opscode-ubuntu-14.04
-    customize:
-      cpus: 2
-      memory: 512
+    box: bento/ubuntu-14.04
 
 suites:
 - name: default
@@ -109,9 +108,6 @@ suites:
 - name: master
   run_list:
   - recipe[rs-mysql::master]
-  provisioner:
-      solo_rb:
-        log_location: /var/log/chef-solo.log
   attributes:
     cloud:
       provider: 'vagrant'
@@ -130,9 +126,6 @@ suites:
   run_list:
   - recipe[fake::master]
   - recipe[rs-mysql::slave]
-  provisioner:
-      solo_rb:
-        log_location: /var/log/chef-solo.log
   attributes:
     cloud:
       provider: 'vagrant'

@@ -2,7 +2,6 @@ require 'rspec/core/rake_task'
 require 'foodcritic'
 require 'kitchen'
 
-cookbook = File.foreach('metadata.rb').grep(/^name/).first.strip.split(' ').last.delete("'")
 directory = File.expand_path(File.dirname(__FILE__))
 
 desc 'Sets up knife, and vendors cookbooks'
@@ -23,7 +22,7 @@ task :verify_version do
     f = `git show master:metadata.rb`
     f.each_line do |line|
       if line =~ /^version/
-        k, v = line.strip.split
+        _k, v = line.strip.split
         @old_version = v
       end
     end
@@ -34,7 +33,7 @@ task :verify_version do
     f = File.read('metadata.rb')
     f.each_line do |line|
       if line =~ /^version/
-        k, v = line.strip.split
+        _k, v = line.strip.split
         @new_version = v
       end
     end
@@ -42,8 +41,8 @@ task :verify_version do
   end
 
   if `git rev-parse --abbrev-ref HEAD`.strip != 'master'
-    old_version=get_old_version.tr('\'', '')
-    new_version=get_new_version.tr('\'', '')
+    old_version = get_old_version.tr('\'', '')
+    new_version = get_new_version.tr('\'', '')
     puts "Verifying Metdata Version - Old:#{old_version}, New:#{new_version}"
     if get_old_version == get_new_version
       raise 'You need to increment version before test will pass'

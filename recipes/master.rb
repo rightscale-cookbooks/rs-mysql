@@ -49,7 +49,7 @@ mysql_connection_info = {
   host: 'localhost',
   username: 'root',
   password: node['rs-mysql']['server_root_password'],
-  default_file: "/etc/mysql-default/my.cnf"
+  default_file: '/etc/mysql-default/my.cnf'
 }
 
 mysql_database 'stop slave IO thread' do

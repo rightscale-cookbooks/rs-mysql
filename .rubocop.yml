@@ -1,0 +1,42 @@
+AllCops:
+  Exclude:
+    - 'berks-cookbooks/**/*'
+    - 'knife.rb'
+Style/AccessorMethodName:
+  Exclude:
+    - 'Rakefile'
+Lint/AmbiguousRegexpLiteral:
+  Exclude:
+    - 'test/integration/default/serverspec/server_spec.rb'
+    - 'test/integration/shared_server/serverspec/server_spec.rb'
+    - 'test/integration/slave/serverspec/slave_spec.rb'
+Lint/IneffectiveAccessModifier:
+  Exclude:
+   - 'libraries/helper.rb'
+   - 'libraries/tuning.rb'
+Lint/UselessAccessModifier:
+  Exclude:
+   - 'libraries/helper.rb'
+   - 'libraries/tuning.rb'
+Lint/UselessAssignment:
+  Exclude:
+   - 'recipes/volume.rb'
+   - 'recipes/stripe.rb'
+Style/PredicateName:
+  Exclude:
+   - 'libraries/helper.rb'
+Lint/EndAlignment:
+  Exclude:
+   - 'recipes/default.rb'
+Lint/ShadowingOuterLocalVariable:
+  Exclude:
+   - 'recipes/stripe.rb'
+Metrics/BlockNesting:
+  Exclude:
+   - 'recipes/default.rb'
+Style/DoubleNegation:
+  Exclude:
+   - 'libraries/helper.rb'
+Style/RegexpLiteral:
+  Exclude:
+   - 'libraries/helper.rb'

@@ -9,23 +9,18 @@ issues_url       'https://github.com/rightscale-cookbooks/rs-mysql/issues' if re
 source_url       'https://github.com/rightscale-cookbooks/rs-mysql' if respond_to?(:source_url)
 chef_version     '>= 12.0' if respond_to?(:chef_version)
 
-depends 'chef_handler' # , '~> 1.1.6'
+depends 'chef_handler'
 depends 'marker', '~> 2.0.0'
-depends 'database' # , '~> 1.5.2'
+depends 'database'
 depends 'mysql2_chef_gem'
-depends 'mysql' # , '~> 4.0.18'
+depends 'mysql'
 depends 'yum-mysql-community'
 depends 'collectd'
 depends 'rightscale_tag', '~> 2.0.0'
-depends 'filesystem', '0.10.2'
-depends 'lvm', '~> 1.6.1'
+depends 'filesystem'
+depends 'lvm', '~> 3.1'
 depends 'rightscale_volume', '~> 2.0.0'
 depends 'rightscale_backup', '~> 2.0.0'
-# depends 'dns', '~> 0.1.3'
-# depends 'git', '~> 4.0.2'
-# depends 'aws', '~> 2.9.3'
-# depends 'ohai', '~> 2.1.0'
-# depends 'dmg', '~> 2.4.0'
 depends 'build-essential'
 
 recipe 'rs-mysql::default', 'Sets up a standalone MySQL server'
