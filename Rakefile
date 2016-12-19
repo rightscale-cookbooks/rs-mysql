@@ -83,7 +83,7 @@ end
 
 desc 'runs rspec'
 task :rspec do
-  cmd = 'chef exec rspec --color --format documentation'
+  cmd = 'chef exec bundle exec rspec --color --format documentation'
   puts cmd
   sh(cmd)
 end
