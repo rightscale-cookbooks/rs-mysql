@@ -40,8 +40,8 @@ default['mysql']['remove_test_database']            = false
 default['mysql']['root_network_acl']                = nil
 default['mysql']['tunable']['character-set-server'] = 'utf8'
 default['mysql']['tunable']['collation-server']     = 'utf8_general_ci'
-default['mysql']['tunable']['lower_case_table_names']  = nil
-default['mysql']['tunable']['back_log']             = '128'
+default['mysql']['tunable']['lower_case_table_names'] = nil
+default['mysql']['tunable']['back_log'] = '128'
 default['mysql']['tunable']['key_buffer_size']           = '256M'
 default['mysql']['tunable']['myisam_sort_buffer_size']   = '8M'
 default['mysql']['tunable']['myisam_max_sort_file_size'] = '2147483648'
@@ -59,7 +59,7 @@ default['mysql']['tunable']['net_read_timeout']     = '30'
 default['mysql']['tunable']['net_write_timeout']    = '30'
 default['mysql']['tunable']['table_cache']          = '128'
 default['mysql']['tunable']['table_open_cache']     = node['mysql']['tunable']['table_cache'] # table_cache is deprecated
-                                                                                              # in favor of table_open_cache
+# in favor of table_open_cache
 default['mysql']['tunable']['thread_cache_size']    = 8
 default['mysql']['tunable']['thread_concurrency']   = 10
 default['mysql']['tunable']['thread_stack']         = '256K'
@@ -176,7 +176,7 @@ when 'rhel'
   case node['platform_version'].to_i
   when 5
     default['mysql']['server']['packages'] = ['mysql-server']
-    default['mysql']['server']['log_slow_queries']     = '/var/log/mysql/slow.log'
+    default['mysql']['server']['log_slow_queries'] = '/var/log/mysql/slow.log'
   when 6, 7
     default['mysql']['server']['packages'] = ['mysql-server']
     default['mysql']['server']['slow_query_log']       = 1
@@ -203,7 +203,7 @@ when 'rhel'
   default['mysql']['server']['socket']               = '/var/lib/mysql/mysql.sock'
   default['mysql']['server']['grants_path']          = '/etc/mysql_grants.sql'
   default['mysql']['server']['old_passwords']        = 1
-  default['mysql']['server']['service_name']        = 'mysqld'
+  default['mysql']['server']['service_name'] = 'mysqld'
 
   # RHEL/CentOS mysql package does not support this option.
   default['mysql']['tunable']['innodb_adaptive_flushing'] = false
@@ -214,7 +214,7 @@ when 'debian'
   # Keep in this namespace for backwards compat
   default['mysql']['data_dir'] = '/var/lib/mysql'
 
-  default['mysql']['server']['packages'] = %w{ mysql-common mysql-server apparmor-utils }
+  default['mysql']['server']['packages'] = %w( mysql-common mysql-server apparmor-utils )
   default['mysql']['server']['slow_query_log']       = 1
   default['mysql']['server']['slow_query_log_file']  = '/var/log/mysql/slow.log'
 
