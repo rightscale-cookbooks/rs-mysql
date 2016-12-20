@@ -54,7 +54,7 @@ module RsMysql
       if memory < 1 * GB
         node_tuning['key_buffer_size'] = (16 * factor).to_i.to_s + 'M'
         node_tuning['max_allowed_packet'] = (20 * factor).to_i.to_s + 'M'
-        node_tuning['innodb_log_file_size'] = (4 * factor).to_i.to_s + 'M'
+        node_tuning['innodb_log_file_size'] = (5 * factor).to_i.to_s + 'M'
         node_tuning['innodb_log_buffer_size'] = (16 * factor).to_i.to_s + 'M'
       else
         node_tuning['key_buffer_size'] = (128 * factor).to_i.to_s + 'M'
