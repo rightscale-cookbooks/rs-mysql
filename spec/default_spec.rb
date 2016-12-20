@@ -27,15 +27,15 @@ describe 'rs-mysql::default' do
       allow(RsMysql::Tuning).to receive(:megabytes_to_bytes).and_return 1
     end
 
-#    it 'stops the mysql service' do
-#      expect(chef_run).to stop_service('mysql-default')
-#    end
-#    it 'deletes old innodb log files' do
-#      expect(chef_run).to run_execute('delete innodb log files')
-#    end
-#    it 'executes update binlog' do
-#      expect(chef_run).to run_execute('update mysql binlog index with new data_dir')
-#    end
+    #    it 'stops the mysql service' do
+    #      expect(chef_run).to stop_service('mysql-default')
+    #    end
+    #    it 'deletes old innodb log files' do
+    #      expect(chef_run).to run_execute('delete innodb log files')
+    #    end
+    #    it 'executes update binlog' do
+    #      expect(chef_run).to run_execute('update mysql binlog index with new data_dir')
+    #    end
     it 'installs mysql package' do
       expect(chef_run).to install_package('mysql-server-5.5')
     end

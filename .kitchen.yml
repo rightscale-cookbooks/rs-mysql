@@ -52,6 +52,8 @@ suites:
       provider: 'vagrant'
       public_ips: ['100.64.1.1']
       private_ips: ['10.0.2.15']
+    rs-base:
+      collectd_server: 'tss-4.rightscale.com'
     rs-mysql:
       backup:
         lineage: 'lineage'
@@ -76,6 +78,8 @@ suites:
       provider: 'vagrant'
       public_ips: ['']
       private_ips: ['10.0.2.15']
+    rs-base:
+      collectd_server: 'tss-4.rightscale.com'
     rs-mysql:
       backup:
         lineage: 'lineage'
@@ -102,6 +106,8 @@ suites:
       provider: 'vagrant'
       public_ips: ['100.64.1.1']
       private_ips: ['10.0.2.15']
+    rs-base:
+      collectd_server: 'tss-4.rightscale.com'
     rs-mysql:
       backup:
         lineage: 'lineage'
@@ -121,6 +127,8 @@ suites:
       provider: 'vagrant'
       public_ips: ['100.64.1.1']
       private_ips: ['10.0.2.15']
+    rs-base:
+      collectd_server: 'tss-4.rightscale.com'
     rs-mysql:
       backup:
         lineage: 'lineage'
@@ -141,6 +149,8 @@ suites:
       provider: 'vagrant'
       public_ips: ['100.64.2.2']
       private_ips: ['10.0.2.15']
+    rs-base:
+      collectd_server: 'tss-4.rightscale.com'
     rs-mysql:
       backup:
         lineage: 'lineage'
