@@ -196,8 +196,8 @@ end
 mysql_config 'default' do
   source 'tunable.erb'
   variables(config: node['rs-mysql']['tunable'])
-  notifies :run, 'execute[delete innodb log files]'
-  notifies :restart, 'mysql_service[default]'
+  notifies :run, 'execute[delete innodb log files]', :immediately
+  notifies :restart, 'mysql_service[default]', :immediately
   action :create
 end
 
