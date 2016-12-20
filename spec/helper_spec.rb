@@ -1,6 +1,6 @@
 require_relative 'spec_helper'
 require 'helper'
-require 'mysql'
+require 'mysql2'
 
 describe RsMysql::Helper do
   let(:mysql_connection_info) do
@@ -16,7 +16,8 @@ describe RsMysql::Helper do
       connection = double
       master_status = double
       slave_status = double
-      Mysql.stub(:new).with('localhost', 'root', 'rootpass').and_return(connection)
+      #Mysql.stub(:new).with('localhost', 'root', 'rootpass').and_return(connection)
+      Mysql2::Client.stub(:new).with({:host=>"localhost", :username=>"root", :password=>"rootpass"}).and_return(connection)
       allow(connection).to receive(:query).with('SHOW MASTER STATUS').and_return(master_status)
       allow(connection).to receive(:query).with('SHOW SLAVE STATUS').and_return(slave_status)
       allow(connection).to receive(:close)
@@ -34,7 +35,8 @@ describe RsMysql::Helper do
       connection = double
       master_status = double
       slave_status = double
-      Mysql.stub(:new).with('localhost', 'root', 'rootpass').and_return(connection)
+      #Mysql.stub(:new).with('localhost', 'root', 'rootpass').and_return(connection)
+      Mysql2::Client.stub(:new).with({:host=>"localhost", :username=>"root", :password=>"rootpass"}).and_return(connection)
       allow(connection).to receive(:query).with('SHOW MASTER STATUS').and_return(master_status)
       allow(connection).to receive(:query).with('SHOW SLAVE STATUS').and_return(slave_status)
       allow(connection).to receive(:close)
@@ -56,7 +58,8 @@ describe RsMysql::Helper do
       connection = double
       master_status = double
       slave_status = double
-      Mysql.stub(:new).with('localhost', 'root', 'rootpass').and_return(connection)
+      #Mysql.stub(:new).with('localhost', 'root', 'rootpass').and_return(connection)
+      Mysql2::Client.stub(:new).with({:host=>"localhost", :username=>"root", :password=>"rootpass"}).and_return(connection)
       allow(connection).to receive(:query).with('SHOW MASTER STATUS').and_return(master_status)
       allow(connection).to receive(:query).with('SHOW SLAVE STATUS').and_return(slave_status)
       allow(connection).to receive(:close)

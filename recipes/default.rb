@@ -209,6 +209,7 @@ end
 
 # TODO: ADD TESTS
 mysql2_chef_gem 'default' do
+  gem_version '0.4.5'
   action :install
 end
 

@@ -104,7 +104,7 @@ describe 'rs-mysql::decommission' do
         end
 
         it 'removes /var/lib/mysql-default symlink' do
-          expect(chef_run).to delete_link('/var/lib/mysql')
+          expect(chef_run).to delete_link('/var/lib/mysql-default')
         end
 
         it 'unmounts and disables the volume on the instance' do
