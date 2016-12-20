@@ -16,7 +16,7 @@ provisioner:
 
 platforms:
 - name: centos-6.8
-  run_list: ['recipe[yum-epel]']
+  run_list: ['recipe[fake::create_secrets]','recipe[yum-epel]']
   driver_config:
     box: bento/centos-6.8
 #- name: rhel-6.5
@@ -31,11 +31,11 @@ platforms:
 #    box: local-rhel-6.5
 #    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-6.5_chef-provisionerless.box
 - name: ubuntu-12.04
-  run_list: ['recipe[apt]']
+  run_list: ['recipe[fake::create_secrets]','recipe[apt]']
   driver_config:
     box: bento/ubuntu-12.04
 - name: ubuntu-14.04
-  run_list: ['recipe[apt]']
+  run_list: ['recipe[fake::create_secrets]','recipe[apt]']
   driver_config:
     box: bento/ubuntu-14.04
 
