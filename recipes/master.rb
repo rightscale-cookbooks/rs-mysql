@@ -98,11 +98,17 @@ mysql_database 'reset master' do
 end
 
 mysql_database_user 'repl' do
-  database_name '*.*'
+  host '%'
   connection mysql_connection_info
   password node['rs-mysql']['server_repl_password']
-  privileges [ 'REPLICATION SLAVE' ]
-  action [ :create, :grant ]
+  action :create
+end
+
+mysql_database_user 'repl' do
+  host '%'
+  connection mysql_connection_info
+  priviliges [ :replication_slave ]
+  action :grant
 end
 
 mysql_master_info_file = "#{node['rs-mysql']['device']['mount_point']}/mysql_master_info.json"
