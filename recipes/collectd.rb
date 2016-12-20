@@ -27,21 +27,21 @@ if node['rightscale'] && node['rightscale']['instance_uuid']
   node.override['collectd']['fqdn'] = node['rightscale']['instance_uuid']
 end
 
-chef_gem 'chef-rewind'
-require 'chef/rewind'
+#chef_gem 'chef-rewind'
+#require 'chef/rewind'
+
+include_recipe 'rs-base::monitoring_collectd'
 
 log 'Installing MySQL collectd plugin...'
 
 package 'collectd-mysql' do
   only_if { node['platform_family'] == 'rhel' }
 end
-# package "collectd"
-include_recipe 'collectd::default'
 
-rewind 'collectd_service[collectd]' do
-  action :nothing
-  only_if { ::File.exist?('/usr/sbin/collectd') }
-end
+#rewind 'collectd_service[collectd]' do
+#  action :nothing
+#  only_if { ::File.exist?('/usr/sbin/collectd') }
+#end
 
 # collectd::default recipe attempts to delete collectd plugins that were not
 # created during the same runlist as this recipe. Some common plugins are installed

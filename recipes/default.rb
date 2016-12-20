@@ -139,6 +139,7 @@ end
 
 execute 'delete innodb log files' do
   command "rm -f #{node['mysql']['data_dir']}/ib_logfile*"
+  action :run
   only_if do
     ::File.exist?("#{node['mysql']['data_dir']}/ib_logfile0") &&
       ::File.size("#{node['mysql']['data_dir']}/ib_logfile0") != RsMysql::Tuning.megabytes_to_bytes(
@@ -151,6 +152,7 @@ data_dir = node['mysql']['data_dir']
 
 execute 'update mysql binlog index with new data_dir' do
   command "sed -i -r -e 's#^.*/(mysql_binlogs/.*)$##{data_dir}/\\1#' '#{data_dir}/mysql_binlogs/mysql-bin.index'"
+  action :run
   only_if { ::File.exist?("#{data_dir}/mysql_binlogs/mysql-bin.index") }
 end
 
