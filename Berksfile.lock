@@ -3,8 +3,8 @@ DEPENDENCIES
   curl
   ephemeral_lvm
     git: https://github.com/rightscale-cookbooks/ephemeral_lvm.git
-    revision: b512d6e6a77846f370bd2c2a49f642c910503541
-    tag: v1.0.16
+    revision: f0348999f1ab75d5a69eb4cf32b894cd0a8b63d1
+    branch: chef-12-migration
   fake
     path: test/cookbooks/fake
   filesystem
@@ -13,7 +13,7 @@ DEPENDENCIES
     branch: update_lvm_cookbook_dependency_3
   machine_tag
     git: https://github.com/rightscale-cookbooks/machine_tag.git
-    revision: 4d2db8e2cd59f5eaa0c1d426e222555a35f48f36
+    revision: e0661ea55da4f3e9cdcbca7b9ca4319df45b8acc
     branch: chef-12-migration
   marker
     git: https://github.com/rightscale-cookbooks/marker.git
@@ -22,15 +22,15 @@ DEPENDENCIES
   rhsm
   rightscale_backup
     git: https://github.com/rightscale-cookbooks/rightscale_backup.git
-    revision: f821b8e2c5f380d9771b9b65645393eb320bed6c
+    revision: 8d53599d56fba0a66f4ddeeff93d1b370a3b7f45
     branch: chef-12-migration
   rightscale_tag
     git: https://github.com/rightscale-cookbooks/rightscale_tag.git
-    revision: b806b54ddeaaaaaca577939d64673d74bbe9fce3
+    revision: b6f95d2cbfe2d3890576afae876e0705eea0c707
     branch: chef-12-migration
   rightscale_volume
     git: https://github.com/rightscale-cookbooks/rightscale_volume.git
-    revision: 6631358b0ea9077f00be8091d24e0ec408d81dc7
+    revision: 186494bdaa838e841bfee66fa823d065261dc585
     branch: chef-12-migration
   rs-mysql
     path: .
@@ -54,8 +54,8 @@ GRAPH
   curl (2.0.3)
   database (6.1.1)
     postgresql (>= 1.0.0)
-  ephemeral_lvm (1.0.16)
-    lvm (>= 1.6.1)
+  ephemeral_lvm (2.0.0)
+    lvm (~> 3.1)
   fake (0.1.0)
     database (>= 0.0.0)
     mysql2_chef_gem (>= 0.0.0)
