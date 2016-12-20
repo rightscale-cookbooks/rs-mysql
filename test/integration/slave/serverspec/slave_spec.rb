@@ -16,13 +16,13 @@ describe 'Verify parameters directly from msyql' do
 end
 
 describe 'Verify replication setup' do
-  #it "should have 'repl' user created" do
+  # it "should have 'repl' user created" do
   #  db.query('SELECT DISTINCT user FROM mysql.user').entries.count { |u| u['user'] == 'repl' }.should == 1
-  #end
+  # end
 
-  #it 'repl user should have replication privileges' do
+  # it 'repl user should have replication privileges' do
   #  db.query("SHOW GRANTS FOR 'repl'").entries.first['Grants for repl@%'].should =~ /^GRANT REPLICATION SLAVE ON \*\.\* TO \'repl\'/
-  #end
+  # end
 end
 
 describe 'Verify master status' do
