@@ -153,7 +153,7 @@ describe 'rs-mysql::volume' do
       end
 
       it 'creates a volume from the backup with the timestamp' do
-        expect(chef_run).to write_log('Restoring volume \'data_storage\' from backup using lineage \'testing\' and using timestamp \'1482262361\'')
+        expect(chef_run).to write_log("Restoring volume \'data_storage\' from backup using lineage \'testing\' and using timestamp \'#{timestamp}\'")
         expect(chef_run).to restore_rightscale_backup(nickname).with(
           lineage: 'testing',
           timestamp: timestamp,
