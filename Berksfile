@@ -9,6 +9,7 @@ cookbook 'rightscale_volume', github: 'rightscale-cookbooks/rightscale_volume', 
 cookbook 'rightscale_tag', github: 'rightscale-cookbooks/rightscale_tag', branch: 'chef-12-migration'
 cookbook 'machine_tag', github: 'rightscale-cookbooks/machine_tag', branch: 'chef-12-migration'
 cookbook 'ephemeral_lvm', github: 'rightscale-cookbooks/ephemeral_lvm', branch: 'chef-12-migration'
+cookbook 'rs-base', github: 'rightscale-cookbooks/rs-base', branch: 'chef-12-migration'
 
 group :integration do
   cookbook 'runit'

@@ -60,6 +60,7 @@ describe 'rs-mysql::backup' do
   end
 
   it 'freezes the filesystem' do
+    expect(chef_run).to write_log('Freezing the filesystem mounted on /mnt/storage')
     expect(chef_run).to freeze_filesystem("freeze #{nickname}").with(
       label: nickname,
       mount: '/mnt/storage'
@@ -67,12 +68,14 @@ describe 'rs-mysql::backup' do
   end
 
   it 'creates a backup' do
+    expect(chef_run).to write_log('Taking a backup of lineage \'testing\'')
     expect(chef_run).to create_rightscale_backup(nickname).with(
       lineage: 'testing'
     )
   end
 
   it 'unfreezes the filesystem' do
+    expect(chef_run).to write_log('Unfreezing the filesystem mounted on /mnt/storage')
     expect(chef_run).to unfreeze_filesystem("unfreeze #{nickname}").with(
       label: nickname,
       mount: '/mnt/storage'
@@ -93,6 +96,7 @@ describe 'rs-mysql::backup' do
   end
 
   it 'cleans up old backups' do
+    expect(chef_run).to write_log('Cleaning up old snapshots')
     expect(chef_run).to cleanup_rightscale_backup(nickname).with(
       lineage: 'testing',
       keep_last: 60,

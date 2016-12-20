@@ -54,7 +54,18 @@ describe 'rs-mysql::decommission' do
           expect(chef_run).to delete_link('/var/lib/mysql-default')
         end
 
+        it 'stops the mysql service' do
+          expect(chef_run).to stop_service('mysql')
+        end
+
+        it 'cleans up grants and settings files' do
+          ['/etc/my.cnf', '/etc/mysql-default/my.cnf', '/etc/mysql_grants.sql'].each do |filename|
+            expect(chef_run).to delete_file(filename)
+          end
+        end
+
         it 'unmounts and disables the volume on the instance' do
+          expect(chef_run).to write_log('Unmounting /mnt/storage')
           expect(chef_run).to umount_mount('/mnt/storage').with(
             device: '/dev/sda'
           )
@@ -66,6 +77,7 @@ describe 'rs-mysql::decommission' do
         end
 
         it 'deletes the volume from the cloud' do
+          expect(chef_run).to write_log('LVM was not used on the device, simply detaching the deleting the device.')
           expect(chef_run).to delete_rightscale_volume(nickname)
         end
 
@@ -115,6 +127,7 @@ describe 'rs-mysql::decommission' do
         end
 
         it 'cleans up the LVM' do
+          expect(chef_run).to write_log('LVM is used on the device(s). Cleaning up the LVM.')
           expect(chef_run).to run_ruby_block('clean up LVM')
         end
 
