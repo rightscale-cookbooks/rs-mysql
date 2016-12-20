@@ -113,6 +113,7 @@ if mysql_master_info && mysql_master_info.key?(:file) && mysql_master_info.key?(
   change_master << ", MASTER_LOG_FILE='#{mysql_master_info[:file]}', MASTER_LOG_POS=#{mysql_master_info[:position]}"
 end
 
+Chef::Log.info "RS: #{change_master}"
 mysql_database 'change master host' do
   database_name 'mysql'
   connection mysql_connection_info
