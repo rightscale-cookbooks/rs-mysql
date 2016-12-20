@@ -3,7 +3,7 @@ driver_plugin: vagrant
 driver_config:
   customize:
     cpus: 2
-    memory: 1152
+    memory: 512
   ssh:
     insert_key: false
 
