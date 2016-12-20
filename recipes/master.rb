@@ -23,7 +23,7 @@ end
 
 # Override master specific attributes
 Chef::Log.info "Overriding mysql/tunable/read_only to 'false'..."
-node.override['mysql']['tunable']['read_only'] = false
+node.override['rs-mysql']['tunable']['read_only'] = false
 
 include_recipe 'rs-mysql::default'
 

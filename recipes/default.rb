@@ -195,7 +195,7 @@ end
 
 mysql_config 'default' do
   source 'tunable.erb'
-  variables(config: node['mysql']['tunable'])
+  variables(config: node['rs-mysql']['tunable'])
   notifies :restart, 'mysql_service[default]'
   action :create
 end

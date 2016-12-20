@@ -1,54 +1,54 @@
 [mysqld]
-<%- if node['mysql']['tunable']['skip-name-resolve'] %>
+<%- if @config['skip-name-resolve'] %>
 skip-name-resolve
 <%- end %>
 
 # * Fine Tuning
 #
-key_buffer_size         = <%= node['mysql']['tunable']['key_buffer_size'] %>
-max_allowed_packet      = <%= node['mysql']['tunable']['max_allowed_packet'] %>
-thread_stack            = <%= node['mysql']['tunable']['thread_stack'] %>
-thread_cache_size       = <%= node['mysql']['tunable']['thread_cache_size'] %>
-sort_buffer_size        = <%= node['mysql']['tunable']['sort_buffer_size'] %>
-read_buffer_size        = <%= node['mysql']['tunable']['read_buffer_size'] %>
-read_rnd_buffer_size    = <%= node['mysql']['tunable']['read_rnd_buffer_size'] %>
-join_buffer_size        = <%= node['mysql']['tunable']['join_buffer_size'] %>
+key_buffer_size         = <%= @config['key_buffer_size'] %>
+max_allowed_packet      = <%= @config['max_allowed_packet'] %>
+thread_stack            = <%= @config['thread_stack'] %>
+thread_cache_size       = <%= @config['thread_cache_size'] %>
+sort_buffer_size        = <%= @config['sort_buffer_size'] %>
+read_buffer_size        = <%= @config['read_buffer_size'] %>
+read_rnd_buffer_size    = <%= @config['read_rnd_buffer_size'] %>
+join_buffer_size        = <%= @config['join_buffer_size'] %>
 
 auto-increment-increment = <%= node['mysql']['auto-increment-increment'] %>
 auto-increment-offset    = <%= node['mysql']['auto-increment-offset'] %>
 
 # This replaces the startup script and checks MyISAM tables if needed
 # the first time they are touched
-myisam-recover          = <%= node['mysql']['tunable']['myisam-recover'] %>
-max_connections         = <%= node['mysql']['tunable']['max_connections'] %>
-max_connect_errors      = <%= node['mysql']['tunable']['max_connect_errors'] %>
-concurrent_insert       = <%= node['mysql']['tunable']['concurrent_insert'] %>
-connect_timeout         = <%= node['mysql']['tunable']['connect_timeout'] %>
-wait_timeout            = <%= node['mysql']['tunable']['wait_timeout'] %>
-net_read_timeout        = <%= node['mysql']['tunable']['net_read_timeout'] %>
-net_write_timeout       = <%= node['mysql']['tunable']['net_write_timeout'] %>
-back_log                = <%= node['mysql']['tunable']['back_log'] %>
+myisam-recover          = <%= @config['myisam-recover'] %>
+max_connections         = <%= @config['max_connections'] %>
+max_connect_errors      = <%= @config['max_connect_errors'] %>
+concurrent_insert       = <%= @config['concurrent_insert'] %>
+connect_timeout         = <%= @config['connect_timeout'] %>
+wait_timeout            = <%= @config['wait_timeout'] %>
+net_read_timeout        = <%= @config['net_read_timeout'] %>
+net_write_timeout       = <%= @config['net_write_timeout'] %>
+back_log                = <%= @config['back_log'] %>
 <%- if node['mysql']['version'].to_f >= 5.6 %>
-table_open_cache        = <%= node['mysql']['tunable']['table_open_cache'] %>
+table_open_cache        = <%= @config['table_open_cache'] %>
 <%- else %>
-table_cache             = <%= node['mysql']['tunable']['table_open_cache'] %>
+table_cache             = <%= @config['table_open_cache'] %>
 <%- end %>
 
-tmp_table_size          = <%= node['mysql']['tunable']['tmp_table_size'] %>
-max_heap_table_size     = <%= node['mysql']['tunable']['max_heap_table_size'] %>
-bulk_insert_buffer_size = <%= node['mysql']['tunable']['bulk_insert_buffer_size'] %>
-open-files-limit        = <%= node['mysql']['tunable']['open-files-limit'] %>
+tmp_table_size          = <%= @config['tmp_table_size'] %>
+max_heap_table_size     = <%= @config['max_heap_table_size'] %>
+bulk_insert_buffer_size = <%= @config['bulk_insert_buffer_size'] %>
+open-files-limit        = <%= @config['open-files-limit'] %>
 
 # Default Table Settings
-<%- if node['mysql']['tunable']['sql_mode'] %>
-sql_mode                = "<%= node['mysql']['tunable']['sql_mode'] %>"
+<%- if @config['sql_mode'] %>
+sql_mode                = "<%= @config['sql_mode'] %>"
 <%- end %>
 
 #
 # * Query Cache Configuration
 #
-query_cache_limit       = <%= node['mysql']['tunable']['query_cache_limit'] %>
-query_cache_size        = <%= node['mysql']['tunable']['query_cache_size'] %>
+query_cache_limit       = <%= @config['query_cache_limit'] %>
+query_cache_size        = <%= @config['query_cache_size'] %>
 #
 # * Logging
 #
@@ -56,7 +56,7 @@ query_cache_size        = <%= node['mysql']['tunable']['query_cache_size'] %>
 # Be aware that this log type is a performance killer.
 #log            = /var/log/mysql/mysql.log
 #
-<%- if node['mysql']['tunable']['log_warnings'] %>
+<%- if @config['log_warnings'] %>
 log_warnings
 <%- end %>
 #
@@ -65,42 +65,42 @@ log_warnings
 
 
 
-long_query_time         = <%= node['mysql']['tunable']['long_query_time'] %>
-<%- if node['mysql']['tunable']['log_queries_not_using_index'] and node['mysql']['tunable']['slow_query_log']  %>
+long_query_time         = <%= @config['long_query_time'] %>
+<%- if @config['log_queries_not_using_index'] and @config['slow_query_log']  %>
 log-queries-not-using-indexes
 <%- end %>
 #
 # The following can be used as easy to replay backup logs or for replication.
 # note: if you are setting up a replication slave, see README.Debian about
 #       other settings you may need to change.
-<%- if node['mysql']['tunable']['server_id'] %>
-server-id = <%= node['mysql']['tunable']['server_id'] %>
+<%- if @config['server_id'] %>
+server-id = <%= @config['server_id'] %>
 <% end %>
-<%- if node['mysql']['tunable']['log_bin'] %>
-log_bin 		= <%= node['mysql']['tunable']['log_bin'] %>
-binlog_format           = <%= node['mysql']['tunable']['binlog_format'] %>
-log_slave_updates       = <%= node['mysql']['tunable']['log_slave_updates'] %>
+<%- if @config['log_bin'] %>
+log_bin 		= <%= @config['log_bin'] %>
+binlog_format           = <%= @config['binlog_format'] %>
+log_slave_updates       = <%= @config['log_slave_updates'] %>
 <%- end %>
-expire_logs_days        = <%= node['mysql']['tunable']['expire_logs_days'] %>
-max_binlog_size         = <%= node['mysql']['tunable']['max_binlog_size'] %>
-binlog_cache_size       = <%= node['mysql']['tunable']['binlog_cache_size'] %>
+expire_logs_days        = <%= @config['expire_logs_days'] %>
+max_binlog_size         = <%= @config['max_binlog_size'] %>
+binlog_cache_size       = <%= @config['binlog_cache_size'] %>
 
 
 
-sync_binlog             = <%= node['mysql']['tunable']['sync_binlog'] %>
-<%- if node['mysql']['tunable']['skip_slave_start'] %>
+sync_binlog             = <%= @config['sync_binlog'] %>
+<%- if @config['skip_slave_start'] %>
 skip_slave_start
 <%- end %>
-<%- if node['mysql']['tunable']['read_only'] %>
+<%- if @config['read_only'] %>
 read_only = 1
 <%- end %>
 
-<%- if node['mysql']['tunable']['transaction-isolation'] %>
-transaction-isolation = <%= node['mysql']['tunable']['transaction-isolation'] %>
+<%- if @config['transaction-isolation'] %>
+transaction-isolation = <%= @config['transaction-isolation'] %>
 <%- end %>
 
-<%- if node['mysql']['tunable']['slave_compressed_protocol'] %>
-slave_compressed_protocol = <%= node['mysql']['tunable']['slave_compressed_protocol'] %>
+<%- if @config['slave_compressed_protocol'] %>
+slave_compressed_protocol = <%= @config['slave_compressed_protocol'] %>
 <%- end %>
 #
 # * InnoDB
@@ -111,10 +111,10 @@ slave_compressed_protocol = <%= node['mysql']['tunable']['slave_compressed_proto
 #skip-innodb
 
 <%- if node["mysql"]["version"].to_f >= 5.5 %>
-innodb_write_io_threads         = <%= node['mysql']['tunable']['innodb_write_io_threads'] %>
-innodb_io_capacity              = <%= node['mysql']['tunable']['innodb_io_capacity'] %>
-innodb_read_io_threads          = <%= node['mysql']['tunable']['innodb_read_io_threads'] %>
-innodb_buffer_pool_instances    = <%= node['mysql']['tunable']['innodb_buffer_pool_instances'] %>
+innodb_write_io_threads         = <%= @config['innodb_write_io_threads'] %>
+innodb_io_capacity              = <%= @config['innodb_io_capacity'] %>
+innodb_read_io_threads          = <%= @config['innodb_read_io_threads'] %>
+innodb_buffer_pool_instances    = <%= @config['innodb_buffer_pool_instances'] %>
 <%- end %>
 
 ## InnoDB Plugin Independent Settings
@@ -122,54 +122,54 @@ innodb_data_home_dir            = <%= node['mysql']['data_dir']  %>
 innodb_log_group_home_dir       = <%= node['mysql']['data_dir']  %>
 
 
-<%- if node['mysql']['tunable']['innodb_file_per_table'] %>
+<%- if @config['innodb_file_per_table'] %>
 innodb_file_per_table
 <%- end %>
-innodb_table_locks              = <%= node['mysql']['tunable']['innodb_table_locks'] %>
-innodb_lock_wait_timeout        = <%= node['mysql']['tunable']['innodb_lock_wait_timeout'] %>
-innodb_thread_concurrency       = <%= node['mysql']['tunable']['innodb_thread_concurrency'] %>
-innodb_commit_concurrency       = <%= node['mysql']['tunable']['innodb_commit_concurrency'] %>
-innodb_support_xa               = <%= node['mysql']['tunable']['innodb_support_xa'] %>
-<%- if node['mysql']['tunable']['skip-innodb-doublewrite'] %>
+innodb_table_locks              = <%= @config['innodb_table_locks'] %>
+innodb_lock_wait_timeout        = <%= @config['innodb_lock_wait_timeout'] %>
+innodb_thread_concurrency       = <%= @config['innodb_thread_concurrency'] %>
+innodb_commit_concurrency       = <%= @config['innodb_commit_concurrency'] %>
+innodb_support_xa               = <%= @config['innodb_support_xa'] %>
+<%- if @config['skip-innodb-doublewrite'] %>
 skip-innodb-doublewrite
 <%- end %>
 
-innodb_buffer_pool_size = <%= node['mysql']['tunable']['innodb_buffer_pool_size'] %>
-innodb_log_file_size    = <%= node['mysql']['tunable']['innodb_log_file_size'] %>
-innodb_additional_mem_pool_size = <%= node['mysql']['tunable']['innodb_additional_mem_pool_size'] %>
-innodb_data_file_path   = <%= node['mysql']['tunable']['innodb_data_file_path'] %>
-innodb_flush_log_at_trx_commit = <%= node['mysql']['tunable']['innodb_flush_log_at_trx_commit'] %>
-<%- if node['mysql']['tunable']['innodb_flush_method'] %>
-innodb_flush_method     = <%= node['mysql']['tunable']['innodb_flush_method'] %>
+innodb_buffer_pool_size = <%= @config['innodb_buffer_pool_size'] %>
+innodb_log_file_size    = <%= @config['innodb_log_file_size'] %>
+innodb_additional_mem_pool_size = <%= @config['innodb_additional_mem_pool_size'] %>
+innodb_data_file_path   = <%= @config['innodb_data_file_path'] %>
+innodb_flush_log_at_trx_commit = <%= @config['innodb_flush_log_at_trx_commit'] %>
+<%- if @config['innodb_flush_method'] %>
+innodb_flush_method     = <%= @config['innodb_flush_method'] %>
 <%- end %>
-innodb_log_buffer_size  = <%= node['mysql']['tunable']['innodb_log_buffer_size'] %>
-<%- if node['mysql']['tunable']['innodb_adaptive_flushing'] %>
-innodb_adaptive_flushing  = <%= node['mysql']['tunable']['innodb_adaptive_flushing'] %>
+innodb_log_buffer_size  = <%= @config['innodb_log_buffer_size'] %>
+<%- if @config['innodb_adaptive_flushing'] %>
+innodb_adaptive_flushing  = <%= @config['innodb_adaptive_flushing'] %>
 <%- end %>
-<%- if node['mysql']['tunable']['innodb_adaptive_flushing_method'] %>
-innodb_adaptive_flushing_method = <%= node['mysql']['tunable']['innodb_adaptive_flushing_method'] %>
+<%- if @config['innodb_adaptive_flushing_method'] %>
+innodb_adaptive_flushing_method = <%= @config['innodb_adaptive_flushing_method'] %>
 <%- end %>
-<%- if node['mysql']['tunable']['innodb_adaptive_checkpoint'] %>
-innodb_adaptive_checkpoint = <%= node['mysql']['tunable']['innodb_adaptive_checkpoint'] %>
+<%- if @config['innodb_adaptive_checkpoint'] %>
+innodb_adaptive_checkpoint = <%= @config['innodb_adaptive_checkpoint'] %>
 <%- end %>
 
 [mysqldump]
 quick
 quote-names
-max_allowed_packet      = <%= node['mysql']['tunable']['max_allowed_packet'] %>
+max_allowed_packet      = <%= @config['max_allowed_packet'] %>
 
 [myisamchk]
-key_buffer                = <%= node['mysql']['tunable']['max_allowed_packet'] %>
+key_buffer                = <%= @config['max_allowed_packet'] %>
 
-<%- if node['mysql']['tunable']['myisam_sort_buffer_size'] %>
-myisam_sort_buffer_size   = <%= node['mysql']['tunable']['myisam_sort_buffer_size'] %>
+<%- if @config['myisam_sort_buffer_size'] %>
+myisam_sort_buffer_size   = <%= @config['myisam_sort_buffer_size'] %>
 <% end %>
-<%- if node['mysql']['tunable']['myisam_max_sort_file_size'] %>
-myisam_max_sort_file_size = <%= node['mysql']['tunable']['myisam_max_sort_file_size'] %>
+<%- if @config['myisam_max_sort_file_size'] %>
+myisam_max_sort_file_size = <%= @config['myisam_max_sort_file_size'] %>
 <%- end %>
-<%- if node['mysql']['tunable']['myisam_repair_threads'] %>
-myisam_repair_threads     = <%= node['mysql']['tunable']['myisam_repair_threads'] %>
+<%- if @config['myisam_repair_threads'] %>
+myisam_repair_threads     = <%= @config['myisam_repair_threads'] %>
 <%- end %>
-<%- if node['mysql']['tunable']['myisam-recover'] %>
-myisam-recover            = <%= node['mysql']['tunable']['myisam-recover'] %>
+<%- if @config['myisam-recover'] %>
+myisam-recover            = <%= @config['myisam-recover'] %>
 <%- end %>
