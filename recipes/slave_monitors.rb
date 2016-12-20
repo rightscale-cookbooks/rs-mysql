@@ -34,7 +34,7 @@ end
 
 node.set['rs-mysql']['exec'] << 'Exec "mysql_monitor" "/opt/chef/embedded/bin/ruby" "/usr/local/bin/mysql_slave_running.rb"'
 
-template ::File.join('/etc/collectd/plugins', 'exec.conf') do
+template ::File.join(node['collectd']['service']['config_directory'], 'exec.conf') do
   source 'exec.conf.erb'
   owner 'root'
   group 'root'
