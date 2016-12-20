@@ -63,6 +63,7 @@ mysql_connection_info = {
   host: 'localhost',
   username: 'root',
   password: node['rs-mysql']['server_root_password'],
+  socket: '/var/run/mysql-default/mysqld.sock',
   default_file: '/etc/mysql-default/my.cnf'
 }
 
