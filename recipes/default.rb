@@ -75,7 +75,7 @@ if node['platform_family'] == 'rhel'
         command "semodule -i #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
         action :run
       end
-      node.default['mysql']['tunable']['log-error'] = default_error_log
+      node.default['rs-mysql']['tunable']['log-error'] = default_error_log
     end
   end
 end
@@ -89,7 +89,7 @@ node.override['mysql']['bind_address'] = bind_ip_address
 # Calculate MySQL tunable attributes based on system memory and server usage type of 'dedicated' or 'shared'.
 # Attributes will be placed in node['mysql']['tunable'] namespace.
 RsMysql::Tuning.tune_attributes(
-  node.override['mysql']['tunable'],
+  node.override['rs-mysql']['tunable'],
   node['memory']['total'],
   node['rs-mysql']['server_usage']
 )
@@ -100,7 +100,7 @@ node.override['mysql']['server_debian_password'] = node['rs-mysql']['server_root
 node.override['mysql']['server_repl_password'] = node['rs-mysql']['server_repl_password'] || node['rs-mysql']['server_root_password']
 
 Chef::Log.info 'Overriding mysql/tunable/expire_logs_days to 2'
-node.override['mysql']['tunable']['expire_logs_days'] = 2
+node.override['rs-mysql']['tunable']['expire_logs_days'] = 2
 
 # The directory that contains the MySQL binary logs. This directory will only be created as part of the initial MySQL
 # installation and setup. If the data directory is changed, this should not be created again as the data from
@@ -111,10 +111,10 @@ if node['mysql']['data_dir'] == '/var/lib/mysql-default'
 end
 
 Chef::Log.info "Overriding mysql/tunable/log_bin to '#{node['mysql']['data_dir']}/mysql_binlogs/mysql-bin'"
-node.override['mysql']['tunable']['log_bin'] = "#{node['mysql']['data_dir']}/mysql_binlogs/mysql-bin"
+node.override['rs-mysql']['tunable']['log_bin'] = "#{node['mysql']['data_dir']}/mysql_binlogs/mysql-bin"
 
 Chef::Log.info "Overriding mysql/tunable/binlog_format to 'MIXED'"
-node.override['mysql']['tunable']['binlog_format'] = 'MIXED'
+node.override['rs-mysql']['tunable']['binlog_format'] = 'MIXED'
 
 # Drop first 2 hex numbers from MAC address to have a 32-bit integer and use it for the server-id attribute in my.cnf.
 # This is used since MAC addresses within the same network must be different to correctly talk to each other.
@@ -122,7 +122,7 @@ node.override['mysql']['tunable']['binlog_format'] = 'MIXED'
 server_id = node['macaddress'].split(/\W/)[2..-1].join.to_i(16)
 
 Chef::Log.info "Overriding mysql/tunable/server_id to '#{server_id}'"
-node.override['mysql']['tunable']['server_id'] = server_id
+node.override['rs-mysql']['tunable']['server_id'] = server_id
 
 # The version of the mysql cookbook we are using does not consistently set mysql/server/service_name
 mysql_service_name = 'mysql-default'
@@ -132,7 +132,7 @@ service mysql_service_name do
   only_if do
     ::File.exist?("#{node['mysql']['data_dir']}/ib_logfile0") &&
       ::File.size("#{node['mysql']['data_dir']}/ib_logfile0") != RsMysql::Tuning.megabytes_to_bytes(
-        node['mysql']['tunable']['innodb_log_file_size']
+        node['rs-mysql']['tunable']['innodb_log_file_size']
       )
   end
 end
@@ -142,7 +142,7 @@ execute 'delete innodb log files' do
   only_if do
     ::File.exist?("#{node['mysql']['data_dir']}/ib_logfile0") &&
       ::File.size("#{node['mysql']['data_dir']}/ib_logfile0") != RsMysql::Tuning.megabytes_to_bytes(
-        node['mysql']['tunable']['innodb_log_file_size']
+        node['rs-mysql']['tunable']['innodb_log_file_size']
       )
   end
 end
