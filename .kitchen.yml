@@ -46,6 +46,8 @@ suites:
   - recipe[rs-mysql::collectd]
   - recipe[fake::database_mysql]
   attributes:
+    apt:
+      compile_time_update: true
     cloud:
       provider: 'vagrant'
       public_ips: ['100.64.1.1']
