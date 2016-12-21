@@ -107,7 +107,7 @@ end
 mysql_database_user 'repl' do
   host '%'
   connection mysql_connection_info
-  privileges [ 'REPLICATION SLAVE' ]
+  privileges ['REPLICATION SLAVE']
   action :grant
 end
 
