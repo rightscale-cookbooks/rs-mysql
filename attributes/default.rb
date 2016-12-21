@@ -17,6 +17,11 @@
 # limitations under the License.
 #
 
+# Dependent cookbook attributes
+default['build-essential']['compile_time'] = true
+default['apt']['compiletime'] = true
+default['apt']['compile_time_update'] = true
+
 # The server usage method. It should either be 'dedicated' or 'shared'. In a 'dedicated' server, all
 # resources are dedicated to MySQL. In a 'shared' server, MySQL utilizes only half of the server resources.
 #
