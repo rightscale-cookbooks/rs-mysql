@@ -21,6 +21,9 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
+# The version of the mysql cookbook we are using does not consistently set mysql/server/service_name
+mysql_service_name = node['rs-mysql']['service_name']
+
 device_count = node['rs-mysql']['device']['count'].to_i
 device_nickname = node['rs-mysql']['device']['nickname']
 size = node['rs-mysql']['device']['volume_size'].to_i
@@ -46,6 +49,7 @@ volume_options[:controller_type] = node['rs-mysql']['device']['controller_type']
 # Install packages required for setting up LVM
 include_recipe 'lvm::default'
 
+old_mysql_dir = "/var/lib/#{mysql_service_name}"
 new_mysql_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
 
 # rs-mysql/restore/lineage is empty, creating new volume(s) and setting up LVM
@@ -72,12 +76,12 @@ else
     command 'pvscan'
   end
 
-  directory '/var/lib/mysql' do
+  directory old_mysql_dir do
     recursive true
     action :delete
   end
 
-  link '/var/lib/mysql' do
+  link old_mysql_dir do
     to new_mysql_dir
   end
 end

@@ -24,6 +24,7 @@ default['apt']['compile_time_update'] = true
 
 # The server usage method. It should either be 'dedicated' or 'shared'. In a 'dedicated' server, all
 # resources are dedicated to MySQL. In a 'shared' server, MySQL utilizes only half of the server resources.
+default['rs-mysql']['service_name'] = 'mysql-default'
 #
 default['rs-mysql']['server_usage'] = 'dedicated'
 

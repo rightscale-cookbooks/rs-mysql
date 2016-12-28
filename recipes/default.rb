@@ -25,6 +25,9 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
+# The version of the mysql cookbook we are using does not consistently set mysql/server/service_name
+mysql_service_name = node['rs-mysql']['service_name']
+
 # RHEL on some clouds take some time to add RHEL repos.
 # Check and wait a few seconds if RHEL repos are not yet installed.
 if node['platform'] == 'redhat'
@@ -105,7 +108,7 @@ node.override['rs-mysql']['tunable']['expire_logs_days'] = 2
 # The directory that contains the MySQL binary logs. This directory will only be created as part of the initial MySQL
 # installation and setup. If the data directory is changed, this should not be created again as the data from
 # /var/lib/mysql will be moved to the new location.
-if node['mysql']['data_dir'] == '/var/lib/mysql-default'
+if node['mysql']['data_dir'] == "/var/lib/#{mysql_service_name}"
   Chef::Log.info "Overriding mysql/server/directories/bin_log_dir to '#{node['mysql']['data_dir']}/mysql_binlogs'"
   node.override['mysql']['server']['directories']['bin_log_dir'] = "#{node['mysql']['data_dir']}/mysql_binlogs"
 end
@@ -123,9 +126,6 @@ server_id = node['macaddress'].split(/\W/)[2..-1].join.to_i(16)
 
 Chef::Log.info "Overriding mysql/tunable/server_id to '#{server_id}'"
 node.override['rs-mysql']['tunable']['server_id'] = server_id
-
-# The version of the mysql cookbook we are using does not consistently set mysql/server/service_name
-mysql_service_name = 'mysql-default'
 
 service mysql_service_name do
   action :stop

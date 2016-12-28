@@ -102,13 +102,13 @@ describe 'rs-mysql::volume' do
     end
 
     it 'deletes the old MySQL directory' do
-      expect(chef_run).to delete_directory('/var/lib/mysql').with(
+      expect(chef_run).to delete_directory('/var/lib/mysql-default').with(
         recursive: true
       )
     end
 
     it 'creates the MySQL directory symlink' do
-      expect(chef_run).to create_link('/var/lib/mysql').with(
+      expect(chef_run).to create_link('/var/lib/mysql-default').with(
         to: '/mnt/storage/mysql'
       )
     end
