@@ -10,7 +10,7 @@ cookbook 'rightscale_tag', github: 'rightscale-cookbooks/rightscale_tag', branch
 cookbook 'machine_tag', github: 'rightscale-cookbooks/machine_tag', branch: 'chef-12-migration'
 cookbook 'ephemeral_lvm', github: 'rightscale-cookbooks/ephemeral_lvm', branch: 'chef-12-migration'
 cookbook 'rs-base', github: 'rightscale-cookbooks/rs-base', branch: 'chef-12-migration'
-cookbook 'dns', github: 'rightscale-cookbooks-contrib/dns', branch: 'chef-12-migration'
+cookbook 'dns', github: 'rightscale-cookbooks-contrib/dns', branch: 'rightscale_development_v2'
 
 group :integration do
   cookbook 'runit'
