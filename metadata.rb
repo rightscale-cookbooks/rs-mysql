@@ -23,6 +23,7 @@ depends 'rightscale_volume', '~> 2.0.0'
 depends 'rightscale_backup', '~> 2.0.0'
 depends 'build-essential'
 depends 'rs-base', '~> 2.0.0'
+depends 'dns'
 
 recipe 'rs-mysql::default', 'Sets up a standalone MySQL server'
 recipe 'rs-mysql::collectd', 'Sets up collectd monitoring for MySQL server'
