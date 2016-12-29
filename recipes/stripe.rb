@@ -127,5 +127,26 @@ end
 node.override['mysql']['data_dir'] = new_mysql_dir
 node.override['mysql']['server']['directories']['log_dir'] = new_mysql_dir
 
+service "apparmor" do
+  service_name 'apparmor'
+  action :nothing
+end
+
+template "/etc/apparmor.d/local/mysql/storage" do
+  cookbook 'rs-mysql'
+  source 'apparmor-storage.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  variables(
+    data_dir: new_mysql_dir
+  )
+  action :create
+  notifies :restart, "service[apparmor]", :immediately
+  only_if do
+    ::File.exist?('/etc/apparmor.d/local/mysql/default')
+  end
+end
+
 # Include the rs-mysql::default so the tuning attributes and tags are set properly.
 include_recipe 'rs-mysql::default'

@@ -181,6 +181,22 @@ mysql_client 'default' do
   action :create
 end
 
+directory data_dir do
+  owner 'mysql'
+  group 'mysql'
+  recursive true
+  mode '0770'
+  action :create
+end
+
+directory "#{data_dir}/mysql_binlogs" do
+  recursive true
+  user 'mysql'
+  group 'mysql'
+  mode '0770'
+  action :create
+end
+
 # TODO: ADD TESTS
 # Configure the MySQL service.
 mysql_service 'default' do
@@ -188,25 +204,22 @@ mysql_service 'default' do
   action [:create, :start]
 end
 
-directory "#{data_dir}/mysql_binlogs" do
-  recursive true
-  user 'mysql'
-  mode '0700'
-  action :create
+execute "chown -R mysql:mysql #{data_dir}" do
+  action :run
 end
 
 mysql_config 'default' do
   source 'tunable.erb'
   variables(config: node['rs-mysql']['tunable'])
   notifies :run, 'execute[delete innodb log files]', :immediately
-  notifies :restart, 'mysql_service[default]', :immediately
+  notifies :restart, "mysql_service[default]", :immediately
   action :create
 end
 
 # allow client to make connections using the default location
 # for the system /etc/my.cnf
 link '/etc/my.cnf' do
-  to '/etc/mysql-default/my.cnf'
+  to "/etc/#{mysql_service_name}/my.cnf"
 end
 
 # TODO: ADD TESTS
@@ -244,7 +257,7 @@ mysql_connection_info = {
   host: 'localhost',
   username: 'root',
   password: node['rs-mysql']['server_root_password'],
-  default_file: '/etc/mysql-default/my.cnf'
+  default_file: "/etc/#{mysql_service_name}/my.cnf"
 }
 
 # Create the application database
@@ -271,4 +284,46 @@ if !node['rs-mysql']['application_username'].to_s.empty? && !node['rs-mysql']['a
       action [:create, :grant]
     end
   end
+end
+
+file '/var/log/mysql.err' do
+  action :delete
+  only_if do
+    ::File.exist?('/var/log/mysql.err')
+  end
+end
+
+file '/var/log/mysql.log' do
+  action :delete
+  only_if do
+    ::File.exist?('/var/log/mysql.log')
+  end
+end
+
+file '/var/log/mysql/error.log' do
+  action :delete
+  only_if do
+    ::File.exist?('/var/log/mysql/error.log')
+  end
+end
+
+directory '/var/log/mysql' do
+  recursive true
+  action :delete
+  only_if do
+    ::Dir.exist?('/var/log/mysql')
+  end
+end
+
+directory '/var/lib/mysql' do
+  recursive true
+  action :delete
+  only_if do
+    ::Dir.exist?('/var/lib/mysql')
+  end
+end
+
+link '/var/lib/mysql' do
+  to "/var/lib/#{mysql_service_name}"
+  link_type :symbolic
 end

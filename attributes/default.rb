@@ -24,7 +24,8 @@ default['apt']['compile_time_update'] = true
 
 # The server usage method. It should either be 'dedicated' or 'shared'. In a 'dedicated' server, all
 # resources are dedicated to MySQL. In a 'shared' server, MySQL utilizes only half of the server resources.
-default['rs-mysql']['service_name'] = 'mysql-default'
+mysql_service_name = 'mysql-default'
+default['rs-mysql']['service_name'] = mysql_service_name
 #
 default['rs-mysql']['server_usage'] = 'dedicated'
 
@@ -76,7 +77,7 @@ default['rs-mysql']['import']['dump_file'] = nil
 # Sets up empty collectd options for v5
 default['rs-mysql']['collectd']['mysql']['Host'] = 'localhost'
 default['rs-mysql']['collectd']['mysql']['User'] = 'root'
-default['rs-mysql']['collectd']['mysql']['Socket'] = '/var/run/mysql-default/mysqld.sock'
+default['rs-mysql']['collectd']['mysql']['Socket'] = "/var/run/#{mysql_service_name}/mysqld.sock"
 default['rs-mysql']['collectd']['mysql']['Password'] = node['rs-mysql']['server_root_password']
 default['rs-mysql']['startup-timeout'] = 300
 default['rs-mysql']['mysql']['version'] = '5.5'
@@ -85,6 +86,6 @@ class Chef::Recipe
   include MysqlCookbook::HelpersBase
 end
 # mysql attributes
-default['mysql']['tunable']['log_error'] = '/var/log/mysql-default/error.log'
+default['mysql']['tunable']['log_error'] = "/var/log/#{mysql_service_name}/error.log"
 default['mysql']['port'] = 3306
-default['mysql']['data_dir'] = '/var/lib/mysql-default'
+default['mysql']['data_dir'] = "/var/lib/#{mysql_service_name}"
