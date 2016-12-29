@@ -327,3 +327,8 @@ link '/var/lib/mysql' do
   to "/var/lib/#{mysql_service_name}"
   link_type :symbolic
 end
+
+link '/var/log/mysql' do
+  to "/var/log/#{mysql_service_name}"
+  link_type :symbolic
+end
