@@ -18,11 +18,11 @@ describe RsMysql::Helper do
       slave_status = double
       # Mysql.stub(:new).with('localhost', 'root', 'rootpass').and_return(connection)
       Mysql2::Client.stub(:new).with(host: 'localhost', username: 'root', password: 'rootpass').and_return(connection)
-      allow(connection).to receive(:query).with('SHOW MASTER STATUS').and_return(master_status)
-      allow(connection).to receive(:query).with('SHOW SLAVE STATUS').and_return(slave_status)
+      allow(connection).to receive(:query).with('SHOW MASTER STATUS', as: :hash, symbolize_keys: false).and_return(master_status)
+      allow(connection).to receive(:query).with('SHOW SLAVE STATUS', as: :hash, symbolize_keys: false).and_return(slave_status)
       allow(connection).to receive(:close)
-      allow(master_status).to receive(:fetch_hash).and_return(nil)
-      allow(slave_status).to receive(:fetch_hash).and_return(nil)
+      allow(master_status).to receive(:first).and_return(nil)
+      allow(slave_status).to receive(:first).and_return(nil)
     end
 
     it 'does not get any MySQL master info' do
@@ -37,14 +37,14 @@ describe RsMysql::Helper do
       slave_status = double
       # Mysql.stub(:new).with('localhost', 'root', 'rootpass').and_return(connection)
       Mysql2::Client.stub(:new).with(host: 'localhost', username: 'root', password: 'rootpass').and_return(connection)
-      allow(connection).to receive(:query).with('SHOW MASTER STATUS').and_return(master_status)
-      allow(connection).to receive(:query).with('SHOW SLAVE STATUS').and_return(slave_status)
+      allow(connection).to receive(:query).with('SHOW MASTER STATUS', as: :hash, symbolize_keys: false).and_return(master_status)
+      allow(connection).to receive(:query).with('SHOW SLAVE STATUS', as: :hash, symbolize_keys: false).and_return(slave_status)
       allow(connection).to receive(:close)
-      allow(master_status).to receive(:fetch_hash).and_return('File' => 'mysql-bin.000012',
+      allow(master_status).to receive(:first).and_return('File' => 'mysql-bin.000012',
                                                               'Position' => '394',
                                                               'Binlog_Do_DB' => '',
                                                               'Binlog_Ignore' => '')
-      allow(slave_status).to receive(:fetch_hash).and_return(nil)
+      allow(slave_status).to receive(:first).and_return(nil)
     end
 
     it 'gets the MySQL master info' do
@@ -60,14 +60,14 @@ describe RsMysql::Helper do
       slave_status = double
       # Mysql.stub(:new).with('localhost', 'root', 'rootpass').and_return(connection)
       Mysql2::Client.stub(:new).with(host: 'localhost', username: 'root', password: 'rootpass').and_return(connection)
-      allow(connection).to receive(:query).with('SHOW MASTER STATUS').and_return(master_status)
-      allow(connection).to receive(:query).with('SHOW SLAVE STATUS').and_return(slave_status)
+      allow(connection).to receive(:query).with('SHOW MASTER STATUS', as: :hash, symbolize_keys: false).and_return(master_status)
+      allow(connection).to receive(:query).with('SHOW SLAVE STATUS', as: :hash, symbolize_keys: false).and_return(slave_status)
       allow(connection).to receive(:close)
-      allow(master_status).to receive(:fetch_hash).and_return('File' => 'mysql-bin.000001',
+      allow(master_status).to receive(:first).and_return('File' => 'mysql-bin.000001',
                                                               'Position' => '107',
                                                               'Binlog_Do_DB' => '',
                                                               'Binlog_Ignore_DB' => '')
-      allow(slave_status).to receive(:fetch_hash).and_return('Slave_IO_State' => 'Waiting for master to send event',
+      allow(slave_status).to receive(:first).and_return('Slave_IO_State' => 'Waiting for master to send event',
                                                              'Master_Host' => '10.240.180.148',
                                                              'Master_User' => 'repl',
                                                              'Master_Port' => '3306',
