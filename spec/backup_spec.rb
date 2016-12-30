@@ -25,14 +25,14 @@ describe 'rs-mysql::backup' do
     slave_status = double
     # Mysql.stub(:new).with('localhost', 'root', 'rootpass').and_return(connection)
     Mysql2::Client.stub(:new).with(host: 'localhost', username: 'root', password: 'rootpass').and_return(connection)
-    allow(connection).to receive(:query).with('SHOW MASTER STATUS').and_return(master_status)
-    allow(connection).to receive(:query).with('SHOW SLAVE STATUS').and_return(slave_status)
+    allow(connection).to receive(:query).with('SHOW MASTER STATUS', as: :hash, symbolize_keys: false).and_return(master_status)
+    allow(connection).to receive(:query).with('SHOW SLAVE STATUS', as: :hash, symbolize_keys: false).and_return(slave_status)
     allow(connection).to receive(:close)
-    allow(master_status).to receive(:fetch_hash).and_return('File' => 'mysql-bin.000012',
-                                                            'Position' => '394',
-                                                            'Binlog_Do_DB' => '',
-                                                            'Binlog_Ignore' => '')
-    allow(slave_status).to receive(:fetch_hash).and_return(nil)
+    allow(master_status).to receive(:first).and_return('File' => 'mysql-bin.000012',
+                                                       'Position' => '394',
+                                                       'Binlog_Do_DB' => '',
+                                                       'Binlog_Ignore' => '')
+    allow(slave_status).to receive(:first).and_return(nil)
   end
 
   it 'sets up chef error handler' do
