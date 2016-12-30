@@ -6,14 +6,6 @@ service 'collectd' do
   action :stop
 end
 
-bash 'clean up extra collectd processes' do
-  flags '-ex'
-  code <<-EOH
-     while [ `pkill -c collectd` -gt 0 ]; do pkill -9 collectd; done
-  EOH
-  action :run
-end
-
 template '/usr/local/bin/mysql_seconds_behind_master.rb' do
   source 'mysql_seconds_behind_master.rb.erb'
   owner 'root'

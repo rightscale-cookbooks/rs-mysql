@@ -17,6 +17,9 @@
 # limitations under the License.
 #
 
+# The version of the mysql cookbook we are using does not consistently set mysql/server/service_name
+mysql_service_name = node['rs-mysql']['service_name']
+
 marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
@@ -49,7 +52,7 @@ mysql_connection_info = {
   host: 'localhost',
   username: 'root',
   password: node['rs-mysql']['server_root_password'],
-  default_file: '/etc/mysql-default/my.cnf'
+  default_file: "/etc/#{mysql_service_name}/my.cnf"
 }
 
 mysql_database 'stop slave IO thread' do

@@ -120,7 +120,7 @@ module RsMysql
               Chef::Log.info 'Waiting for slave to become functional...'
               # Only sleep after the initial query
               sleep 2 if slave_status
-              slave_status = connection.query('SHOW SLAVE STATUS').fetch_hash
+              slave_status = connection.query('SHOW SLAVE STATUS', as: :hash, symbolize_keys: false).first
               break if slave_status['Slave_IO_Running'] == 'Yes' && slave_status['Slave_SQL_Running'] == 'Yes'
             end
           end
@@ -173,8 +173,8 @@ module RsMysql
       require 'mysql2'
 
       with_closing(Mysql2::Client.new(connection_info)) do |connection|
-        master_status = connection.query('SHOW MASTER STATUS').fetch_hash
-        slave_status = connection.query('SHOW SLAVE STATUS').fetch_hash
+        master_status = connection.query('SHOW MASTER STATUS', as: :hash, symbolize_keys: false).first
+        slave_status = connection.query('SHOW SLAVE STATUS', as: :hash, symbolize_keys: false).first
 
         master_info = if slave_status
                         {
