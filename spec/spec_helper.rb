@@ -22,8 +22,10 @@ $LOAD_PATH.unshift(libraries_path) unless $LOAD_PATH.include?(libraries_path)
 
 require 'chefspec'
 require 'chefspec/berkshelf'
+require 'chefspec/cacher'
 
 RSpec.configure do |config|
+  config.extend(ChefSpec::Cacher)
   config.platform = 'ubuntu'
   config.version = '14.04'
   config.log_level = :error

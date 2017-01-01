@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 require 'mysql2'
 
 describe 'rs-mysql::backup' do
-  let(:chef_run) do
+  cached(:chef_run) do
     ChefSpec::SoloRunner.new do |node|
       node.set['chef_handler']['handler_path'] = '/var/chef/handlers'
       node.set['rs-mysql']['server_root_password'] = 'rootpass'
