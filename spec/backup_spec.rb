@@ -24,7 +24,7 @@ describe 'rs-mysql::backup' do
     master_status = double
     slave_status = double
     # Mysql.stub(:new).with('localhost', 'root', 'rootpass').and_return(connection)
-    Mysql2::Client.stub(:new).with(host: 'localhost', username: 'root', password: 'rootpass',default_file: "/etc/mysql-default/my.cnf").and_return(connection)
+    Mysql2::Client.stub(:new).with(host: 'localhost', username: 'root', password: 'rootpass', default_file: '/etc/mysql-default/my.cnf').and_return(connection)
     allow(connection).to receive(:query).with('SHOW MASTER STATUS', as: :hash, symbolize_keys: false).and_return(master_status)
     allow(connection).to receive(:query).with('SHOW SLAVE STATUS', as: :hash, symbolize_keys: false).and_return(slave_status)
     allow(connection).to receive(:close)
