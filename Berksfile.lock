@@ -3,12 +3,11 @@ DEPENDENCIES
   curl
   dns
     git: https://github.com/rightscale-cookbooks-contrib/dns.git
-    revision: e3101e5eb40dc5965af436619b342388709b47aa
-    branch: chef-12-migration
+    revision: 711a041d3c7cdb20156099b054f10905c1841d89
+    branch: rightscale_development_v2
   ephemeral_lvm
     git: https://github.com/rightscale-cookbooks/ephemeral_lvm.git
-    revision: f0348999f1ab75d5a69eb4cf32b894cd0a8b63d1
-    branch: chef-12-migration
+    revision: 959b9a103620ce8a63988368d12912850df47b56
   fake
     path: test/cookbooks/fake
   filesystem
@@ -17,29 +16,23 @@ DEPENDENCIES
     branch: update_lvm_cookbook_dependency_3
   machine_tag
     git: https://github.com/rightscale-cookbooks/machine_tag.git
-    revision: e0661ea55da4f3e9cdcbca7b9ca4319df45b8acc
-    branch: chef-12-migration
+    revision: 2cf4d496223986fdb13af29a7d3434ed7fbda82e
   marker
     git: https://github.com/rightscale-cookbooks/marker.git
-    revision: cf4531671c066643d41d0d38452ec9f81e2646b3
-    branch: chef-12-migration
+    revision: 058e70879408fceceb628c600d487b1ddfa06cdb
   rhsm
   rightscale_backup
     git: https://github.com/rightscale-cookbooks/rightscale_backup.git
-    revision: 8d53599d56fba0a66f4ddeeff93d1b370a3b7f45
-    branch: chef-12-migration
+    revision: 454fa9f582943f0ace47dd90bf6106e7bf752a93
   rightscale_tag
     git: https://github.com/rightscale-cookbooks/rightscale_tag.git
-    revision: b6f95d2cbfe2d3890576afae876e0705eea0c707
-    branch: chef-12-migration
+    revision: d012cd3486fd9fc4efbf5200885bad521301c4b9
   rightscale_volume
     git: https://github.com/rightscale-cookbooks/rightscale_volume.git
-    revision: 186494bdaa838e841bfee66fa823d065261dc585
-    branch: chef-12-migration
+    revision: 48c24ba0f0815e86200793ef50fe27dce9f09d8e
   rs-base
     git: https://github.com/rightscale-cookbooks/rs-base.git
-    revision: 9f245674712a53a90ef51b4b2f93759398187e38
-    branch: chef-12-migration
+    revision: 6dae6b0ce17455210576ca8175f3ad9590547d22
   rs-mysql
     path: .
     metadata: true
@@ -47,20 +40,20 @@ DEPENDENCIES
   yum-epel
 
 GRAPH
-  apt (5.0.0)
-    compat_resource (>= 12.14.7)
-  build-essential (7.0.2)
-    compat_resource (>= 12.14)
+  apt (5.0.1)
+    compat_resource (>= 12.16.3)
+  build-essential (7.0.3)
+    compat_resource (>= 12.16.3)
     mingw (>= 1.1)
     seven_zip (>= 0.0.0)
   chef-sugar (3.4.0)
-  chef_handler (2.0.0)
+  chef_handler (2.1.0)
   collectd (2.2.2)
     poise (~> 2.2)
     poise-service (~> 1.0)
   collectd_plugins (2.1.3)
     collectd (~> 2.0)
-  compat_resource (12.16.2)
+  compat_resource (12.16.3)
   curl (2.0.3)
   database (6.1.1)
     postgresql (>= 1.0.0)
@@ -96,7 +89,7 @@ GRAPH
     build-essential (>= 0.0.0)
     mariadb (>= 0.0.0)
     mysql (>= 6.0)
-  ntp (3.3.0)
+  ntp (3.3.1)
   ohai (4.2.3)
     compat_resource (>= 12.14.7)
   openssl (6.0.0)
@@ -104,9 +97,9 @@ GRAPH
   poise (2.7.1)
   poise-service (1.4.2)
     poise (~> 2.0)
-  postgresql (5.1.0)
-    apt (>= 1.9.0)
+  postgresql (6.0.1)
     build-essential (>= 2.0.0)
+    compat_resource (>= 12.16.3)
     openssl (>= 4.0)
   rhsm (1.0.0)
     chef-sugar (>= 0.0.0)
@@ -122,6 +115,7 @@ GRAPH
     apt (>= 0.0.0)
     collectd (~> 2.2.2)
     collectd_plugins (~> 2.1.3)
+    ephemeral_lvm (= 2.0.0)
     machine_tag (~> 2.0.0)
     marker (>= 0.0.0)
     ntp (>= 0.0.0)
@@ -145,7 +139,7 @@ GRAPH
     rightscale_volume (~> 2.0.0)
     rs-base (~> 2.0.0)
     yum-mysql-community (>= 0.0.0)
-  rsyslog (5.0.1)
+  rsyslog (5.1.0)
     compat_resource (>= 12.14.6)
   runit (3.0.3)
     packagecloud (>= 0.0.0)
@@ -160,7 +154,7 @@ GRAPH
     build-essential (>= 0.0.0)
     chef-sugar (>= 0.0.0)
   yum (4.1.0)
-  yum-epel (2.0.0)
-    compat_resource (>= 12.14.6)
-  yum-mysql-community (2.0.2)
-    compat_resource (>= 12.14.7)
+  yum-epel (2.1.1)
+    compat_resource (>= 12.16.3)
+  yum-mysql-community (2.0.3)
+    compat_resource (>= 12.16.3)
