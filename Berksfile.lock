@@ -1,0 +1,166 @@
+DEPENDENCIES
+  apt
+  curl
+  dns
+    git: https://github.com/rightscale-cookbooks-contrib/dns.git
+    revision: e3101e5eb40dc5965af436619b342388709b47aa
+    branch: chef-12-migration
+  ephemeral_lvm
+    git: https://github.com/rightscale-cookbooks/ephemeral_lvm.git
+    revision: f0348999f1ab75d5a69eb4cf32b894cd0a8b63d1
+    branch: chef-12-migration
+  fake
+    path: test/cookbooks/fake
+  filesystem
+    git: https://github.com/rightscale-cookbooks-contrib/filesystem_cookbook.git
+    revision: 9c2a21a8aa41b16d3774ed5292f9a31b018dee92
+    branch: update_lvm_cookbook_dependency_3
+  machine_tag
+    git: https://github.com/rightscale-cookbooks/machine_tag.git
+    revision: e0661ea55da4f3e9cdcbca7b9ca4319df45b8acc
+    branch: chef-12-migration
+  marker
+    git: https://github.com/rightscale-cookbooks/marker.git
+    revision: cf4531671c066643d41d0d38452ec9f81e2646b3
+    branch: chef-12-migration
+  rhsm
+  rightscale_backup
+    git: https://github.com/rightscale-cookbooks/rightscale_backup.git
+    revision: 8d53599d56fba0a66f4ddeeff93d1b370a3b7f45
+    branch: chef-12-migration
+  rightscale_tag
+    git: https://github.com/rightscale-cookbooks/rightscale_tag.git
+    revision: b6f95d2cbfe2d3890576afae876e0705eea0c707
+    branch: chef-12-migration
+  rightscale_volume
+    git: https://github.com/rightscale-cookbooks/rightscale_volume.git
+    revision: 186494bdaa838e841bfee66fa823d065261dc585
+    branch: chef-12-migration
+  rs-base
+    git: https://github.com/rightscale-cookbooks/rs-base.git
+    revision: 9f245674712a53a90ef51b4b2f93759398187e38
+    branch: chef-12-migration
+  rs-mysql
+    path: .
+    metadata: true
+  runit
+  yum-epel
+
+GRAPH
+  apt (5.0.0)
+    compat_resource (>= 12.14.7)
+  build-essential (7.0.2)
+    compat_resource (>= 12.14)
+    mingw (>= 1.1)
+    seven_zip (>= 0.0.0)
+  chef-sugar (3.4.0)
+  chef_handler (2.0.0)
+  collectd (2.2.2)
+    poise (~> 2.2)
+    poise-service (~> 1.0)
+  collectd_plugins (2.1.3)
+    collectd (~> 2.0)
+  compat_resource (12.16.2)
+  curl (2.0.3)
+  database (6.1.1)
+    postgresql (>= 1.0.0)
+  dns (0.1.3)
+    build-essential (>= 1.1.0)
+    hosts_file (~> 0.1.4)
+    xml (~> 1.2.0)
+  ephemeral_lvm (2.0.0)
+    lvm (~> 3.1)
+  fake (0.1.0)
+    database (>= 0.0.0)
+    mysql2_chef_gem (>= 0.0.0)
+    rightscale_tag (>= 0.0.0)
+    rs-mysql (>= 0.0.0)
+  filesystem (0.11.0)
+    lvm (~> 3.1)
+    xfs (>= 0.0.0)
+  hosts_file (0.1.4)
+  lvm (3.1.0)
+  machine_tag (2.0.0)
+    apt (>= 0.0.0)
+    build-essential (>= 0.0.0)
+  mariadb (0.3.3)
+    apt (>= 0.0.0)
+    yum (>= 0.0.0)
+    yum-epel (>= 0.0.0)
+  marker (2.0.0)
+  mingw (1.2.4)
+    compat_resource (>= 0.0.0)
+    seven_zip (>= 0.0.0)
+  mysql (8.2.0)
+  mysql2_chef_gem (1.1.0)
+    build-essential (>= 0.0.0)
+    mariadb (>= 0.0.0)
+    mysql (>= 6.0)
+  ntp (3.3.0)
+  ohai (4.2.3)
+    compat_resource (>= 12.14.7)
+  openssl (6.0.0)
+  packagecloud (0.2.5)
+  poise (2.7.1)
+  poise-service (1.4.2)
+    poise (~> 2.0)
+  postgresql (5.1.0)
+    apt (>= 1.9.0)
+    build-essential (>= 2.0.0)
+    openssl (>= 4.0)
+  rhsm (1.0.0)
+    chef-sugar (>= 0.0.0)
+  rightscale_backup (2.0.0)
+    build-essential (>= 0.0.0)
+    rightscale_volume (~> 2.0.0)
+  rightscale_tag (2.0.0)
+    machine_tag (~> 2.0)
+    marker (~> 2.0)
+  rightscale_volume (2.0.0)
+    build-essential (>= 0.0.0)
+  rs-base (2.0.0)
+    apt (>= 0.0.0)
+    collectd (~> 2.2.2)
+    collectd_plugins (~> 2.1.3)
+    machine_tag (~> 2.0.0)
+    marker (>= 0.0.0)
+    ntp (>= 0.0.0)
+    rightscale_tag (~> 2.0.0)
+    rsyslog (>= 0.0.0)
+    swap (>= 0.0.0)
+    yum-epel (>= 0.0.0)
+  rs-mysql (2.0.0)
+    build-essential (>= 0.0.0)
+    chef_handler (>= 0.0.0)
+    collectd (>= 0.0.0)
+    database (>= 0.0.0)
+    dns (>= 0.0.0)
+    filesystem (>= 0.0.0)
+    lvm (~> 3.1)
+    marker (~> 2.0.0)
+    mysql (>= 0.0.0)
+    mysql2_chef_gem (>= 0.0.0)
+    rightscale_backup (~> 2.0.0)
+    rightscale_tag (~> 2.0.0)
+    rightscale_volume (~> 2.0.0)
+    rs-base (~> 2.0.0)
+    yum-mysql-community (>= 0.0.0)
+  rsyslog (5.0.1)
+    compat_resource (>= 12.14.6)
+  runit (3.0.3)
+    packagecloud (>= 0.0.0)
+    yum-epel (>= 0.0.0)
+  seven_zip (2.0.2)
+    windows (>= 1.2.2)
+  swap (0.3.8)
+  windows (2.1.1)
+    ohai (>= 4.0.0)
+  xfs (2.0.1)
+  xml (1.2.13)
+    build-essential (>= 0.0.0)
+    chef-sugar (>= 0.0.0)
+  yum (4.1.0)
+  yum-epel (2.0.0)
+    compat_resource (>= 12.14.6)
+  yum-mysql-community (2.0.2)
+    compat_resource (>= 12.14.7)
