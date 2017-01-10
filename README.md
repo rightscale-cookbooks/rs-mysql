@@ -16,9 +16,11 @@ Github Repository: [https://github.com/rightscale-cookbooks/rs-mysql](https://gi
 
 # Requirements
 
-* Requires Chef 11
-* Requires Ruby 1.9 of higher
-* [RightLink 10](http://docs.rightscale.com/rl10/) See cookbook version 1.1.9 for RightLink 6 support
+* Requires Chef 12
+* Requires Ruby 2.3.1 of higher
+* [RightLink 10](http://docs.rightscale.com/rl10/)
+* See cookbook version 1.2.6 for chef11 support
+* See cookbook version 1.1.9 for RightLink 6 support
 * Platform
   * Ubuntu 12.04
   * CentOS 6
