@@ -8,10 +8,10 @@ cookbook 'mysql', github: 'rightscale-cookbooks-contrib/mysql', branch: 'rs-fixe
 cookbook 'dns', github: 'rightscale-cookbooks-contrib/dns', branch: 'rightscale_development_v2'
 cookbook 'database', github: 'rightscale-cookbooks-contrib/database', branch: 'rs-fixes'
 
-cookbook 'rightscale_backup',github: 'rightscale-cookbooks/rightscale_backup'
-cookbook 'rightscale_volume',github: 'rightscale-cookbooks/rightscale_volume'
-cookbook 'rightscale_tag',github: 'rightscale-cookbooks/rightscale_tag'
-cookbook 'machine_tag',github: 'rightscale-cookbooks/machine_tag'
+cookbook 'rightscale_backup',github: 'rightscale-cookbooks/rightscale_backup', tag: 'v1.2.1'
+cookbook 'rightscale_volume',github: 'rightscale-cookbooks/rightscale_volume', tag: 'v1.3.1'
+cookbook 'rightscale_tag',github: 'rightscale-cookbooks/rightscale_tag', tag: 'v1.2.2'
+cookbook 'machine_tag',github: 'rightscale-cookbooks/machine_tag', tag: 'v1.2.2'
 cookbook 'ephemeral_lvm',github:'rightscale-cookbooks/ephemeral_lvm', tag:'v1.0.16'
 
 group :integration do
