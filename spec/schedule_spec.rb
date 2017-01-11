@@ -3,7 +3,7 @@ require_relative 'spec_helper'
 describe 'rs-mysql::schedule' do
   context 'rs-mysql/schedule/enable is true' do
     let(:chef_run) do
-      ChefSpec::Runner.new do |node|
+      ChefSpec::SoloRunner.new do |node|
         node.set['rs-mysql']['schedule']['enable'] = true
         node.set['rs-mysql']['backup']['lineage'] = 'testing'
         node.set['rs-mysql']['schedule']['hour'] = '10'
@@ -23,7 +23,7 @@ describe 'rs-mysql::schedule' do
 
   context 'rs-mysql/schedule/enable is false' do
     let(:chef_run) do
-      ChefSpec::Runner.new do |node|
+      ChefSpec::SoloRunner.new do |node|
         node.set['rs-mysql']['schedule']['enable'] = false
         node.set['rs-mysql']['backup']['lineage'] = 'testing'
       end.converge(described_recipe)
@@ -39,7 +39,7 @@ describe 'rs-mysql::schedule' do
 
   context 'rs-mysql/schedule/hour or rs-mysql/schedule/minute missing' do
     let(:chef_run) do
-      ChefSpec::Runner.new do |node|
+      ChefSpec::SoloRunner.new do |node|
         node.set['rs-mysql']['backup']['lineage'] = 'testing'
         node.set['rs-mysql']['schedule']['enable'] = true
         node.set['rs-mysql']['schedule']['hour'] = '10'

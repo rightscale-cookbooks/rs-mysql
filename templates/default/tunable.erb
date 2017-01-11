@@ -1,0 +1,175 @@
+[mysqld]
+<%- if @config['skip-name-resolve'] %>
+skip-name-resolve
+<%- end %>
+
+# * Fine Tuning
+#
+key_buffer_size         = <%= @config['key_buffer_size'] %>
+max_allowed_packet      = <%= @config['max_allowed_packet'] %>
+thread_stack            = <%= @config['thread_stack'] %>
+thread_cache_size       = <%= @config['thread_cache_size'] %>
+sort_buffer_size        = <%= @config['sort_buffer_size'] %>
+read_buffer_size        = <%= @config['read_buffer_size'] %>
+read_rnd_buffer_size    = <%= @config['read_rnd_buffer_size'] %>
+join_buffer_size        = <%= @config['join_buffer_size'] %>
+
+auto-increment-increment = <%= node['mysql']['auto-increment-increment'] %>
+auto-increment-offset    = <%= node['mysql']['auto-increment-offset'] %>
+
+# This replaces the startup script and checks MyISAM tables if needed
+# the first time they are touched
+myisam-recover          = <%= @config['myisam-recover'] %>
+max_connections         = <%= @config['max_connections'] %>
+max_connect_errors      = <%= @config['max_connect_errors'] %>
+concurrent_insert       = <%= @config['concurrent_insert'] %>
+connect_timeout         = <%= @config['connect_timeout'] %>
+wait_timeout            = <%= @config['wait_timeout'] %>
+net_read_timeout        = <%= @config['net_read_timeout'] %>
+net_write_timeout       = <%= @config['net_write_timeout'] %>
+back_log                = <%= @config['back_log'] %>
+<%- if node['mysql']['version'].to_f >= 5.6 %>
+table_open_cache        = <%= @config['table_open_cache'] %>
+<%- else %>
+table_cache             = <%= @config['table_open_cache'] %>
+<%- end %>
+
+tmp_table_size          = <%= @config['tmp_table_size'] %>
+max_heap_table_size     = <%= @config['max_heap_table_size'] %>
+bulk_insert_buffer_size = <%= @config['bulk_insert_buffer_size'] %>
+open-files-limit        = <%= @config['open-files-limit'] %>
+
+# Default Table Settings
+<%- if @config['sql_mode'] %>
+sql_mode                = "<%= @config['sql_mode'] %>"
+<%- end %>
+
+#
+# * Query Cache Configuration
+#
+query_cache_limit       = <%= @config['query_cache_limit'] %>
+query_cache_size        = <%= @config['query_cache_size'] %>
+#
+# * Logging
+#
+# Both location gets rotated by the cronjob.
+# Be aware that this log type is a performance killer.
+#log            = /var/log/mysql/mysql.log
+#
+<%- if @config['log_warnings'] %>
+log_warnings
+<%- end %>
+#
+# * Replication
+#
+
+
+
+long_query_time         = <%= @config['long_query_time'] %>
+<%- if @config['log_queries_not_using_index'] and @config['slow_query_log']  %>
+log-queries-not-using-indexes
+<%- end %>
+#
+# The following can be used as easy to replay backup logs or for replication.
+# note: if you are setting up a replication slave, see README.Debian about
+#       other settings you may need to change.
+<%- if @config['server_id'] %>
+server-id = <%= @config['server_id'] %>
+<% end %>
+<%- if @config['log_bin'] %>
+log_bin 		= <%= @config['log_bin'] %>
+binlog_format           = <%= @config['binlog_format'] %>
+log_slave_updates       = <%= @config['log_slave_updates'] %>
+<%- end %>
+expire_logs_days        = <%= @config['expire_logs_days'] %>
+max_binlog_size         = <%= @config['max_binlog_size'] %>
+binlog_cache_size       = <%= @config['binlog_cache_size'] %>
+
+
+
+sync_binlog             = <%= @config['sync_binlog'] %>
+<%- if @config['skip_slave_start'] %>
+skip_slave_start
+<%- end %>
+<%- if @config['read_only'] %>
+read_only = 1
+<%- end %>
+
+<%- if @config['transaction-isolation'] %>
+transaction-isolation = <%= @config['transaction-isolation'] %>
+<%- end %>
+
+<%- if @config['slave_compressed_protocol'] %>
+slave_compressed_protocol = <%= @config['slave_compressed_protocol'] %>
+<%- end %>
+#
+# * InnoDB
+#
+# InnoDB is enabled by default with a 10MB datafile in /var/lib/mysql/.
+# Read the manual for more InnoDB related options. There are many!
+# You might want to disable InnoDB to shrink the mysqld process by circa 100MB.
+#skip-innodb
+
+<%- if node["mysql"]["version"].to_f >= 5.5 %>
+innodb_write_io_threads         = <%= @config['innodb_write_io_threads'] %>
+innodb_io_capacity              = <%= @config['innodb_io_capacity'] %>
+innodb_read_io_threads          = <%= @config['innodb_read_io_threads'] %>
+innodb_buffer_pool_instances    = <%= @config['innodb_buffer_pool_instances'] %>
+<%- end %>
+
+## InnoDB Plugin Independent Settings
+innodb_data_home_dir            = <%= node['mysql']['data_dir']  %>
+innodb_log_group_home_dir       = <%= node['mysql']['data_dir']  %>
+
+
+<%- if @config['innodb_file_per_table'] %>
+innodb_file_per_table
+<%- end %>
+innodb_table_locks              = <%= @config['innodb_table_locks'] %>
+innodb_lock_wait_timeout        = <%= @config['innodb_lock_wait_timeout'] %>
+innodb_thread_concurrency       = <%= @config['innodb_thread_concurrency'] %>
+innodb_commit_concurrency       = <%= @config['innodb_commit_concurrency'] %>
+innodb_support_xa               = <%= @config['innodb_support_xa'] %>
+<%- if @config['skip-innodb-doublewrite'] %>
+skip-innodb-doublewrite
+<%- end %>
+
+innodb_buffer_pool_size = <%= @config['innodb_buffer_pool_size'] %>
+innodb_log_file_size    = <%= @config['innodb_log_file_size'] %>
+innodb_additional_mem_pool_size = <%= @config['innodb_additional_mem_pool_size'] %>
+innodb_data_file_path   = <%= @config['innodb_data_file_path'] %>
+innodb_flush_log_at_trx_commit = <%= @config['innodb_flush_log_at_trx_commit'] %>
+<%- if @config['innodb_flush_method'] %>
+innodb_flush_method     = <%= @config['innodb_flush_method'] %>
+<%- end %>
+innodb_log_buffer_size  = <%= @config['innodb_log_buffer_size'] %>
+<%- if @config['innodb_adaptive_flushing'] %>
+innodb_adaptive_flushing  = <%= @config['innodb_adaptive_flushing'] %>
+<%- end %>
+<%- if @config['innodb_adaptive_flushing_method'] %>
+innodb_adaptive_flushing_method = <%= @config['innodb_adaptive_flushing_method'] %>
+<%- end %>
+<%- if @config['innodb_adaptive_checkpoint'] %>
+innodb_adaptive_checkpoint = <%= @config['innodb_adaptive_checkpoint'] %>
+<%- end %>
+
+[mysqldump]
+quick
+quote-names
+max_allowed_packet      = <%= @config['max_allowed_packet'] %>
+
+[myisamchk]
+key_buffer                = <%= @config['max_allowed_packet'] %>
+
+<%- if @config['myisam_sort_buffer_size'] %>
+myisam_sort_buffer_size   = <%= @config['myisam_sort_buffer_size'] %>
+<% end %>
+<%- if @config['myisam_max_sort_file_size'] %>
+myisam_max_sort_file_size = <%= @config['myisam_max_sort_file_size'] %>
+<%- end %>
+<%- if @config['myisam_repair_threads'] %>
+myisam_repair_threads     = <%= @config['myisam_repair_threads'] %>
+<%- end %>
+<%- if @config['myisam-recover'] %>
+myisam-recover            = <%= @config['myisam-recover'] %>
+<%- end %>

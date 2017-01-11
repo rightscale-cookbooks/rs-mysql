@@ -17,13 +17,16 @@
 # limitations under the License.
 #
 
+# The version of the mysql cookbook we are using does not consistently set mysql/server/service_name
+mysql_service_name = node['rs-mysql']['service_name']
+
 marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
 # Override master specific attributes
 Chef::Log.info "Overriding mysql/tunable/read_only to 'false'..."
-node.override['mysql']['tunable']['read_only'] = false
+node.override['rs-mysql']['tunable']['read_only'] = false
 
 include_recipe 'rs-mysql::default'
 
@@ -46,9 +49,10 @@ end
 
 # The connection hash to use to connect to mysql
 mysql_connection_info = {
-  :host => 'localhost',
-  :username => 'root',
-  :password => node['rs-mysql']['server_root_password'],
+  host: 'localhost',
+  username: 'root',
+  password: node['rs-mysql']['server_root_password'],
+  default_file: "/etc/#{mysql_service_name}/my.cnf"
 }
 
 mysql_database 'stop slave IO thread' do
@@ -79,7 +83,7 @@ mysql_database 'reset slave' do
   # MySQL 5.5 introduced the RESET SLAVE ALL command which does the full cleanup without restarting.
   if node['platform_family'] == 'rhel'
     sql 'RESET SLAVE'
-    notifies :restart, 'service[mysql-start]'
+    notifies :restart, 'mysql_service[default]'
   else
     sql 'RESET SLAVE ALL'
   end
@@ -94,6 +98,20 @@ mysql_database 'reset master' do
   connection mysql_connection_info
   sql 'RESET MASTER'
   action :query
+end
+
+mysql_database_user 'repl' do
+  host '%'
+  connection mysql_connection_info
+  password node['rs-mysql']['server_repl_password']
+  action :create
+end
+
+mysql_database_user 'repl' do
+  host '%'
+  connection mysql_connection_info
+  privileges ['REPLICATION SLAVE']
+  action :grant
 end
 
 mysql_master_info_file = "#{node['rs-mysql']['device']['mount_point']}/mysql_master_info.json"
@@ -115,7 +133,7 @@ if missing_dns_creds.empty?
     domain domain_name
     credentials(
       'dnsmadeeasy_api_key' => node['rs-mysql']['dns']['user_key'],
-      'dnsmadeeasy_secret_key' => node['rs-mysql']['dns']['secret_key'],
+      'dnsmadeeasy_secret_key' => node['rs-mysql']['dns']['secret_key']
     )
     entry_value node['mysql']['bind_address']
     type node['dns']['entry']['type']
@@ -126,5 +144,5 @@ else
   log "Following DNS credentials are missing #{missing_dns_creds.join(', ')}! Skipping DNS setting..."
 end
 
-node.default['rs-mysql']['collectd']['mysql']['MasterStats']=true
+node.default['rs-mysql']['collectd']['mysql']['MasterStats'] = true
 include_recipe 'rs-mysql::collectd'

@@ -17,9 +17,12 @@
 # limitations under the License.
 #
 
-marker "recipe_start_rightscale" do
-  template "rightscale_audit_entry.erb"
+marker 'recipe_start_rightscale' do
+  template 'rightscale_audit_entry.erb'
 end
+
+# The version of the mysql cookbook we are using does not consistently set mysql/server/service_name
+mysql_service_name = node['rs-mysql']['service_name']
 
 device_count = node['rs-mysql']['device']['count'].to_i
 device_nickname = node['rs-mysql']['device']['nickname']
@@ -28,7 +31,6 @@ size = node['rs-mysql']['device']['volume_size'].to_i
 raise 'rs-mysql/device/count should be at least 2 for setting up stripe' if device_count < 2
 
 detach_timeout = node['rs-mysql']['device']['detach_timeout'].to_i * device_count
-
 
 each_device_size = (size.to_f / device_count.to_f).ceil
 
@@ -47,6 +49,7 @@ volume_options[:controller_type] = node['rs-mysql']['device']['controller_type']
 # Install packages required for setting up LVM
 include_recipe 'lvm::default'
 
+old_mysql_dir = "/var/lib/#{mysql_service_name}"
 new_mysql_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
 
 # rs-mysql/restore/lineage is empty, creating new volume(s) and setting up LVM
@@ -73,12 +76,12 @@ else
     command 'pvscan'
   end
 
-  directory '/var/lib/mysql' do
+  directory old_mysql_dir do
     recursive true
     action :delete
   end
 
-  link '/var/lib/mysql' do
+  link old_mysql_dir do
     to new_mysql_dir
   end
 end
@@ -123,6 +126,27 @@ end
 #     empty.
 node.override['mysql']['data_dir'] = new_mysql_dir
 node.override['mysql']['server']['directories']['log_dir'] = new_mysql_dir
+
+service 'apparmor' do
+  service_name 'apparmor'
+  action :nothing
+end
+
+template '/etc/apparmor.d/local/mysql/storage' do
+  cookbook 'rs-mysql'
+  source 'apparmor-storage.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  variables(
+    data_dir: new_mysql_dir
+  )
+  action :create
+  notifies :restart, 'service[apparmor]', :immediately
+  only_if do
+    ::File.exist?('/etc/apparmor.d/local/mysql/default')
+  end
+end
 
 # Include the rs-mysql::default so the tuning attributes and tags are set properly.
 include_recipe 'rs-mysql::default'

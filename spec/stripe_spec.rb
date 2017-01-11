@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 
 describe 'rs-mysql::stripe' do
   let(:chef_runner) do
-    ChefSpec::Runner.new do |node|
+    ChefSpec::SoloRunner.new do |node|
       node.set['cloud']['private_ips'] = ['10.0.2.15']
       node.set['memory']['total'] = '1011228kB'
       node.set['rightscale_volume']['data_storage_1']['device'] = '/dev/sda'
@@ -16,8 +16,8 @@ describe 'rs-mysql::stripe' do
   let(:nickname) { chef_run.node['rs-mysql']['device']['nickname'] }
   let(:nickname_1) { "#{nickname}_1" }
   let(:nickname_2) { "#{nickname}_2" }
-  let(:volume_group) { "#{nickname.gsub('_', '-')}-vg" }
-  let(:logical_volume) { "#{nickname.gsub('_', '-')}-lv" }
+  let(:volume_group) { "#{nickname.tr('_', '-')}-vg" }
+  let(:logical_volume) { "#{nickname.tr('_', '-')}-lv" }
   let(:detach_timeout) do
     chef_runner.converge(described_recipe).node['rs-mysql']['device']['detach_timeout'].to_i
   end
@@ -29,15 +29,14 @@ describe 'rs-mysql::stripe' do
   context 'rs-mysql/restore/lineage is not set' do
     let(:chef_run) { chef_runner.converge(described_recipe) }
 
-
     it 'creates two new volumes and attaches them' do
       expect(chef_run).to create_rightscale_volume(nickname_1).with(
         size: 5,
-        options: {},
+        options: {}
       )
       expect(chef_run).to create_rightscale_volume(nickname_2).with(
         size: 5,
-        options: {},
+        options: {}
       )
       expect(chef_run).to attach_rightscale_volume(nickname_1)
       expect(chef_run).to attach_rightscale_volume(nickname_2)
@@ -51,14 +50,14 @@ describe 'rs-mysql::stripe' do
         filesystem: 'ext4',
         mount_point: '/mnt/storage',
         stripes: 2,
-        stripe_size: 512,
+        stripe_size: 512
       )
     end
 
     it 'creates the MySQL directory on the volume' do
       expect(chef_run).to create_directory('/mnt/storage/mysql').with(
         owner: 'mysql',
-        group: 'mysql',
+        group: 'mysql'
       )
     end
 
@@ -80,11 +79,11 @@ describe 'rs-mysql::stripe' do
       it 'creates two new volumes with iops set to 100 and attaches them' do
         expect(chef_run).to create_rightscale_volume(nickname_1).with(
           size: 5,
-          options: {iops: 100},
+          options: { iops: 100 }
         )
         expect(chef_run).to create_rightscale_volume(nickname_2).with(
           size: 5,
-          options: {iops: 100},
+          options: { iops: 100 }
         )
         expect(chef_run).to attach_rightscale_volume(nickname_1)
         expect(chef_run).to attach_rightscale_volume(nickname_2)
@@ -106,7 +105,7 @@ describe 'rs-mysql::stripe' do
         lineage: 'testing',
         timestamp: nil,
         size: 5,
-        options: {},
+        options: {}
       )
     end
 
@@ -118,26 +117,26 @@ describe 'rs-mysql::stripe' do
         filesystem: 'ext4',
         mount_point: '/mnt/storage',
         stripes: 2,
-        stripe_size: 512,
+        stripe_size: 512
       )
     end
 
     it 'deletes the old MySQL directory' do
-      expect(chef_run).to delete_directory('/var/lib/mysql').with(
-        recursive: true,
+      expect(chef_run).to delete_directory('/var/lib/mysql-default').with(
+        recursive: true
       )
     end
 
     it 'creates the MySQL directory symlink' do
-      expect(chef_run).to create_link('/var/lib/mysql').with(
-        to: '/mnt/storage/mysql',
+      expect(chef_run).to create_link('/var/lib/mysql-default').with(
+        to: '/mnt/storage/mysql'
       )
     end
 
     it 'creates the MySQL directory on the volume' do
       expect(chef_run).to create_directory('/mnt/storage/mysql').with(
         owner: 'mysql',
-        group: 'mysql',
+        group: 'mysql'
       )
     end
 
@@ -161,7 +160,7 @@ describe 'rs-mysql::stripe' do
           lineage: 'testing',
           timestamp: nil,
           size: 5,
-          options: {iops: 100},
+          options: { iops: 100 }
         )
       end
     end
@@ -178,7 +177,7 @@ describe 'rs-mysql::stripe' do
           lineage: 'testing',
           timestamp: timestamp,
           size: 5,
-          options: {},
+          options: {}
         )
       end
     end

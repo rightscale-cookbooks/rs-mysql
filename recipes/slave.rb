@@ -17,6 +17,9 @@
 # limitations under the License.
 #
 
+# The version of the mysql cookbook we are using does not consistently set mysql/server/service_name
+mysql_service_name = node['rs-mysql']['service_name']
+
 marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
@@ -34,11 +37,11 @@ include_recipe 'rs-mysql::default'
 # Find the most recent master database in the deployment
 latest_master = nil
 Chef::Log.info "Finding master database servers with lineage '#{node['rs-mysql']['backup']['lineage']}' in the deployment..."
-master_dbs = find_database_servers(node, node['rs-mysql']['backup']['lineage'], 'master', {:only_latest_for_role => true})
+master_dbs = find_database_servers(node, node['rs-mysql']['backup']['lineage'], 'master', only_latest_for_role: true)
 if master_dbs.empty?
   raise "No master database for the lineage '#{node['rs-mysql']['backup']['lineage']}' found in the deployment!"
 else
-  latest_master = master_dbs.map { |uuid, server_hash| server_hash }.first
+  latest_master = master_dbs.map { |_uuid, server_hash| server_hash }.first
 end
 
 rightscale_tag_database node['rs-mysql']['backup']['lineage'] do
@@ -60,9 +63,10 @@ end
 
 # The connection hash to use to connect to mysql
 mysql_connection_info = {
-  :host => 'localhost',
-  :username => 'root',
-  :password => node['rs-mysql']['server_root_password']
+  host: 'localhost',
+  username: 'root',
+  password: node['rs-mysql']['server_root_password'],
+  default_file: "/etc/#{mysql_service_name}/my.cnf"
 }
 
 mysql_database 'set global read only' do
@@ -93,24 +97,25 @@ mysql_database 'stop slave' do
 end
 
 mysql_master_info_file = "#{node['rs-mysql']['device']['mount_point']}/mysql_master_info.json"
-if ::File.exists?(mysql_master_info_file)
-  mysql_master_info = JSON.parse(::File.read(mysql_master_info_file), :symbolize_names => true)
+if ::File.exist?(mysql_master_info_file)
+  mysql_master_info = JSON.parse(::File.read(mysql_master_info_file), symbolize_names: true)
 end
 
 log "MySQL master info: #{mysql_master_info.inspect}"
 
-change_master = "CHANGE MASTER TO" +
-  " MASTER_HOST='#{latest_master['bind_ip_address']}'," +
-  " MASTER_USER='repl'," +
-  " MASTER_PASSWORD='#{node['rs-mysql']['server_repl_password']}'"
+change_master = 'CHANGE MASTER TO' \
+                " MASTER_HOST='#{latest_master['bind_ip_address']}'," \
+                " MASTER_USER='repl'," \
+                " MASTER_PASSWORD='#{node['rs-mysql']['server_repl_password']}'"
 
 # Set master info from a recently restored backup; if no backup was recently restored there will not be any master info
 # so nothing will be changed.
 #
-if mysql_master_info && mysql_master_info.has_key?(:file) && mysql_master_info.has_key?(:position)
+if mysql_master_info && mysql_master_info.key?(:file) && mysql_master_info.key?(:position)
   change_master << ", MASTER_LOG_FILE='#{mysql_master_info[:file]}', MASTER_LOG_POS=#{mysql_master_info[:position]}"
 end
 
+Chef::Log.info "RS: #{change_master}"
 mysql_database 'change master host' do
   database_name 'mysql'
   connection mysql_connection_info

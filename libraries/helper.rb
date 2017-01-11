@@ -40,21 +40,21 @@ module RsMysql
         Addrinfo.getaddrinfo(node['rs-mysql']['bind_address'], nil, Socket::PF_INET).first.ip_address
       else
         case node['rs-mysql']['bind_network_interface']
-        when "private"
+        when 'private'
           if node['cloud']['private_ips'].nil? || node['cloud']['private_ips'].empty?
             raise 'Cannot find private IP of the server!'
           end
 
           node['cloud']['private_ips'].first
-        when "public"
+        when 'public'
           if node['cloud']['public_ips'].nil? || node['cloud']['public_ips'].empty?
             raise 'Cannot find public IP of the server!'
           end
 
           node['cloud']['public_ips'].first
         else
-          raise "Unknown network interface '#{node['rs-mysql']['bind_network_interface']}'!" +
-            " The network interface must be either 'public' or 'private'."
+          raise "Unknown network interface '#{node['rs-mysql']['bind_network_interface']}'!" \
+                " The network interface must be either 'public' or 'private'."
         end
       end
     end
@@ -68,7 +68,7 @@ module RsMysql
     def self.find_missing_dns_credentials(node)
       missing_creds = []
 
-      ['master_fqdn', 'user_key', 'secret_key'].each do |cred|
+      %w(master_fqdn user_key secret_key).each do |cred|
         unless node['rs-mysql']['dns'][cred] && !node['rs-mysql']['dns'][cred].empty?
           missing_creds << cred
         end
@@ -78,14 +78,14 @@ module RsMysql
     end
 
     # Verifies that the server has come operational after start/restart
-    def self.verify_mysqld_is_up(connection_info, timeout=300)
+    def self.verify_mysqld_is_up(connection_info, timeout = 300)
       Chef::Log.info "Timeout is set to: #{timeout.inspect}"
       # Verify slave functional only if timeout is a positive value
       if timeout && timeout > 0
         Timeout.timeout(timeout) do
-          @ping_result=""
-          while @ping_result != "mysqld is alive" do
-            ping=Mixlib::ShellOut.new("mysqladmin ping -h #{connection_info[:host]} -u #{connection_info[:username]} -p#{connection_info[:password]}").run_command
+          @ping_result = ''
+          while @ping_result != 'mysqld is alive'
+            ping = Mixlib::ShellOut.new("mysqladmin ping -h #{connection_info[:host]} -u #{connection_info[:username]} -p#{connection_info[:password]}").run_command
             @ping_result = ping.stdout.strip
             Chef::Log.info "Result STDOUT: #{ping.stdout}, STDERR: #{ping.stderr}"
             sleep 10
@@ -95,6 +95,7 @@ module RsMysql
         Chef::Log.info 'Skipping mysql check as timeout is too low'
       end
     end
+
     # Verifies if the slave server is functional by checking the 'Slave_IO_Running' and 'Slave_SQL_Running' in the
     # output of SHOW SLAVE STATUS query. This verification is done with a sleep of 2 seconds and a configurable
     # timeout.
@@ -110,17 +111,17 @@ module RsMysql
       if timeout && timeout < 0
         Chef::Log.info 'Skipping slave verification as timeout is set to a negative value'
       else
-        require 'mysql'
+        require 'mysql2'
 
-        with_closing(Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])) do |connection|
+        with_closing(Mysql2::Client.new(connection_info)) do |connection|
           Timeout.timeout(timeout) do
             slave_status = nil
             loop do
               Chef::Log.info 'Waiting for slave to become functional...'
               # Only sleep after the initial query
               sleep 2 if slave_status
-              slave_status = connection.query('SHOW SLAVE STATUS').fetch_hash
-              break if slave_status["Slave_IO_Running"] == "Yes" && slave_status["Slave_SQL_Running"] == "Yes"
+              slave_status = connection.query('SHOW SLAVE STATUS', as: :hash, symbolize_keys: false).first
+              break if slave_status['Slave_IO_Running'] == 'Yes' && slave_status['Slave_SQL_Running'] == 'Yes'
             end
           end
         end
@@ -134,10 +135,10 @@ module RsMysql
     def self.wait_for_relay_log_read(connection_info)
       Chef::Log.info 'Waiting for slave to read relay log...'
 
-      require 'mysql'
+      require 'mysql2'
 
-      with_closing(Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])) do |connection|
-        slave_status = connection.query('SHOW SLAVE STATUS').fetch_hash
+      with_closing(Mysql2::Client.new(connection_info)) do |connection|
+        slave_status = connection.query('SHOW SLAVE STATUS').first
 
         Chef::Log.info "Slave IO state: #{(slave_status && slave_status['Slave_IO_State']).inspect}"
 
@@ -169,25 +170,25 @@ module RsMysql
     #   binlog position
     #
     def self.get_master_info(connection_info)
-      require 'mysql'
+      require 'mysql2'
 
-      with_closing(Mysql.new(connection_info[:host], connection_info[:username], connection_info[:password])) do |connection|
-        master_status = connection.query('SHOW MASTER STATUS').fetch_hash
-        slave_status = connection.query('SHOW SLAVE STATUS').fetch_hash
+      with_closing(Mysql2::Client.new(connection_info)) do |connection|
+        master_status = connection.query('SHOW MASTER STATUS', as: :hash, symbolize_keys: false).first
+        slave_status = connection.query('SHOW SLAVE STATUS', as: :hash, symbolize_keys: false).first
 
-        if slave_status
-          master_info = {
-            file: slave_status['Relay_Master_Log_File'],
-            position: slave_status['Exec_Master_Log_Pos'],
-          }
-        elsif master_status
-          master_info = {
-            file: master_status['File'],
-            position: master_status['Position'],
-          }
-        else
-          master_info = {}
-        end
+        master_info = if slave_status
+                        {
+                          file: slave_status['Relay_Master_Log_File'],
+                          position: slave_status['Exec_Master_Log_Pos']
+                        }
+                      elsif master_status
+                        {
+                          file: master_status['File'],
+                          position: master_status['Position']
+                        }
+                      else
+                        {}
+                      end
 
         master_info
       end
@@ -216,7 +217,7 @@ module RsMysql
       mount = shell_out!('mount')
       mount.stdout.each_line do |line|
         if line =~ /^(.+)\s+on\s+#{mount_point}\s+/
-          device = $1
+          device = Regexp.last_match(1)
           return !!(device =~ /^\/dev\/mapper/) && shell_out("lvdisplay '#{device}'").status == 0
         end
       end
@@ -251,8 +252,8 @@ module RsMysql
       if volume_group.nil?
         Chef::Log.info "Volume group '#{volume_group_name}' is not found"
       else
-        logical_volume_names = volume_group.logical_volumes.map { |logical_volume| logical_volume.name }
-        physical_volume_names = volume_group.physical_volumes.map { |physical_volume| physical_volume.name }
+        logical_volume_names = volume_group.logical_volumes.map(&:name)
+        physical_volume_names = volume_group.physical_volumes.map(&:name)
 
         # Remove the logical volumes
         logical_volume_names.each do |logical_volume_name|
@@ -318,7 +319,6 @@ module RsMysql
     def to_dm_name(name)
       RsMysql::Helper.to_dm_name(name)
     end
-
 
     private
 

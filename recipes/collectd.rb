@@ -27,8 +27,10 @@ if node['rightscale'] && node['rightscale']['instance_uuid']
   node.override['collectd']['fqdn'] = node['rightscale']['instance_uuid']
 end
 
-chef_gem 'chef-rewind'
-require 'chef/rewind'
+# chef_gem 'chef-rewind'
+# require 'chef/rewind'
+
+include_recipe 'rs-base::monitoring_collectd'
 
 log 'Installing MySQL collectd plugin...'
 
@@ -36,27 +38,25 @@ package 'collectd-mysql' do
   only_if { node['platform_family'] == 'rhel' }
 end
 
-include_recipe 'collectd::default'
-
-rewind "package[collectd]" do
-  action :nothing
-  only_if {::File.exists?("/usr/sbin/collectd")}
-end
+# rewind 'collectd_service[collectd]' do
+#  action :nothing
+#  only_if { ::File.exist?('/usr/sbin/collectd') }
+# end
 
 # collectd::default recipe attempts to delete collectd plugins that were not
 # created during the same runlist as this recipe. Some common plugins are installed
 # as a part of base install which runs in a different runlist. This resource
 # will safeguard the base plugins from being removed.
-rewind 'ruby_block[delete_old_plugins]' do
-  action :nothing
-end
+# rewind 'ruby_block[delete_old_plugins]' do
+#   action :nothing
+# end
 
 collectd_plugin 'processes' do
- options :process => [ 'collectd', 'mysqld' ]
+  options process: %w(collectd mysqld)
 end
 
 collectd_plugin 'mysql' do
-  cookbook 'rs-mysql'
-  template 'plugin.conf.erb'
-  options( node['rs-mysql']['collectd']['mysql'] )
+  # cookbook 'rs-mysql'
+  # template 'plugin.conf.erb'
+  options(node['rs-mysql']['collectd']['mysql'])
 end

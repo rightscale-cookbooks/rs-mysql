@@ -21,7 +21,6 @@
 module RsMysql
   # The helper for calculating the MySQL tuning attributes.
   module Tuning
-
     # The constant multiplied with megabytes to obtain the value in gigabytes
     GB = 1024 unless const_defined?(:GB)
 
@@ -41,7 +40,7 @@ module RsMysql
       #
       node_tuning['thread_cache_size'] = (50 * factor).to_i
       node_tuning['max_connections'] = (800 * factor).to_i
-      node_tuning['wait_timeout'] = (28800 * factor).to_i
+      node_tuning['wait_timeout'] = (28_800 * factor).to_i
       node_tuning['net_read_timeout'] = (30 * factor).to_i
       node_tuning['net_write_timeout'] = (30 * factor).to_i
       node_tuning['back_log'] = (128 * factor).to_i
@@ -111,7 +110,7 @@ module RsMysql
       matched[1].to_i * 1024 * 1024 if matched
     end
 
-  private
+    private
 
     # Given the memory in either kilobytes as a String or in bytes as an Integer (the formats Ohai returns),
     # this method will return the memory in megabytes.

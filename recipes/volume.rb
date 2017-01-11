@@ -17,19 +17,20 @@
 # limitations under the License.
 #
 
-marker "recipe_start_rightscale" do
-  template "rightscale_audit_entry.erb"
+marker 'recipe_start_rightscale' do
+  template 'rightscale_audit_entry.erb'
 end
+# The version of the mysql cookbook we are using does not consistently set mysql/server/service_name
+mysql_service_name = node['rs-mysql']['service_name']
 
 detach_timeout = node['rs-mysql']['device']['detach_timeout'].to_i
 device_nickname = node['rs-mysql']['device']['nickname']
 size = node['rs-mysql']['device']['volume_size'].to_i
 
-#execute "set decommission timeout to #{detach_timeout}" do
+# execute "set decommission timeout to #{detach_timeout}" do
 #  command "rs_config --set decommission_timeout #{detach_timeout}"
 #  not_if "[ `rs_config --get decommission_timeout` -eq #{detach_timeout} ]"
-#end
-
+# end
 
 # Cloud-specific volume options
 volume_options = {}
@@ -37,6 +38,7 @@ volume_options[:iops] = node['rs-mysql']['device']['iops'] if node['rs-mysql']['
 volume_options[:volume_type] = node['rs-mysql']['device']['volume_type'] if node['rs-mysql']['device']['volume_type']
 volume_options[:controller_type] = node['rs-mysql']['device']['controller_type'] if node['rs-mysql']['device']['controller_type']
 
+old_mysql_dir = "/var/lib/#{mysql_service_name}"
 new_mysql_dir = "#{node['rs-mysql']['device']['mount_point']}/mysql"
 
 # rs-mysql/restore/lineage is empty, creating new volume
@@ -50,7 +52,7 @@ if node['rs-mysql']['restore']['lineage'].to_s.empty?
 
   # Filesystem label must be <= 12 chars
   filesystem device_nickname do
-    label device_nickname[0,12]
+    label device_nickname[0, 12]
     fstype node['rs-mysql']['device']['filesystem']
     device lazy { node['rightscale_volume'][device_nickname]['device'] }
     mkfs_options node['rs-mysql']['device']['mkfs_options']
@@ -86,12 +88,12 @@ else
     action [:mount, :enable]
   end
 
-  directory '/var/lib/mysql' do
+  directory old_mysql_dir do
     recursive true
     action :delete
   end
 
-  link '/var/lib/mysql' do
+  link old_mysql_dir do
     to new_mysql_dir
   end
 end
@@ -100,6 +102,8 @@ end
 directory new_mysql_dir do
   owner 'mysql'
   group 'mysql'
+  mode '0770'
+  recursive true
   action :create
 end
 
@@ -109,6 +113,27 @@ end
 #     empty.
 node.override['mysql']['data_dir'] = new_mysql_dir
 node.override['mysql']['server']['directories']['log_dir'] = new_mysql_dir
+
+service 'apparmor' do
+  service_name 'apparmor'
+  action :nothing
+end
+
+template '/etc/apparmor.d/local/mysql/storage' do
+  cookbook 'rs-mysql'
+  source 'apparmor-storage.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  variables(
+    data_dir: new_mysql_dir
+  )
+  action :create
+  notifies :restart, 'service[apparmor]', :immediately
+  only_if do
+    ::File.exist?('/etc/apparmor.d/local/mysql/default')
+  end
+end
 
 # Include the rs-mysql::default so the tuning attributes and tags are set properly.
 include_recipe 'rs-mysql::default'

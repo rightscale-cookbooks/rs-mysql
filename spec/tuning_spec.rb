@@ -4,7 +4,7 @@ require 'tuning'
 describe RsMysql::Tuning do
   {
     dedicated: 1,
-    shared: 0.5,
+    shared: 0.5
   }.each do |usage, factor|
     context "with #{usage} usage" do
       [
@@ -21,12 +21,12 @@ describe RsMysql::Tuning do
             table_open_cache: (256 * factor).to_i,
             sort_buffer_size: "#{(2 * factor).to_i}M",
             innodb_additional_mem_pool_size: "#{(50 * factor).to_i}M",
-            myisam_sort_buffer_size: "#{(64 * factor).to_i}M",
-          },
+            myisam_sort_buffer_size: "#{(64 * factor).to_i}M"
+          }
         },
         {
           name: '512 MB (in bytes)',
-          memory: 536870912,
+          memory: 536_870_912,
           assertions: {
             query_cache_size: "#{(5 * factor).to_i}M",
             innodb_buffer_pool_size: "#{(409 * factor).to_i}M",
@@ -37,8 +37,8 @@ describe RsMysql::Tuning do
             table_open_cache: (256 * factor).to_i,
             sort_buffer_size: "#{(2 * factor).to_i}M",
             innodb_additional_mem_pool_size: "#{(50 * factor).to_i}M",
-            myisam_sort_buffer_size: "#{(64 * factor).to_i}M",
-          },
+            myisam_sort_buffer_size: "#{(64 * factor).to_i}M"
+          }
         },
         {
           name: '2 GB',
@@ -53,8 +53,8 @@ describe RsMysql::Tuning do
             table_open_cache: (256 * factor).to_i,
             sort_buffer_size: "#{(2 * factor).to_i}M",
             innodb_additional_mem_pool_size: "#{(50 * factor).to_i}M",
-            myisam_sort_buffer_size: "#{(64 * factor).to_i}M",
-          },
+            myisam_sort_buffer_size: "#{(64 * factor).to_i}M"
+          }
         },
         {
           name: '5 GB',
@@ -69,15 +69,15 @@ describe RsMysql::Tuning do
             table_open_cache: (512 * factor).to_i,
             sort_buffer_size: "#{(4 * factor).to_i}M",
             innodb_additional_mem_pool_size: "#{(200 * factor).to_i}M",
-            myisam_sort_buffer_size: "#{(96 * factor).to_i}M",
-          },
+            myisam_sort_buffer_size: "#{(96 * factor).to_i}M"
+          }
         },
         {
           name: '15 GB',
           memory: '15728640kB',
           assertions: {
             query_cache_size: "#{(153 * factor).to_i}M",
-            innodb_buffer_pool_size: "#{(12288 * factor).to_i}M",
+            innodb_buffer_pool_size: "#{(12_288 * factor).to_i}M",
             key_buffer_size: "#{(128 * factor).to_i}M",
             max_allowed_packet: "#{(128 * factor).to_i}M",
             innodb_log_file_size: "#{(64 * factor).to_i}M",
@@ -85,15 +85,15 @@ describe RsMysql::Tuning do
             table_open_cache: (1024 * factor).to_i,
             sort_buffer_size: "#{(8 * factor).to_i}M",
             innodb_additional_mem_pool_size: "#{(300 * factor).to_i}M",
-            myisam_sort_buffer_size: "#{(128 * factor).to_i}M",
-          },
+            myisam_sort_buffer_size: "#{(128 * factor).to_i}M"
+          }
         },
         {
           name: '30 GB',
           memory: '31457280kB',
           assertions: {
             query_cache_size: "#{(307 * factor).to_i}M",
-            innodb_buffer_pool_size: "#{(24576 * factor).to_i}M",
+            innodb_buffer_pool_size: "#{(24_576 * factor).to_i}M",
             key_buffer_size: "#{(128 * factor).to_i}M",
             max_allowed_packet: "#{(128 * factor).to_i}M",
             innodb_log_file_size: "#{(64 * factor).to_i}M",
@@ -101,15 +101,15 @@ describe RsMysql::Tuning do
             table_open_cache: (2048 * factor).to_i,
             sort_buffer_size: "#{(16 * factor).to_i}M",
             innodb_additional_mem_pool_size: "#{(400 * factor).to_i}M",
-            myisam_sort_buffer_size: "#{(256 * factor).to_i}M",
-          },
+            myisam_sort_buffer_size: "#{(256 * factor).to_i}M"
+          }
         },
         {
           name: '55 GB',
           memory: '57671680kB',
           assertions: {
             query_cache_size: "#{(563 * factor).to_i}M",
-            innodb_buffer_pool_size: "#{(45056 * factor).to_i}M",
+            innodb_buffer_pool_size: "#{(45_056 * factor).to_i}M",
             key_buffer_size: "#{(128 * factor).to_i}M",
             max_allowed_packet: "#{(128 * factor).to_i}M",
             innodb_log_file_size: "#{(64 * factor).to_i}M",
@@ -117,13 +117,13 @@ describe RsMysql::Tuning do
             table_open_cache: (4096 * factor).to_i,
             sort_buffer_size: "#{(32 * factor).to_i}M",
             innodb_additional_mem_pool_size: "#{(500 * factor).to_i}M",
-            myisam_sort_buffer_size: "#{(512 * factor).to_i}M",
-          },
-        },
+            myisam_sort_buffer_size: "#{(512 * factor).to_i}M"
+          }
+        }
       ].each do |category|
         context "with #{category[:name]} of memory" do
           let(:node) do
-            chef_run = ChefSpec::Runner.new do |node|
+            chef_run = ChefSpec::SoloRunner.new do |node|
               node.automatic['memory']['total'] = category[:memory]
             end
             chef_run.node
@@ -140,14 +140,14 @@ describe RsMysql::Tuning do
           {
             thread_cache_size: (50 * factor).to_i,
             max_connections: (800 * factor).to_i,
-            wait_timeout: (28800 * factor).to_i,
+            wait_timeout: (28_800 * factor).to_i,
             net_read_timeout: (30 * factor).to_i,
             net_write_timeout: (30 * factor).to_i,
             back_log: (128 * factor).to_i,
             max_heap_table_size: "#{(32 * factor).to_i}M",
             read_buffer_size: "#{(1 * factor).to_i}M",
             read_rnd_buffer_size: "#{(4 * factor).to_i}M",
-            long_query_time: 5,
+            long_query_time: 5
           }.each do |name, value|
             it "sets #{name} to #{value}" do
               tune_attributes

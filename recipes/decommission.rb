@@ -17,29 +17,33 @@
 # limitations under the License.
 #
 
-marker "recipe_start_rightscale" do
-  template "rightscale_audit_entry.erb"
+marker 'recipe_start_rightscale' do
+  template 'rightscale_audit_entry.erb'
+end
+
+class Chef::Recipe
+  include MysqlCookbook::HelpersBase
 end
 
 # Check for the safety attribute first
 if node['rs-mysql']['device']['destroy_on_decommission'] != true &&
-    node['rs-mysql']['device']['destroy_on_decommission'] != 'true'
-  log "rs-mysql/device/destroy_on_decommission is set to '#{node['rs-mysql']['device']['destroy_on_decommission']}'" +
-    " skipping..."
+   node['rs-mysql']['device']['destroy_on_decommission'] != 'true'
+  log "rs-mysql/device/destroy_on_decommission is set to '#{node['rs-mysql']['device']['destroy_on_decommission']}'" \
+      ' skipping...'
   # Check 'DECOM_REASON' from Shutdown Reason script and skip if the instance
   # is rebooting or entering the stop state
-elsif ['reboot', 'stop',].include?(node['rightscale']['decom_reason'])
+elsif %w(reboot stop).include?(node['rightscale']['decom_reason'])
   log 'Skipping deletion of volumes as the instance is either rebooting or entering the stop state...'
   # Detach and delete the volumes if the above safety conditions are satisfied
 else
-  # Delete the link created as /var/lib/mysql
-  link '/var/lib/mysql' do
+  # Delete the link created as /var/lib/mysql-default
+  link '/var/lib/mysql-default' do
     action :delete
-    only_if 'test -L /var/lib/mysql'
+    only_if 'test -L /var/lib/mysql-default'
   end
 
   # The version of the mysql cookbook we are using does not consistently set mysql/server/service_name
-  mysql_service_name = node['mysql']['server']['service_name'] || 'mysql'
+  mysql_service_name = system_service_name
 
   service mysql_service_name do
     provider Chef::Provider::Service::Upstart if node['platform'] == 'ubuntu'
@@ -49,7 +53,7 @@ else
   # The file /etc/mysql_grants.sql has SQL commands to install grants to the database including setting the root
   # password. Deleting this file during decommission will make the rs-mysql::default recipe to create this file and
   # install grants.
-  ['/etc/my.cnf', '/etc/mysql/my.cnf', '/etc/mysql_grants.sql'].each do |filename|
+  ['/etc/my.cnf', '/etc/mysql-default/my.cnf', '/etc/mysql_grants.sql'].each do |filename|
     file filename do
       action :delete
     end
@@ -76,7 +80,7 @@ else
       action [:umount, :disable]
     end
 
-    log "LVM is used on the device(s). Cleaning up the LVM."
+    log 'LVM is used on the device(s). Cleaning up the LVM.'
     # Clean up the LVM conditionally
     ruby_block 'clean up LVM' do
       block do
@@ -112,7 +116,7 @@ else
 
   # Remove tags created when server took a master or slave role.
   tag_bind_ip_address = RsMysql::Helper.get_bind_ip_address(node)
-  ['master', 'slave'].each do |tag_role|
+  %w(master slave).each do |tag_role|
     rightscale_tag_database "#{tag_role} #{node['rs-mysql']['backup']['lineage']}" do
       lineage node['rs-mysql']['backup']['lineage']
       role tag_role

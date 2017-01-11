@@ -1,5 +1,4 @@
 .vagrant
-Berksfile.lock
 *~
 *#
 .#*
@@ -23,3 +22,4 @@ doc/
 berks-cookbooks/
 knife.rb
 syntaxcache/
+coverage/

@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 
 describe 'rs-mysql::volume' do
   let(:chef_runner) do
-    ChefSpec::Runner.new(platform: 'ubuntu', version: '12.04') do |node|
+    ChefSpec::SoloRunner.new(platform: 'ubuntu', version: '12.04') do |node|
       node.set['cloud']['private_ips'] = ['10.0.2.15']
       node.set['memory']['total'] = '1011228kB'
       node.set['rightscale_volume']['data_storage']['device'] = '/dev/sda'
@@ -24,11 +24,10 @@ describe 'rs-mysql::volume' do
   context 'rs-mysql/restore/lineage is not set' do
     let(:chef_run) { chef_runner.converge(described_recipe) }
 
-
     it 'creates a new volume and attaches it' do
       expect(chef_run).to create_rightscale_volume(nickname).with(
         size: 10,
-        options: {},
+        options: {}
       )
       expect(chef_run).to attach_rightscale_volume(nickname)
     end
@@ -37,7 +36,7 @@ describe 'rs-mysql::volume' do
       expect(chef_run).to create_filesystem(nickname).with(
         fstype: 'ext4',
         mkfs_options: '-F',
-        mount: '/mnt/storage',
+        mount: '/mnt/storage'
       )
       expect(chef_run).to enable_filesystem(nickname)
       expect(chef_run).to mount_filesystem(nickname)
@@ -46,7 +45,7 @@ describe 'rs-mysql::volume' do
     it 'creates the MySQL directory on the volume' do
       expect(chef_run).to create_directory('/mnt/storage/mysql').with(
         owner: 'mysql',
-        group: 'mysql',
+        group: 'mysql'
       )
     end
 
@@ -68,7 +67,7 @@ describe 'rs-mysql::volume' do
       it 'creates a new volume with iops set to 100 and attaches it' do
         expect(chef_run).to create_rightscale_volume(nickname).with(
           size: 10,
-          options: {iops: 100},
+          options: { iops: 100 }
         )
         expect(chef_run).to attach_rightscale_volume(nickname)
       end
@@ -86,37 +85,38 @@ describe 'rs-mysql::volume' do
     let(:device) { chef_run.node['rightscale_volume'][nickname]['device'] }
 
     it 'creates a volume from the backup' do
+      expect(chef_run).to write_log('Restoring volume \'data_storage\' from backup using lineage \'testing\'')
       expect(chef_run).to restore_rightscale_backup(nickname).with(
         lineage: 'testing',
         timestamp: nil,
         size: 10,
-        options: {},
+        options: {}
       )
     end
 
     it 'mounts and enables the restored volume' do
       expect(chef_run).to mount_mount(device).with(
-        fstype: 'ext4',
+        fstype: 'ext4'
       )
       expect(chef_run).to enable_mount(device)
     end
 
     it 'deletes the old MySQL directory' do
-      expect(chef_run).to delete_directory('/var/lib/mysql').with(
-        recursive: true,
+      expect(chef_run).to delete_directory("/var/lib/#{chef_run.node['rs-mysql']['service_name']}").with(
+        recursive: true
       )
     end
 
     it 'creates the MySQL directory symlink' do
-      expect(chef_run).to create_link('/var/lib/mysql').with(
-        to: '/mnt/storage/mysql',
+      expect(chef_run).to create_link("/var/lib/#{chef_run.node['rs-mysql']['service_name']}").with(
+        to: '/mnt/storage/mysql'
       )
     end
 
     it 'creates the MySQL directory on the volume' do
       expect(chef_run).to create_directory('/mnt/storage/mysql').with(
         owner: 'mysql',
-        group: 'mysql',
+        group: 'mysql'
       )
     end
 
@@ -140,7 +140,7 @@ describe 'rs-mysql::volume' do
           lineage: 'testing',
           timestamp: nil,
           size: 10,
-          options: {iops: 100},
+          options: { iops: 100 }
         )
       end
     end
@@ -153,11 +153,12 @@ describe 'rs-mysql::volume' do
       end
 
       it 'creates a volume from the backup with the timestamp' do
+        expect(chef_run).to write_log("Restoring volume \'data_storage\' from backup using lineage \'testing\' and using timestamp \'#{timestamp}\'")
         expect(chef_run).to restore_rightscale_backup(nickname).with(
           lineage: 'testing',
           timestamp: timestamp,
           size: 10,
-          options: {},
+          options: {}
         )
       end
     end
