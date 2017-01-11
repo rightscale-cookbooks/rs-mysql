@@ -181,6 +181,11 @@ mysql_client 'default' do
   action :create
 end
 
+mysql_service 'default' do
+  initial_root_password node['rs-mysql']['server_root_password']
+  action [ :create ]
+end
+
 directory data_dir do
   owner 'mysql'
   group 'mysql'
@@ -201,7 +206,7 @@ end
 # Configure the MySQL service.
 mysql_service 'default' do
   initial_root_password node['rs-mysql']['server_root_password']
-  action [:create, :start]
+  action [:start]
 end
 
 execute "chown -R mysql:mysql #{data_dir}" do
