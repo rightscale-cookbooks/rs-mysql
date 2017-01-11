@@ -8,6 +8,10 @@ v2.0.0
 - Remove support for Chef 11
 - Add support for Chef 12
 
+v1.2.7
+------
+- pins nio4r
+
 v1.2.6
 ------
 - fixing selinux permission error when moving directories on centos.
