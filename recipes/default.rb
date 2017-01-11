@@ -183,7 +183,7 @@ end
 
 mysql_service 'default' do
   initial_root_password node['rs-mysql']['server_root_password']
-  action [ :create ]
+  action [:create]
 end
 
 directory data_dir do
