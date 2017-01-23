@@ -16,7 +16,7 @@ DEPENDENCIES
     branch: update_lvm_cookbook_dependency_3
   machine_tag
     git: https://github.com/rightscale-cookbooks/machine_tag.git
-    revision: 2cf4d496223986fdb13af29a7d3434ed7fbda82e
+    revision: 581dd0b7ddf2e65939527bb5e6c6c47788d1bf33
   marker
     git: https://github.com/rightscale-cookbooks/marker.git
     revision: 058e70879408fceceb628c600d487b1ddfa06cdb
@@ -73,7 +73,7 @@ GRAPH
     xfs (>= 0.0.0)
   hosts_file (0.1.4)
   lvm (3.1.0)
-  machine_tag (2.0.0)
+  machine_tag (2.0.1)
     apt (>= 0.0.0)
     build-essential (>= 0.0.0)
   mariadb (1.0.1)
@@ -81,8 +81,8 @@ GRAPH
     yum (>= 0.0.0)
     yum-epel (>= 0.0.0)
   marker (2.0.0)
-  mingw (1.2.4)
-    compat_resource (>= 0.0.0)
+  mingw (1.2.5)
+    compat_resource (>= 12.16.3)
     seven_zip (>= 0.0.0)
   mysql (8.2.0)
   mysql2_chef_gem (1.1.0)
@@ -92,7 +92,7 @@ GRAPH
   ntp (3.3.1)
   ohai (4.2.3)
     compat_resource (>= 12.14.7)
-  openssl (6.0.0)
+  openssl (6.1.1)
   packagecloud (0.2.5)
   poise (2.7.1)
   poise-service (1.4.2)
@@ -131,13 +131,13 @@ GRAPH
     dns (>= 0.0.0)
     filesystem (>= 0.0.0)
     lvm (~> 3.1)
-    marker (~> 2.0.0)
+    marker (~> 2.0)
     mysql (>= 0.0.0)
     mysql2_chef_gem (>= 0.0.0)
-    rightscale_backup (~> 2.0.0)
-    rightscale_tag (~> 2.0.0)
-    rightscale_volume (~> 2.0.0)
-    rs-base (~> 2.0.0)
+    rightscale_backup (~> 2.0)
+    rightscale_tag (~> 2.0)
+    rightscale_volume (~> 2.0)
+    rs-base (~> 2.0)
     yum-mysql-community (>= 0.0.0)
   rsyslog (5.1.0)
     compat_resource (>= 12.14.6)
