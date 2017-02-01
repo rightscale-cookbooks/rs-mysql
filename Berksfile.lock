@@ -26,7 +26,7 @@ DEPENDENCIES
     revision: 454fa9f582943f0ace47dd90bf6106e7bf752a93
   rightscale_tag
     git: https://github.com/rightscale-cookbooks/rightscale_tag.git
-    revision: d012cd3486fd9fc4efbf5200885bad521301c4b9
+    revision: 93a8e1d1040f508623fa3cae4fbd7ecf67bcb450
   rightscale_volume
     git: https://github.com/rightscale-cookbooks/rightscale_volume.git
     revision: 48c24ba0f0815e86200793ef50fe27dce9f09d8e
@@ -106,7 +106,7 @@ GRAPH
   rightscale_backup (2.0.0)
     build-essential (>= 0.0.0)
     rightscale_volume (~> 2.0.0)
-  rightscale_tag (2.0.0)
+  rightscale_tag (2.0.1)
     machine_tag (~> 2.0)
     marker (~> 2.0)
   rightscale_volume (2.0.0)
@@ -123,7 +123,7 @@ GRAPH
     rsyslog (>= 0.0.0)
     swap (>= 0.0.0)
     yum-epel (>= 0.0.0)
-  rs-mysql (2.0.0)
+  rs-mysql (2.0.1)
     build-essential (>= 0.0.0)
     chef_handler (>= 0.0.0)
     collectd (>= 0.0.0)
