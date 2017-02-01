@@ -8,7 +8,6 @@ cookbook 'rightscale_backup', github: 'rightscale-cookbooks/rightscale_backup'
 cookbook 'rightscale_volume', github: 'rightscale-cookbooks/rightscale_volume'
 cookbook 'rightscale_tag', github: 'rightscale-cookbooks/rightscale_tag'
 cookbook 'machine_tag', github: 'rightscale-cookbooks/machine_tag'
-cookbook 'ephemeral_lvm', github: 'rightscale-cookbooks/ephemeral_lvm'
 cookbook 'rs-base', github: 'rightscale-cookbooks/rs-base'
 cookbook 'dns', github: 'rightscale-cookbooks-contrib/dns', branch: 'rightscale_development_v2'
 
