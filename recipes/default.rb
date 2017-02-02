@@ -156,20 +156,9 @@ execute 'update mysql binlog index with new data_dir' do
 end
 
 # TODO: ADD TESTS
-if node['platform_family'] == 'rhel'
-  case node['rs-mysql']['mysql']['version']
-  when '5.5'
-    include_recipe 'yum-mysql-community::mysql55'
-  when '5.6'
-    include_recipe 'yum-mysql-community::mysql56'
-  when '5.7'
-    include_recipe 'yum-mysql-community::mysql57'
-  end
-end
-
-# TODO: ADD TESTS
 case node['platform_family']
 when 'rhel'
+  include_recipe "yum-mysql-community::mysql#{node['rs-mysql']['mysql']['version'].split('.').join}"
   package 'mysql-community-devel'
 when 'debian'
   package "mysql-server-#{node['rs-mysql']['mysql']['version']}"
@@ -181,53 +170,12 @@ mysql_client 'default' do
 end
 
 mysql_service 'default' do
+  data_dir mysql_data_dir
+  version node['rs-mysql']['mysql']['version']
+  bind_address '0.0.0.0'
+  port '3306'
   initial_root_password node['rs-mysql']['server_root_password']
-  action [:create]
-end
-
-directory mysql_data_dir do
-  owner 'mysql'
-  group 'mysql'
-  recursive true
-  mode '0770'
-  action :create
-end
-
-directory "#{mysql_data_dir}/mysql_binlogs" do
-  recursive true
-  user 'mysql'
-  group 'mysql'
-  mode '0770'
-  action :create
-end
-
-if node['platform_family'] == 'rhel' && node['platform_version'].split('.').first == '7'
-  execute "mysql_install_db --datadir #{mysql_data_dir}"
-
-  execute "chown -R mysql:mysql #{mysql_data_dir}" do
-    action :run
-  end
-
-  bash "setup db" do
-  code <<-EOF
-  mysqld --defaults-file=/etc/mysql-default/my.cnf --init-file=/tmp/mysql-default/my.sql &
-  sleep 10
-  pkill mysqld
-  touch /tmp/configured
-  EOF
-  not_if ::File.exist?('/tmp/configured')
-  end
-
-end
-# TODO: ADD TESTS
-# Configure the MySQL service.
-mysql_service 'default' do
-  initial_root_password node['rs-mysql']['server_root_password']
-  action [:start]
-end
-
-execute "chown -R mysql:mysql #{mysql_data_dir}" do
-  action :run
+  action [:create, :start]
 end
 
 mysql_config 'default' do
