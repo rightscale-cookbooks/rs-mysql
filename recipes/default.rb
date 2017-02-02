@@ -182,17 +182,18 @@ mysql_client 'default' do
   action :create
 end
 
-mysql_service 'default' do
-  initial_root_password node['rs-mysql']['server_root_password']
-  action [:create]
-end
-
 directory data_dir do
   owner 'mysql'
   group 'mysql'
   recursive true
   mode '0770'
   action :create
+end
+
+mysql_service 'default' do
+  initial_root_password node['rs-mysql']['server_root_password']
+  data_dir data_dir
+  action [:create]
 end
 
 directory "#{data_dir}/mysql_binlogs" do
