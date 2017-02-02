@@ -55,7 +55,7 @@ task :verify_version do
     f.each_line do |line|
       counter += 1 if line.match new_version
     end
-    raise 'CHANGELOG update needed' if counter.zero?
+    raise 'CHANGELOG update needed' if counter == 0
   end
 end
 

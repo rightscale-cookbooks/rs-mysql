@@ -45,7 +45,7 @@ if node['platform'] == 'redhat'
       Timeout.timeout(300) do
         loop do
           check_rhel_repo = Mixlib::ShellOut.new("yum --cacheonly repolist | grep #{repo_id_partial}").run_command
-          check_rhel_repo.exitstatus.zero? ? break : sleep(1)
+          check_rhel_repo.exitstatus == 0 ? break : sleep(1)
         end
       end
     end

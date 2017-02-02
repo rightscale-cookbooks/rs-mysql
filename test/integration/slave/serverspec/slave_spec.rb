@@ -34,7 +34,7 @@ describe 'Verify master status' do
   end
 
   it 'should have non-zero position marker' do
-    query_entries[0]['Position'].should_not.zero?
+    query_entries[0]['Position'].should_not == 0
   end
 end
 

@@ -104,7 +104,7 @@ module RsMysql
     def self.verify_mysqld_is_up(connection_info, timeout = 300)
       Chef::Log.info "Timeout is set to: #{timeout.inspect}"
       # Verify slave functional only if timeout is a positive value
-      if timeout && timeout.positive?
+      if timeout && timeout > 0
         Timeout.timeout(timeout) do
           @ping_result = ''
           while @ping_result != 'mysqld is alive'
@@ -131,7 +131,7 @@ module RsMysql
     def self.verify_slave_functional(connection_info, timeout)
       Chef::Log.info "Timeout is set to: #{timeout.inspect}"
       # Verify slave functional only if timeout is a positive value
-      if timeout && timeout.positive?
+      if timeout && timeout > 0
         Chef::Log.info 'Skipping slave verification as timeout is set to a negative value'
       else
         require 'mysql2'
@@ -241,7 +241,7 @@ module RsMysql
       mount.stdout.each_line do |line|
         if line =~ /^(.+)\s+on\s+#{mount_point}\s+/
           device = Regexp.last_match(1)
-          return !!(device =~ /^\/dev\/mapper/) && shell_out("lvdisplay '#{device}'").status.zero?
+          return !!(device =~ /^\/dev\/mapper/) && shell_out("lvdisplay '#{device}'").status == 0
         end
       end
       false
