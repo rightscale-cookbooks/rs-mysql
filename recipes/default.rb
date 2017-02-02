@@ -56,6 +56,7 @@ if node['platform_family'] == 'rhel'
   if ::File.exist?('/usr/sbin/getenforce')
     # if selinux is set to enforcing instead of permissive, update mysqld access
     if Mixlib::ShellOut.new('/usr/sbin/getenforce').run_command.stdout.strip.casecmp('enforcing').zero?
+      Chef::Log.info "Implementing RHEL-mysql"
       cookbook_file ::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te') do
         source 'rhel-mysql.te'
         owner 'root'

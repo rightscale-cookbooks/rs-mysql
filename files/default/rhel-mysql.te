@@ -7,6 +7,7 @@ require {
         type mysqld_t;
         type file_t;
         type var_lib_t;
+        type var_log_t;
         class lnk_file { read getattr };
         class dir { create read  write open getattr search remove_name add_name rmdir };
         class file { create read  write open getattr unlink lock rename };
@@ -27,7 +28,7 @@ allow mysqld_safe_t var_lib_t:lnk_file { read getattr };
 
 allow mysqld_t var_lib_t:file { read getattr open };
 allow mysqld_t var_lib_t:lnk_file read;
-
+allow mysqld_t var_log_t:file { create read open write };
 allow mysqld_t file_t:dir { create getattr search read remove_name add_name write open rmdir };
 allow mysqld_t file_t:file { create read getattr open write unlink lock rename };
 allow mysqld_t file_t:sock_file { create read write open getattr link unlink};
