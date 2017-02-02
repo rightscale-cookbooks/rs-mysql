@@ -61,23 +61,23 @@ if node['platform_family'] == 'rhel'
       owner 'root'
       group 'root'
       mode '0644'
-      action :create
-    end
+      action :nothing
+    end.run_action(:create)
 
     execute 'mysql:compile selinux te to module' do
       command "checkmodule -M -m -o #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.mod')} #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te')}"
-      action :run
-    end
+      action :nothing
+    end.run_action(:run)
 
     execute 'mysql:package selinux module' do
       command "semodule_package -m #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.mod')} -o #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
-      action :run
-    end
+      action :nothing
+    end.run_action(:run)
 
     execute 'fix selinux' do
       command "semodule -i #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
-      action :run
-    end
+      action :nothing
+    end.run_action(:run)
     node.default['rs-mysql']['tunable']['log-error'] = default_error_log
   end
 end
@@ -190,7 +190,6 @@ end
 
 mysql_service 'default' do
   initial_root_password node['rs-mysql']['server_root_password']
-  data_dir mysql_data_dir
   action [:create]
 end
 
