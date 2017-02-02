@@ -78,7 +78,7 @@ if node['platform_family'] == 'rhel'
       command "semodule -i #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
       action :nothing
     end.run_action(:run)
-    node.default['rs-mysql']['tunable']['log-error'] = default_error_log
+    node.default['rs-mysql']['tunable']['log-error'] = '/var/log/mysql-default/error.log'
   end
 end
 
@@ -180,17 +180,17 @@ mysql_client 'default' do
   action :create
 end
 
+mysql_service 'default' do
+  initial_root_password node['rs-mysql']['server_root_password']
+  action [:create]
+end
+
 directory mysql_data_dir do
   owner 'mysql'
   group 'mysql'
   recursive true
   mode '0770'
   action :create
-end
-
-mysql_service 'default' do
-  initial_root_password node['rs-mysql']['server_root_password']
-  action [:create]
 end
 
 directory "#{mysql_data_dir}/mysql_binlogs" do
