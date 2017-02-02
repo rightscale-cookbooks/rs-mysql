@@ -201,6 +201,24 @@ directory "#{mysql_data_dir}/mysql_binlogs" do
   action :create
 end
 
+if node['platform_family'] == 'rhel' && node['platform_version'].split('.').first == '7'
+  execute "mysql_install_db --datadir #{mysql_data_dir}"
+
+  execute "chown -R mysql:mysql #{mysql_data_dir}" do
+    action :run
+  end
+
+  bash "setup db" do
+  code <<-EOF
+  mysqld --defaults-file=/etc/mysql-default/my.cnf --init-file=/tmp/mysql-default/my.sql &
+  sleep 10
+  pkill mysqld
+  touch /tmp/configured
+  EOF
+  not_if ::File.exist?('/tmp/configured')
+  end
+
+end
 # TODO: ADD TESTS
 # Configure the MySQL service.
 mysql_service 'default' do
