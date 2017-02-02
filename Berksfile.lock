@@ -37,7 +37,7 @@ DEPENDENCIES
   yum-epel
 
 GRAPH
-  apt (5.0.1)
+  apt (5.1.0)
     compat_resource (>= 12.16.3)
   build-essential (7.0.3)
     compat_resource (>= 12.16.3)
@@ -91,7 +91,7 @@ GRAPH
     compat_resource (>= 12.14.7)
   openssl (6.1.1)
   packagecloud (0.2.5)
-  poise (2.7.1)
+  poise (2.7.2)
   poise-service (1.4.2)
     poise (~> 2.0)
   postgresql (6.0.1)
