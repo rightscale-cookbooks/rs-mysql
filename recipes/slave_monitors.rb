@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 user 'mysql_monitor' do
   action :create
 end

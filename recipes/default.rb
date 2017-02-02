@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: rs-mysql
 # Recipe:: default
@@ -208,14 +209,14 @@ if node['platform_family'] == 'rhel' && node['platform_version'].split('.').firs
     action :run
   end
 
-  bash "setup db" do
-  code <<-EOF
+  bash 'setup db' do
+    code <<-EOF
   mysqld --defaults-file=/etc/mysql-default/my.cnf --init-file=/tmp/mysql-default/my.sql &
   sleep 10
   pkill mysqld
   touch /tmp/configured
   EOF
-  not_if ::File.exist?('/tmp/configured')
+    not_if ::File.exist?('/tmp/configured')
   end
 
 end
@@ -259,7 +260,7 @@ ruby_block 'wait for listening' do
     mysql_connection_info = {
       host: 'localhost',
       username: 'root',
-      password: node['rs-mysql']['server_root_password']
+      password: node['rs-mysql']['server_root_password'],
     }
     RsMysql::Helper.verify_mysqld_is_up(mysql_connection_info, node['rs-mysql']['startup-timeout'])
   end
@@ -279,7 +280,7 @@ mysql_connection_info = {
   host: 'localhost',
   username: 'root',
   password: node['rs-mysql']['server_root_password'],
-  default_file: "/etc/#{mysql_service_name}/my.cnf"
+  default_file: "/etc/#{mysql_service_name}/my.cnf",
 }
 
 # Create the application database

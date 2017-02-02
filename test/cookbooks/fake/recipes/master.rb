@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: fake
 # Recipe:: master
@@ -24,7 +25,7 @@ tags = [
   "database:master_active=#{Time.now.to_i}",
   "database:lineage=#{node['rs-mysql']['backup']['lineage']}",
   'database:bind_ip_address=10.10.3.2',
-  'database:bind_port=3306'
+  'database:bind_port=3306',
 ]
 
 # The file containing the master server tags must be created in this path so that machine tag search work as

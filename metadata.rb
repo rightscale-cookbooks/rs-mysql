@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 name             'rs-mysql'
 maintainer       'RightScale, Inc.'
 maintainer_email 'cookbooks@rightscale.com'
