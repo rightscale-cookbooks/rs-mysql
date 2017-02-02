@@ -9,8 +9,8 @@ require {
         type var_lib_t;
         type var_log_t;
         class lnk_file { read getattr };
-        class dir { create read  write open getattr search remove_name add_name rmdir };
-        class file { create read  write open getattr unlink lock rename };
+        class dir { create read write open getattr search remove_name add_name rmdir };
+        class file { create read write open getattr unlink lock rename };
         class sock_file { create read write open getattr link unlink };
 }
 
@@ -23,9 +23,6 @@ allow groupadd_t var_lib_t:file read;
 allow mysqld_safe_t var_lib_t:lnk_file { read getattr };
 
 #============= mysqld_t ==============
-#!!!! The source type 'mysqld_t' can write to a 'dir' of the following types:
-# mysqld_log_t, mysqld_tmp_t, var_log_t, var_lib_t, var_run_t, mysqld_var_run_t, pcscd_var_run_t, mysqld_db_t, tmp_t, cluster_var_lib_t, cluster_var_run_t, root_t, cluster_conf_t, krb5_host_rcache_t, tmp_t
-
 allow mysqld_t var_lib_t:file { create read getattr write open lock };
 allow mysqld_t var_lib_t:lnk_file read;
 allow mysqld_t var_log_t:file { create read open write };
