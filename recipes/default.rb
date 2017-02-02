@@ -55,32 +55,30 @@ if node['platform_family'] == 'rhel'
   # verify getenforce exists on the install
   if ::File.exist?('/usr/sbin/getenforce')
     # if selinux is set to enforcing instead of permissive, update mysqld access
-    # if Mixlib::ShellOut.new('/usr/sbin/getenforce').run_command.stdout.strip.casecmp('enforcing').zero?
-      Chef::Log.info 'Implementing RHEL-mysql'
-      cookbook_file ::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te') do
-        source 'rhel-mysql.te'
-        owner 'root'
-        group 'root'
-        mode '0644'
-        action :create
-      end
+    Chef::Log.info 'Implementing RHEL-mysql'
+    cookbook_file ::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te') do
+      source 'rhel-mysql.te'
+      owner 'root'
+      group 'root'
+      mode '0644'
+      action :create
+    end
 
-      execute 'mysql:compile selinux te to module' do
-        command "checkmodule -M -m -o #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.mod')} #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te')}"
-        action :run
-      end
+    execute 'mysql:compile selinux te to module' do
+      command "checkmodule -M -m -o #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.mod')} #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te')}"
+      action :run
+    end
 
-      execute 'mysql:package selinux module' do
-        command "semodule_package -m #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.mod')} -o #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
-        action :run
-      end
+    execute 'mysql:package selinux module' do
+      command "semodule_package -m #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.mod')} -o #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
+      action :run
+    end
 
-      execute 'fix selinux' do
-        command "semodule -i #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
-        action :run
-      end
-      node.default['rs-mysql']['tunable']['log-error'] = default_error_log
-    # end
+    execute 'fix selinux' do
+      command "semodule -i #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
+      action :run
+    end
+    node.default['rs-mysql']['tunable']['log-error'] = default_error_log
   end
 end
 
@@ -149,12 +147,12 @@ execute 'delete innodb log files' do
   end
 end
 
-data_dir = node['mysql']['data_dir']
+mysql_data_dir = node['mysql']['data_dir']
 
 execute 'update mysql binlog index with new data_dir' do
-  command "sed -i -r -e 's#^.*/(mysql_binlogs/.*)$##{data_dir}/\\1#' '#{data_dir}/mysql_binlogs/mysql-bin.index'"
+  command "sed -i -r -e 's#^.*/(mysql_binlogs/.*)$##{mysql_data_dir}/\\1#' '#{mysql_data_dir}/mysql_binlogs/mysql-bin.index'"
   action :run
-  only_if { ::File.exist?("#{data_dir}/mysql_binlogs/mysql-bin.index") }
+  only_if { ::File.exist?("#{mysql_data_dir}/mysql_binlogs/mysql-bin.index") }
 end
 
 # TODO: ADD TESTS
@@ -182,7 +180,7 @@ mysql_client 'default' do
   action :create
 end
 
-directory data_dir do
+directory mysql_data_dir do
   owner 'mysql'
   group 'mysql'
   recursive true
@@ -192,11 +190,11 @@ end
 
 mysql_service 'default' do
   initial_root_password node['rs-mysql']['server_root_password']
-  data_dir data_dir
+  data_dir mysql_data_dir
   action [:create]
 end
 
-directory "#{data_dir}/mysql_binlogs" do
+directory "#{mysql_data_dir}/mysql_binlogs" do
   recursive true
   user 'mysql'
   group 'mysql'
@@ -211,7 +209,7 @@ mysql_service 'default' do
   action [:start]
 end
 
-execute "chown -R mysql:mysql #{data_dir}" do
+execute "chown -R mysql:mysql #{mysql_data_dir}" do
   action :run
 end
 
