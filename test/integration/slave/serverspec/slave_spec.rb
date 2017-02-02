@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # Slave
 
 require 'spec_helper'
@@ -7,7 +8,7 @@ describe 'Verify parameters directly from msyql' do
     log_bin: 1,
     read_only: 1,
     binlog_format: 'MIXED',
-    expire_logs_days: 2
+    expire_logs_days: 2,
   }.each do |attribute, value|
     it "parameter #{attribute} should return #{value}" do
       db.query("SELECT @@global.#{attribute}").entries.first["@@global.#{attribute}"].should == value
@@ -33,7 +34,7 @@ describe 'Verify master status' do
   end
 
   it 'should have non-zero position marker' do
-    query_entries[0]['Position'].should_not == 0
+    query_entries[0]['Position'].should_not.zero?
   end
 end
 

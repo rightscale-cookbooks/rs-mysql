@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # Shared Server
 
 require 'spec_helper'
@@ -30,7 +31,7 @@ describe "verify the tuning attributes set in #{mysql_config_file}" do
     table_cache: 128,
     sort_buffer_size: '1M',
     innodb_additional_mem_pool_size: '25M',
-    myisam_sort_buffer_size: '32M'
+    myisam_sort_buffer_size: '32M',
   }.each do |attribute, value|
     describe command("grep -E \"^#{attribute}\\s+\" #{mysql_config_file}") do
       its(:stdout) { should match /#{value}/ }

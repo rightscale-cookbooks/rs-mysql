@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rspec/core/rake_task'
 require 'foodcritic'
 require 'kitchen'
@@ -54,7 +55,7 @@ task :verify_version do
     f.each_line do |line|
       counter += 1 if line.match new_version
     end
-    raise 'CHANGELOG update needed' if counter == 0
+    raise 'CHANGELOG update needed' if counter.zero?
   end
 end
 
@@ -76,7 +77,7 @@ desc 'runs foodcritic linttask'
 task :fc_new do
   FoodCritic::Rake::LintTask.new(:chef) do |t|
     t.options = {
-      fail_tags: ['any']
+      fail_tags: ['any'],
     }
   end
 end
