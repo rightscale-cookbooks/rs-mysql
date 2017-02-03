@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rspec/core/rake_task'
 require 'foodcritic'
 require 'kitchen'
@@ -8,7 +9,7 @@ desc 'Sets up knife, and vendors cookbooks'
 task :setup_test_environment do
   File.open('knife.rb', 'w+') do |file|
     file.write <<-EOF
-      log_level                :debug
+      log_level                :info
       log_location             STDOUT
       cookbook_path            ['.', 'berks-cookbooks/' ]
     EOF
@@ -76,7 +77,7 @@ desc 'runs foodcritic linttask'
 task :fc_new do
   FoodCritic::Rake::LintTask.new(:chef) do |t|
     t.options = {
-      fail_tags: ['any']
+      fail_tags: ['any'],
     }
   end
 end

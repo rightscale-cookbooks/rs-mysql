@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: rs-mysql
 # Recipe:: slave
@@ -66,7 +67,7 @@ mysql_connection_info = {
   host: 'localhost',
   username: 'root',
   password: node['rs-mysql']['server_root_password'],
-  default_file: "/etc/#{mysql_service_name}/my.cnf"
+  default_file: "/etc/#{mysql_service_name}/my.cnf",
 }
 
 mysql_database 'set global read only' do

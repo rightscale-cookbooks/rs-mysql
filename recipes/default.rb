@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: rs-mysql
 # Recipe:: default
@@ -207,7 +208,7 @@ ruby_block 'wait for listening' do
     mysql_connection_info = {
       host: 'localhost',
       username: 'root',
-      password: node['rs-mysql']['server_root_password']
+      password: node['rs-mysql']['server_root_password'],
     }
     RsMysql::Helper.verify_mysqld_is_up(mysql_connection_info, node['rs-mysql']['startup-timeout'])
   end
@@ -227,7 +228,7 @@ mysql_connection_info = {
   host: 'localhost',
   username: 'root',
   password: node['rs-mysql']['server_root_password'],
-  default_file: "/etc/#{mysql_service_name}/my.cnf"
+  default_file: "/etc/#{mysql_service_name}/my.cnf",
 }
 
 # Create the application database

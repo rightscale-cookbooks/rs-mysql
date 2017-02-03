@@ -41,3 +41,6 @@ Style/DoubleNegation:
 Style/RegexpLiteral:
   Exclude:
    - 'libraries/helper.rb'
+Style/GuardClause:
+  Exclude:
+   - 'recipes/slave.rb'

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: rs-mysql
 # Library:: helper
@@ -130,7 +131,7 @@ module RsMysql
     def self.verify_slave_functional(connection_info, timeout)
       Chef::Log.info "Timeout is set to: #{timeout.inspect}"
       # Verify slave functional only if timeout is a positive value
-      if timeout && timeout < 0
+      if timeout && timeout > 0
         Chef::Log.info 'Skipping slave verification as timeout is set to a negative value'
       else
         require 'mysql2'
@@ -201,12 +202,12 @@ module RsMysql
         master_info = if slave_status
                         {
                           file: slave_status['Relay_Master_Log_File'],
-                          position: slave_status['Exec_Master_Log_Pos']
+                          position: slave_status['Exec_Master_Log_Pos'],
                         }
                       elsif master_status
                         {
                           file: master_status['File'],
-                          position: master_status['Position']
+                          position: master_status['Position'],
                         }
                       else
                         {}
