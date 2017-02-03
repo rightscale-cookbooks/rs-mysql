@@ -131,7 +131,7 @@ module RsMysql
     def self.verify_slave_functional(connection_info, timeout)
       Chef::Log.info "Timeout is set to: #{timeout.inspect}"
       # Verify slave functional only if timeout is a positive value
-      if timeout && timeout > 0
+      if timeout && timeout < 0
         Chef::Log.info 'Skipping slave verification as timeout is set to a negative value'
       else
         require 'mysql2'
