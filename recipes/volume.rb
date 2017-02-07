@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: rs-mysql
 # Recipe:: volume
@@ -66,7 +67,7 @@ else
   timestamp = node['rs-mysql']['restore']['timestamp']
 
   message = "Restoring volume '#{device_nickname}' from backup using lineage '#{lineage}'"
-  message << " and using timestamp '#{timestamp}'" if timestamp
+  message += " and using timestamp '#{timestamp}'" if timestamp
 
   log message
 

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: rs-mysql
 # Library:: helper
@@ -41,17 +42,39 @@ module RsMysql
       else
         case node['rs-mysql']['bind_network_interface']
         when 'private'
-          if node['cloud']['private_ips'].nil? || node['cloud']['private_ips'].empty?
-            raise 'Cannot find private IP of the server!'
+          priv_ip = nil
+          if !node['cloud']['private_ips'].nil? && !node['cloud']['private_ips'].empty?
+            priv_ip = node['cloud']['private_ips'].first
           end
 
-          node['cloud']['private_ips'].first
+          if !node['cloud_v2']['local_ipv4_addrs'].nil? && !node['cloud_v2']['local_ipv4_addrs'].empty? && priv_ip.nil?
+            priv_ip = node['cloud_v2']['local_ipv4_addrs'].first
+          end unless node['cloud_v2'].nil?
+
+          if priv_ip.nil? && IPAddress(node['ipaddress']).private?
+            priv_ip = node['ipaddress']
+          end
+
+          raise 'Cannot find private IP of the server!' if priv_ip.nil?
+
+          priv_ip
         when 'public'
-          if node['cloud']['public_ips'].nil? || node['cloud']['public_ips'].empty?
-            raise 'Cannot find public IP of the server!'
+          public_ip = nil
+          if !node['cloud']['public_ips'].nil? && !node['cloud']['public_ips'].empty?
+            public_ip = node['cloud']['public_ips'].first
           end
 
-          node['cloud']['public_ips'].first
+          if !node['cloud_v2']['public_ipv4_addrs'].nil? && !node['cloud_v2']['public_ipv4_addrs'].empty? && public_ip.nil?
+            public_ip = node['cloud_v2']['public_ipv4_addrs'].first
+          end unless node['cloud_v2'].nil?
+
+          if public_ip.nil? && !IPAddress(node['ipaddress']).private?
+            public_ip = node['ipaddress']
+          end
+
+          raise 'Cannot find public IP of the server!' if public_ip.nil?
+
+          public_ip
         else
           raise "Unknown network interface '#{node['rs-mysql']['bind_network_interface']}'!" \
                 " The network interface must be either 'public' or 'private'."
@@ -179,12 +202,12 @@ module RsMysql
         master_info = if slave_status
                         {
                           file: slave_status['Relay_Master_Log_File'],
-                          position: slave_status['Exec_Master_Log_Pos']
+                          position: slave_status['Exec_Master_Log_Pos'],
                         }
                       elsif master_status
                         {
                           file: master_status['File'],
-                          position: master_status['Position']
+                          position: master_status['Position'],
                         }
                       else
                         {}

@@ -1,10 +1,11 @@
+# frozen_string_literal: true
 name             'rs-mysql'
 maintainer       'RightScale, Inc.'
 maintainer_email 'cookbooks@rightscale.com'
 license          'Apache 2.0'
 description      'Installs and configures a MySQL server'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '2.0.0'
+version          '2.0.1'
 issues_url       'https://github.com/rightscale-cookbooks/rs-mysql/issues' if respond_to?(:issues_url)
 source_url       'https://github.com/rightscale-cookbooks/rs-mysql' if respond_to?(:source_url)
 chef_version     '>= 12.0' if respond_to?(:chef_version)
@@ -18,6 +19,7 @@ depends 'yum-mysql-community'
 depends 'collectd'
 depends 'rightscale_tag', '~> 2.0'
 depends 'filesystem'
+depends 'ephemeral_lvm', '~> 2.0'
 depends 'lvm', '~> 3.1'
 depends 'rightscale_volume', '~> 2.0'
 depends 'rightscale_backup', '~> 2.0'

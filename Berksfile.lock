@@ -5,9 +5,6 @@ DEPENDENCIES
     git: https://github.com/rightscale-cookbooks-contrib/dns.git
     revision: 711a041d3c7cdb20156099b054f10905c1841d89
     branch: rightscale_development_v2
-  ephemeral_lvm
-    git: https://github.com/rightscale-cookbooks/ephemeral_lvm.git
-    revision: 959b9a103620ce8a63988368d12912850df47b56
   fake
     path: test/cookbooks/fake
   filesystem
@@ -26,13 +23,13 @@ DEPENDENCIES
     revision: 454fa9f582943f0ace47dd90bf6106e7bf752a93
   rightscale_tag
     git: https://github.com/rightscale-cookbooks/rightscale_tag.git
-    revision: d012cd3486fd9fc4efbf5200885bad521301c4b9
+    revision: 93a8e1d1040f508623fa3cae4fbd7ecf67bcb450
   rightscale_volume
     git: https://github.com/rightscale-cookbooks/rightscale_volume.git
     revision: 48c24ba0f0815e86200793ef50fe27dce9f09d8e
   rs-base
     git: https://github.com/rightscale-cookbooks/rs-base.git
-    revision: 6dae6b0ce17455210576ca8175f3ad9590547d22
+    revision: 501761b8977004bee8d38c10b42434c37362d6cb
   rs-mysql
     path: .
     metadata: true
@@ -40,7 +37,7 @@ DEPENDENCIES
   yum-epel
 
 GRAPH
-  apt (5.0.1)
+  apt (5.1.0)
     compat_resource (>= 12.16.3)
   build-essential (7.0.3)
     compat_resource (>= 12.16.3)
@@ -48,7 +45,7 @@ GRAPH
     seven_zip (>= 0.0.0)
   chef-sugar (3.4.0)
   chef_handler (2.1.0)
-  collectd (2.2.2)
+  collectd (2.2.4)
     poise (~> 2.2)
     poise-service (~> 1.0)
   collectd_plugins (2.1.3)
@@ -94,7 +91,7 @@ GRAPH
     compat_resource (>= 12.14.7)
   openssl (6.1.1)
   packagecloud (0.2.5)
-  poise (2.7.1)
+  poise (2.7.2)
   poise-service (1.4.2)
     poise (~> 2.0)
   postgresql (6.0.1)
@@ -106,7 +103,7 @@ GRAPH
   rightscale_backup (2.0.0)
     build-essential (>= 0.0.0)
     rightscale_volume (~> 2.0.0)
-  rightscale_tag (2.0.0)
+  rightscale_tag (2.0.1)
     machine_tag (~> 2.0)
     marker (~> 2.0)
   rightscale_volume (2.0.0)
@@ -116,19 +113,20 @@ GRAPH
     collectd (~> 2.2.2)
     collectd_plugins (~> 2.1.3)
     ephemeral_lvm (= 2.0.0)
-    machine_tag (~> 2.0.0)
+    machine_tag (~> 2.0)
     marker (>= 0.0.0)
     ntp (>= 0.0.0)
-    rightscale_tag (~> 2.0.0)
+    rightscale_tag (~> 2.0)
     rsyslog (>= 0.0.0)
     swap (>= 0.0.0)
     yum-epel (>= 0.0.0)
-  rs-mysql (2.0.0)
+  rs-mysql (2.0.1)
     build-essential (>= 0.0.0)
     chef_handler (>= 0.0.0)
     collectd (>= 0.0.0)
     database (>= 0.0.0)
     dns (>= 0.0.0)
+    ephemeral_lvm (~> 2.0)
     filesystem (>= 0.0.0)
     lvm (~> 3.1)
     marker (~> 2.0)
@@ -141,7 +139,7 @@ GRAPH
     yum-mysql-community (>= 0.0.0)
   rsyslog (5.1.0)
     compat_resource (>= 12.14.6)
-  runit (3.0.3)
+  runit (3.0.5)
     packagecloud (>= 0.0.0)
     yum-epel (>= 0.0.0)
   seven_zip (2.0.2)

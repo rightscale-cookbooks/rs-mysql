@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
@@ -74,22 +75,22 @@ Vagrant.configure('2') do |config|
 
     master.vm.provision :chef_solo do |chef|
       chef.json = {
-        :cloud => {
+        cloud: {
           provider: 'vagrant',
           private_ips: ['33.33.33.10'],
-          local_ipv4: '33.33.33.10'
+          local_ipv4: '33.33.33.10',
         },
-        :'rs-mysql' => {
+        'rs-mysql': {
           lineage: 'lineage',
           server_root_password: 'rootpass',
           server_repl_password: 'replpass',
           application_username: 'appuser',
           application_password: 'apppass',
-          application_database_name: 'app_test'
+          application_database_name: 'app_test',
         },
-        :rightscale => {
-          instance_uuid: '1111111'
-        }
+        rightscale: {
+          instance_uuid: '1111111',
+        },
       }
 
       chef.run_list = [
@@ -97,7 +98,7 @@ Vagrant.configure('2') do |config|
         # "recipe[yum::epel]",
         'recipe[rs-mysql::master]',
         # "recipe[rs-mysql::slave]",
-        'recipe[fake::database_mysql]'
+        'recipe[fake::database_mysql]',
       ]
 
       chef.arguments = '--logfile /var/log/chef-solo.log --log_level debug'
@@ -111,22 +112,22 @@ Vagrant.configure('2') do |config|
 
     slave.vm.provision :chef_solo do |chef|
       chef.json = {
-        :cloud => {
+        cloud: {
           provider: 'vagrant',
           private_ips: ['33.33.33.11'],
-          local_ipv4: '33.33.33.11'
+          local_ipv4: '33.33.33.11',
         },
-        :'rs-mysql' => {
+        'rs-mysql': {
           lineage: 'lineage',
           server_root_password: 'rootpass',
           server_repl_password: 'replpass',
           application_username: 'appuser',
           application_password: 'apppass',
-          application_database_name: 'app_test'
+          application_database_name: 'app_test',
         },
-        :rightscale => {
-          instance_uuid: '2222222'
-        }
+        rightscale: {
+          instance_uuid: '2222222',
+        },
       }
 
       chef.run_list = [
@@ -147,30 +148,30 @@ Vagrant.configure('2') do |config|
 
     slave.vm.provision :chef_solo do |chef|
       chef.json = {
-        :cloud => {
+        cloud: {
           provider: 'vagrant',
           private_ips: ['33.33.33.12'],
-          local_ipv4: '33.33.33.12'
+          local_ipv4: '33.33.33.12',
         },
-        :'rs-mysql' => {
+        'rs-mysql': {
           backup: {
-            lineage: 'lineage'
+            lineage: 'lineage',
           },
           server_root_password: 'rootpass',
           server_repl_password: 'replpass',
           application_username: 'appuser',
           application_password: 'apppass',
-          application_database_name: 'app_test'
+          application_database_name: 'app_test',
         },
-        :rightscale => {
-          instance_uuid: '3333333'
-        }
+        rightscale: {
+          instance_uuid: '3333333',
+        },
       }
 
       chef.run_list = [
         'recipe[apt::default]',
         # "recipe[yum::epel]",
-        'recipe[rs-mysql::slave]'
+        'recipe[rs-mysql::slave]',
       ]
 
       chef.arguments = '--logfile /var/log/chef-solo.log --log_level debug'

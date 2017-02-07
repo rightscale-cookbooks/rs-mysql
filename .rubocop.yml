@@ -34,9 +34,13 @@ Lint/ShadowingOuterLocalVariable:
 Metrics/BlockNesting:
   Exclude:
    - 'recipes/default.rb'
+   - 'libraries/helper.rb'   
 Style/DoubleNegation:
   Exclude:
    - 'libraries/helper.rb'
 Style/RegexpLiteral:
   Exclude:
    - 'libraries/helper.rb'
+Style/GuardClause:
+  Exclude:
+   - 'recipes/slave.rb'

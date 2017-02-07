@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: rs-mysql
 # Recipe:: default
@@ -55,31 +56,30 @@ if node['platform_family'] == 'rhel'
   # verify getenforce exists on the install
   if ::File.exist?('/usr/sbin/getenforce')
     # if selinux is set to enforcing instead of permissive, update mysqld access
-    if Mixlib::ShellOut.new('/usr/sbin/getenforce').run_command.stdout.strip.casecmp('enforcing').zero?
-      cookbook_file ::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te') do
-        source 'rhel-mysql.te'
-        owner 'root'
-        group 'root'
-        mode '0644'
-        action :create
-      end
+    Chef::Log.info 'Implementing RHEL-mysql'
+    cookbook_file ::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te') do
+      source 'rhel-mysql.te'
+      owner 'root'
+      group 'root'
+      mode '0644'
+      action :nothing
+    end.run_action(:create)
 
-      execute 'mysql:compile selinux te to module' do
-        command "checkmodule -M -m -o #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.mod')} #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te')}"
-        action :run
-      end
+    execute 'mysql:compile selinux te to module' do
+      command "checkmodule -M -m -o #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.mod')} #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.te')}"
+      action :nothing
+    end.run_action(:run)
 
-      execute 'mysql:package selinux module' do
-        command "semodule_package -m #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.mod')} -o #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
-        action :run
-      end
+    execute 'mysql:package selinux module' do
+      command "semodule_package -m #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.mod')} -o #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
+      action :nothing
+    end.run_action(:run)
 
-      execute 'fix selinux' do
-        command "semodule -i #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
-        action :run
-      end
-      node.default['rs-mysql']['tunable']['log-error'] = default_error_log
-    end
+    execute 'fix selinux' do
+      command "semodule -i #{::File.join(Chef::Config[:file_cache_path], 'rhel-mysql.pp')}"
+      action :nothing
+    end.run_action(:run)
+    node.default['rs-mysql']['tunable']['log-error'] = '/var/log/mysql-default/error.log'
   end
 end
 
@@ -148,12 +148,12 @@ execute 'delete innodb log files' do
   end
 end
 
-data_dir = node['mysql']['data_dir']
+mysql_data_dir = node['mysql']['data_dir']
 
 execute 'update mysql binlog index with new data_dir' do
-  command "sed -i -r -e 's#^.*/(mysql_binlogs/.*)$##{data_dir}/\\1#' '#{data_dir}/mysql_binlogs/mysql-bin.index'"
+  command "sed -i -r -e 's#^.*/(mysql_binlogs/.*)$##{mysql_data_dir}/\\1#' '#{mysql_data_dir}/mysql_binlogs/mysql-bin.index'"
   action :run
-  only_if { ::File.exist?("#{data_dir}/mysql_binlogs/mysql-bin.index") }
+  only_if { ::File.exist?("#{mysql_data_dir}/mysql_binlogs/mysql-bin.index") }
 end
 
 # TODO: ADD TESTS
@@ -186,7 +186,7 @@ mysql_service 'default' do
   action [:create]
 end
 
-directory data_dir do
+directory mysql_data_dir do
   owner 'mysql'
   group 'mysql'
   recursive true
@@ -194,7 +194,7 @@ directory data_dir do
   action :create
 end
 
-directory "#{data_dir}/mysql_binlogs" do
+directory "#{mysql_data_dir}/mysql_binlogs" do
   recursive true
   user 'mysql'
   group 'mysql'
@@ -202,6 +202,24 @@ directory "#{data_dir}/mysql_binlogs" do
   action :create
 end
 
+if node['platform_family'] == 'rhel' && node['platform_version'].split('.').first == '7'
+  execute "mysql_install_db --datadir #{mysql_data_dir}"
+
+  execute "chown -R mysql:mysql #{mysql_data_dir}" do
+    action :run
+  end
+
+  bash 'setup db' do
+    code <<-EOF
+  mysqld --defaults-file=/etc/mysql-default/my.cnf --init-file=/tmp/mysql-default/my.sql &
+  sleep 10
+  pkill mysqld
+  touch /tmp/configured
+  EOF
+    not_if ::File.exist?('/tmp/configured')
+  end
+
+end
 # TODO: ADD TESTS
 # Configure the MySQL service.
 mysql_service 'default' do
@@ -209,7 +227,7 @@ mysql_service 'default' do
   action [:start]
 end
 
-execute "chown -R mysql:mysql #{data_dir}" do
+execute "chown -R mysql:mysql #{mysql_data_dir}" do
   action :run
 end
 
@@ -242,7 +260,7 @@ ruby_block 'wait for listening' do
     mysql_connection_info = {
       host: 'localhost',
       username: 'root',
-      password: node['rs-mysql']['server_root_password']
+      password: node['rs-mysql']['server_root_password'],
     }
     RsMysql::Helper.verify_mysqld_is_up(mysql_connection_info, node['rs-mysql']['startup-timeout'])
   end
@@ -262,7 +280,7 @@ mysql_connection_info = {
   host: 'localhost',
   username: 'root',
   password: node['rs-mysql']['server_root_password'],
-  default_file: "/etc/#{mysql_service_name}/my.cnf"
+  default_file: "/etc/#{mysql_service_name}/my.cnf",
 }
 
 # Create the application database
