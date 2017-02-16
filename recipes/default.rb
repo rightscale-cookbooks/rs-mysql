@@ -183,6 +183,7 @@ end
 
 mysql_service 'default' do
   initial_root_password node['rs-mysql']['server_root_password']
+  version node['rs-mysql']['mysql']['version']
   action [:create]
 end
 
