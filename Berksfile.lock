@@ -37,8 +37,10 @@ DEPENDENCIES
   yum-epel
 
 GRAPH
-  apt (6.0.0)
-  build-essential (8.0.0)
+  apt (5.1.0)
+    compat_resource (>= 12.16.3)
+  build-essential (7.0.3)
+    compat_resource (>= 12.16.3)
     mingw (>= 1.1)
     seven_zip (>= 0.0.0)
   chef-sugar (3.4.0)
