@@ -157,7 +157,8 @@ execute 'update mysql binlog index with new data_dir' do
 end
 
 # TODO: ADD TESTS
-if node['platform_family'] == 'rhel'
+case node['platform_family']
+when 'rhel'
   case node['rs-mysql']['mysql']['version']
   when '5.5'
     include_recipe 'yum-mysql-community::mysql55'
@@ -166,13 +167,27 @@ if node['platform_family'] == 'rhel'
   when '5.7'
     include_recipe 'yum-mysql-community::mysql57'
   end
-end
-
-# TODO: ADD TESTS
-case node['platform_family']
-when 'rhel'
   package 'mysql-community-devel'
 when 'debian'
+  case node['rs-mysql']['mysql']['version']
+  when '5.7'
+    remote_file ::File.join(Chef::Config[:file_cache_path], 'mysql-apt-config_0.8.2-1_all.deb') do
+      source 'https://dev.mysql.com/get/mysql-apt-config_0.8.2-1_all.deb'
+      owner 'root'
+      group 'root'
+      mode '0644'
+      action :create
+    end
+
+    dpkg_package 'mysql-apt-config' do
+      source ::File.join(Chef::Config[:file_cache_path], 'mysql-apt-config_0.8.2-1_all.deb')
+      action :install
+    end
+
+    apt_update 'apt-mysql' do
+      action :update
+    end
+  end
   package "mysql-server-#{node['rs-mysql']['mysql']['version']}"
 end
 
