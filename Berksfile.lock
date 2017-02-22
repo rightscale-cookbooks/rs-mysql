@@ -37,10 +37,8 @@ DEPENDENCIES
   yum-epel
 
 GRAPH
-  apt (5.1.0)
-    compat_resource (>= 12.16.3)
-  build-essential (7.0.3)
-    compat_resource (>= 12.16.3)
+  apt (6.0.0)
+  build-essential (8.0.0)
     mingw (>= 1.1)
     seven_zip (>= 0.0.0)
   chef-sugar (3.4.0)
@@ -120,7 +118,7 @@ GRAPH
     rsyslog (>= 0.0.0)
     swap (>= 0.0.0)
     yum-epel (>= 0.0.0)
-  rs-mysql (2.0.1)
+  rs-mysql (2.1.0)
     build-essential (>= 0.0.0)
     chef_handler (>= 0.0.0)
     collectd (>= 0.0.0)

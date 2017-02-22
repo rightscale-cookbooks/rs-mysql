@@ -171,34 +171,50 @@ when 'rhel'
 when 'debian'
   case node['rs-mysql']['mysql']['version']
   when '5.7'
-    remote_file ::File.join(Chef::Config[:file_cache_path], 'mysql-apt-config_0.8.2-1_all.deb') do
+    r=remote_file ::File.join(Chef::Config[:file_cache_path], 'mysql-apt-config_0.8.2-1_all.deb') do
       source 'https://dev.mysql.com/get/mysql-apt-config_0.8.2-1_all.deb'
       owner 'root'
       group 'root'
       mode '0644'
-      action :create
-    end
+      action :nothing
+    end.run_action(:create)
 
-    dpkg_package 'mysql-apt-config' do
+    d=dpkg_package 'mysql-apt-config' do
       source ::File.join(Chef::Config[:file_cache_path], 'mysql-apt-config_0.8.2-1_all.deb')
-      action :install
-    end
+      action :nothing
+    end.run_action(:install)
 
-    apt_update 'apt-mysql' do
-      action :update
+    a=apt_update 'apt-mysql' do
+      action :nothing
+    end.run_action(:update)
+    
+    srv_pkg = 'mysql-server'
+    client_pkg = 'mysql-community-client'
+    service 'mysql' do
+      action :stop
     end
+  else
+    srv_pkg = "mysql-server-#{node['rs-mysql']['mysql']['version']}"
+    client_pkg = 'mysql-client'
   end
-  package "mysql-server-#{node['rs-mysql']['mysql']['version']}"
+  package srv_pkg
 end
 
 # TODO: ADD TESTS
 mysql_client 'default' do
+  package_name client_pkg if node['platform_family'] == 'debian'
   action :create
+end
+%w(mysql mysqld).each do |svc|
+  service svc do
+    action [:disable, :stop]
+  end
 end
 
 mysql_service 'default' do
   initial_root_password node['rs-mysql']['server_root_password']
-  version node['rs-mysql']['mysql']['version']
+  version node['rs-mysql']['mysql']['version'] unless node['platform_family'] == 'debian'
+  package_name srv_pkg if node['platform_family'] == 'debian'
   action [:create]
 end
 
@@ -210,15 +226,8 @@ directory mysql_data_dir do
   action :create
 end
 
-directory "#{mysql_data_dir}/mysql_binlogs" do
-  recursive true
-  user 'mysql'
-  group 'mysql'
-  mode '0770'
-  action :create
-end
-
-if node['platform_family'] == 'rhel' && node['platform_version'].split('.').first == '7'
+if ((node['platform_family'] == 'rhel' && node['platform_version'].split('.').first == '7') || 
+    (node['rs-mysql']['mysql']['version'] == '5.7' && node['platform_family'] == 'debian'))
   execute "mysql_install_db --datadir #{mysql_data_dir}"
 
   execute "chown -R mysql:mysql #{mysql_data_dir}" do
@@ -236,12 +245,36 @@ if node['platform_family'] == 'rhel' && node['platform_version'].split('.').firs
   end
 
 end
+
+directory "#{mysql_data_dir}/mysql_binlogs" do
+  recursive true
+  user 'mysql'
+  group 'mysql'
+  mode '0770'
+  action :create
+end
+
+execute 'apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld' do
+  action :nothing
+end
+
+link '/etc/apparmor.d/disable/usr.sbin.mysqld' do
+  to '/etc/apparmor.d/usr.sbin.mysqld'
+  link_type :symbolic
+  notifies :run, 'execute[apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld]', :immediately
+  only_if do
+    ::File.exist?('/etc/apparmor.d/usr.sbin.mysqld')
+  end
+end
+
 # TODO: ADD TESTS
 # Configure the MySQL service.
 mysql_service 'default' do
   initial_root_password node['rs-mysql']['server_root_password']
   action [:start]
 end
+
+execute 'mysql_upgrade'
 
 execute "chown -R mysql:mysql #{mysql_data_dir}" do
   action :run
