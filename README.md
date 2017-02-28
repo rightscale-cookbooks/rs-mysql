@@ -22,8 +22,10 @@ Github Repository: [https://github.com/rightscale-cookbooks/rs-mysql](https://gi
 * See cookbook version 1.2.6 for chef11 support
 * See cookbook version 1.1.9 for RightLink 6 support
 * Platform
-  * Ubuntu 12.04
-  * CentOS 6
+  * Ubuntu 12.04(MySQL 5.5, MySQL 5.6)
+  * Ubuntu 14.04(MySQL 5.5, MySQL 5.6)
+  * CentOS 6(MySQL 5.5, MySQL 5.6, MySQL 5.7)
+  * CentOS 7(MySQL 5.5, MySQL 5.6, MySQL 5.7)
 * Cookbooks
   * [marker](http://community.opscode.com/cookbooks/marker)
   * [mysql](http://community.opscode.com/cookbooks/mysql)
