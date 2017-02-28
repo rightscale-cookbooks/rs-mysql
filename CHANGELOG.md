@@ -6,6 +6,8 @@ This file is used to list changes made in each version of the rs-mysql cookbook.
 v2.0.2
 ------
 - adds ephemeral_lvm > 3.0
+- allows customizable mysql server versions, refer to README.md for supported versions.
+- updated test-kitchen to allow for testing for multiple versions.
 
 v2.0.1
 ------
