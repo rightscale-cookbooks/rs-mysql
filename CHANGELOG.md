@@ -3,6 +3,10 @@ rs-mysql Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-mysql cookbook.
 
+v2.0.2
+------
+- adds ephemeral_lvm > 3.0
+
 v2.0.1
 ------
 - adds azure rm support for private ips, issue: [#68][]
