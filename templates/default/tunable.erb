@@ -28,10 +28,10 @@ wait_timeout            = <%= @config['wait_timeout'] %>
 net_read_timeout        = <%= @config['net_read_timeout'] %>
 net_write_timeout       = <%= @config['net_write_timeout'] %>
 back_log                = <%= @config['back_log'] %>
-<%- if node['mysql']['version'].to_f >= 5.6 %>
+<%- if node['rs-mysql']['mysql']['version'].to_f >= 5.6 %>
 table_open_cache        = <%= @config['table_open_cache'] %>
 <%- else %>
-table_cache             = <%= @config['table_open_cache'] %>
+table_cache             = <%= @config['table_cache'] %>
 <%- end %>
 
 tmp_table_size          = <%= @config['tmp_table_size'] %>
