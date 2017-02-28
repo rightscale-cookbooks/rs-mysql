@@ -41,8 +41,8 @@ default['rs-mysql']['tunable']['max_heap_table_size']  = node['rs-mysql']['tunab
 default['rs-mysql']['tunable']['bulk_insert_buffer_size'] = node['rs-mysql']['tunable']['tmp_table_size']
 default['rs-mysql']['tunable']['net_read_timeout']     = '30'
 default['rs-mysql']['tunable']['net_write_timeout']    = '30'
-default['rs-mysql']['tunable']['table_cache']          = '128'
-default['rs-mysql']['tunable']['table_open_cache']     = node['rs-mysql']['tunable']['table_cache'] # table_cache is deprecated
+default['rs-mysql']['tunable']['table_cache']          = '128' if node['rs-mysql']['mysql']['version'] < '5.5'
+default['rs-mysql']['tunable']['table_open_cache']     = '128' if node['rs-mysql']['mysql']['version'] > '5.5'
 # in favor of table_open_cache
 default['rs-mysql']['tunable']['thread_cache_size']    = 8
 default['rs-mysql']['tunable']['thread_concurrency']   = 10

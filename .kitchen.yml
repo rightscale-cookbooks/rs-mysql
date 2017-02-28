@@ -61,6 +61,64 @@ suites:
     rs-mysql:
       backup:
         lineage: 'lineage'
+      mysql:
+        version: '5.5'
+      server_root_password: rootpass
+      server_repl_password: realpass
+      server_usage: dedicated
+      application_username: appuser
+      application_password: apppass
+      application_database_name: app_test
+    rightscale:
+      instance_uuid: '1111111'
+
+- name: default-56
+  run_list:
+  - recipe[rs-mysql::default]
+  - recipe[rs-mysql::collectd]
+  - recipe[fake::database_mysql]
+  attributes:
+    apt:
+      compile_time_update: true
+    cloud:
+      provider: 'vagrant'
+      public_ips: ['100.64.1.1']
+      private_ips: ['10.0.2.15']
+    rs-base:
+      collectd_server: 'tss-4.rightscale.com'
+    rs-mysql:
+      backup:
+        lineage: 'lineage'
+      mysql:
+        version: '5.6'
+      server_root_password: rootpass
+      server_repl_password: realpass
+      server_usage: dedicated
+      application_username: appuser
+      application_password: apppass
+      application_database_name: app_test
+    rightscale:
+      instance_uuid: '1111111'
+
+- name: default-57
+  run_list:
+  - recipe[rs-mysql::default]
+  - recipe[rs-mysql::collectd]
+  - recipe[fake::database_mysql]
+  attributes:
+    apt:
+      compile_time_update: true
+    cloud:
+      provider: 'vagrant'
+      public_ips: ['100.64.1.1']
+      private_ips: ['10.0.2.15']
+    rs-base:
+      collectd_server: 'tss-4.rightscale.com'
+    rs-mysql:
+      backup:
+        lineage: 'lineage'
+      mysql:
+        version: '5.7'
       server_root_password: rootpass
       server_repl_password: realpass
       server_usage: dedicated
