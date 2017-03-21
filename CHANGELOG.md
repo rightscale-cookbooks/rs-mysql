@@ -5,7 +5,8 @@ This file is used to list changes made in each version of the rs-mysql cookbook.
 
 v2.0.3
 ------
-- updates filesystem cookbook
+- updates filesystem cookbook to >= 0.11.1 to use the supermarket version and \
+  fix the frozen? issue.
 - cleans up Berksfile
 
 v2.0.2
