@@ -178,6 +178,7 @@ end
 
 # TODO: ADD TESTS
 mysql_client 'default' do
+  version node['rs-mysql']['mysql']['version']
   action :create
 end
 
