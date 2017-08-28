@@ -45,7 +45,7 @@ module RsMysql
           priv_ip = nil
           if !node['cloud']['private_ips'].nil? && !node['cloud']['private_ips'].empty?
             priv_ip = node['cloud']['private_ips'].first
-          end
+          end unless node['cloud'].nil?
 
           if !node['cloud_v2']['local_ipv4_addrs'].nil? && !node['cloud_v2']['local_ipv4_addrs'].empty? && priv_ip.nil?
             priv_ip = node['cloud_v2']['local_ipv4_addrs'].first
@@ -62,7 +62,7 @@ module RsMysql
           public_ip = nil
           if !node['cloud']['public_ips'].nil? && !node['cloud']['public_ips'].empty?
             public_ip = node['cloud']['public_ips'].first
-          end
+          end unless node['cloud'].nil?
 
           if !node['cloud_v2']['public_ipv4_addrs'].nil? && !node['cloud_v2']['public_ipv4_addrs'].empty? && public_ip.nil?
             public_ip = node['cloud_v2']['public_ipv4_addrs'].first
